@@ -1,0 +1,237 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <title>Quotation Builder — Preview</title>
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <style>
+      :root {
+        --bg: #0f172a;
+        --card: #ffffff;
+        --muted: #6b7280;
+        --accent: #0ea5e9;
+        --border: #e5e7eb;
+        --radius: 18px;
+        font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      }
+      body {
+        margin: 0;
+        background: #f3f4f6;
+      }
+      header {
+        background: var(--bg);
+        color: #fff;
+        padding: 14px 24px;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+      }
+      .lang-switch button {
+        background: transparent;
+        border: 1px solid rgba(255,255,255,.4);
+        color: #fff;
+        border-radius: 9999px;
+        padding: 4px 10px;
+        font-size: 12px;
+        cursor: pointer;
+        margin-left: 6px;
+      }
+      .shell {
+        max-width: 1200px;
+        margin: 28px auto;
+        padding: 0 16px 48px;
+      }
+      .hero {
+        background: radial-gradient(circle at top, #e0f2fe, #ffffff);
+        border: 1px solid #dbeafe;
+        border-radius: 24px;
+        padding: 26px 32px 24px;
+        display: flex;
+        justify-content: space-between;
+        gap: 16px;
+        margin-bottom: 24px;
+      }
+      .hero-title {
+        font-size: 1.4rem;
+        font-weight: 700;
+      }
+      .hero-sub {
+        color: #475569;
+        margin-top: 6px;
+      }
+      .steps {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(170px, 1fr));
+        gap: 16px;
+      }
+      .step-card {
+        background: var(--card);
+        border: 1px solid var(--border);
+        border-radius: 18px;
+        padding: 16px 16px 14px;
+      }
+      .step-card small {
+        display: inline-block;
+        background: rgba(14,165,233,.12);
+        color: #0f172a;
+        padding: 2px 10px;
+        border-radius: 9999px;
+        font-size: 11px;
+        margin-bottom: 6px;
+      }
+      .step-card h3 {
+        margin: 0;
+        font-size: 1rem;
+      }
+      .step-card p {
+        margin: 8px 0 12px;
+        font-size: 13px;
+        color: var(--muted);
+      }
+      .step-card a {
+        font-size: 12px;
+        color: var(--accent);
+        text-decoration: none;
+        font-weight: 600;
+      }
+      footer {
+        text-align: center;
+        color: #94a3b8;
+        font-size: 12px;
+        padding: 20px 0 40px;
+      }
+      @media (max-width: 640px) {
+        .hero { flex-direction: column; }
+      }
+    </style>
+  </head>
+  <body data-lang="en">
+    <header>
+      <div>Trustech Systèmes et Procédés Inc. — Internal Engineering Tools</div>
+      <div class="lang-switch">
+        <button onclick="setLang('en')">EN</button>
+        <button onclick="setLang('fr')">FR</button>
+      </div>
+    </header>
+    <main class="shell">
+      <section class="hero">
+        <div>
+          <div class="hero-title" data-en="Quotation Builder — Preview"
+               data-fr="Générateur de soumissions — Aperçu">
+            Quotation Builder — Preview
+          </div>
+          <p class="hero-sub" data-en="7-step quotation flow for engineering projects"
+             data-fr="Flux de soumission en 7 étapes pour projets d’ingénierie">
+            7-step quotation flow for engineering projects
+          </p>
+        </div>
+        <div style="text-align:right; font-size:12px; color:#64748b;">
+          <div data-en="Current bundle: preview + index + step 1"
+               data-fr="Lot courant : aperçu + index + étape 1">
+            Current bundle: preview + index + step 1
+          </div>
+          <div data-en="Steps 2–5: equipment-driven layout (to be added)"
+               data-fr="Étapes 2–5 : maquette pilotée par équipements (à ajouter)">
+            Steps 2–5: equipment-driven layout (to be added)
+          </div>
+        </div>
+      </section>
+
+      <section class="steps">
+        <article class="step-card">
+          <small>Step 0</small>
+          <h3 data-en="Overview" data-fr="Vue d’ensemble">Overview</h3>
+          <p data-en="Top-level view of 7 steps, target audience and mapping to Word."
+             data-fr="Vue globale des 7 étapes, public cible et mappage vers Word.">
+            Top-level view of 7 steps, target audience and mapping to Word.
+          </p>
+          <a href="./index.html" data-en="Open main index →" data-fr="Ouvrir l’index →">Open main index →</a>
+        </article>
+
+        <article class="step-card">
+          <small>Step 1</small>
+          <h3 data-en="Project header" data-fr="En-tête du projet">Project header</h3>
+          <p data-en="Client, project, site, currency, tax, quote no. auto."
+             data-fr="Client, projet, site, devise, taxe, no. soumission auto.">
+            Client, project, site, currency, tax, quote no. auto.
+          </p>
+          <a href="./step1.html" data-en="Go to step 1 →" data-fr="Aller à l’étape 1 →">Go to step 1 →</a>
+        </article>
+
+        <article class="step-card">
+          <small>Step 2</small>
+          <h3 data-en="Site & process" data-fr="Site & procédé">Site & process</h3>
+          <p data-en="Layout, height, power, explosive zone, prelim. CFM."
+             data-fr="Implantation, hauteur, puissance, zone Ex, CFM préliminaire.">
+            Layout, height, power, explosive zone, prelim. CFM.
+          </p>
+          <span style="font-size:12px; color:#94a3b8;">(placeholder)</span>
+        </article>
+
+        <article class="step-card">
+          <small>Step 3</small>
+          <h3 data-en="Performance & compliance" data-fr="Performance & conformité">
+            Performance & compliance
+          </h3>
+          <p data-en="Target CFM/SP/ATC and NFPA/CSA/ASHRAE flags."
+             data-fr="CFM/PS/ATC cibles et indicateurs NFPA/CSA/ASHRAE.">
+            Target CFM/SP/ATC and NFPA/CSA/ASHRAE flags.
+          </p>
+          <span style="font-size:12px; color:#94a3b8;">(placeholder)</span>
+        </article>
+
+        <article class="step-card">
+          <small>Step 4</small>
+          <h3 data-en="Options (A/B/C)" data-fr="Options (A/B/C)">Options (A/B/C)</h3>
+          <p data-en="Equipment-based options, BOM, fan/filter sizing."
+             data-fr="Options basées sur équipements, nomenclature, dimensionnement.">
+            Equipment-based options, BOM, fan/filter sizing.
+          </p>
+          <span style="font-size:12px; color:#94a3b8;">(placeholder)</span>
+        </article>
+
+        <article class="step-card">
+          <small>Step 5</small>
+          <h3 data-en="Costing & pricing" data-fr="Coûts & prix">Costing & pricing</h3>
+          <p data-en="Materials, labour, logistics, discount, margin, taxes."
+             data-fr="Matériels, main-d’œuvre, logistique, escompte, marge, taxes.">
+            Materials, labour, logistics, discount, margin, taxes.
+          </p>
+          <span style="font-size:12px; color:#94a3b8;">(placeholder)</span>
+        </article>
+
+        <article class="step-card">
+          <small>Step 6</small>
+          <h3 data-en="Contract & delivery" data-fr="Contrat & livraison">Contract & delivery</h3>
+          <p data-en="Lead times, warranty, scope split, legal text."
+             data-fr="Délais, garantie, partage de portée, texte légal.">
+            Lead times, warranty, scope split, legal text.
+          </p>
+          <span style="font-size:12px; color:#94a3b8;">(placeholder)</span>
+        </article>
+
+        <article class="step-card">
+          <small>Step 7</small>
+          <h3 data-en="Preview & export" data-fr="Aperçu & export">Preview & export</h3>
+          <p data-en="Word/PDF generation, customer/internal views."
+             data-fr="Génération Word/PDF, vues client/interne.">
+            Word/PDF generation, customer/internal views.
+          </p>
+          <span style="font-size:12px; color:#94a3b8;">(placeholder)</span>
+        </article>
+      </section>
+    </main>
+    <footer>
+      © 2025 Trustech Systèmes et Procédés Inc. — Quotation Builder Preview
+    </footer>
+    <script>
+      function setLang(lang) {
+        document.body.dataset.lang = lang;
+        document.querySelectorAll("[data-en]").forEach(el => {
+          const text = el.getAttribute(lang === "fr" ? "data-fr" : "data-en");
+          if (text) el.textContent = text;
+        });
+      }
+    </script>
+  </body>
+</html>
