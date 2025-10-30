@@ -1,0 +1,132 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <title>Equipment Detail — EN / FR</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <script src="https://cdn.tailwindcss.com"></script>
+  </head>
+  <body class="min-h-screen bg-slate-50 text-slate-900">
+    <header class="bg-white border-b sticky top-0 z-10">
+      <div class="max-w-6xl mx-auto px-4 py-3 flex items-center justify-between gap-4">
+        <div>
+          <h1 class="text-lg font-bold">Equipment detail (read-only)</h1>
+          <p class="text-xs text-slate-500">Same data · 2 label sets</p>
+        </div>
+        <div class="flex gap-2 items-center">
+          <span class="text-xs text-slate-500">Language</span>
+          <button id="btn-en" class="px-3 py-1 rounded-full bg-slate-900 text-white text-xs">EN</button>
+          <button id="btn-fr" class="px-3 py-1 rounded-full bg-white border text-xs">FR</button>
+        </div>
+      </div>
+    </header>
+
+    <main class="max-w-6xl mx-auto px-4 py-6 space-y-6">
+      <!-- Dust Collector -->
+      <section class="bg-white rounded-2xl border shadow-sm p-4">
+        <h2 class="text-sm font-semibold mb-2"><span data-en="Dust collector" data-fr="Collecteur de poussière">Dust collector</span> · COL-001</h2>
+        <p class="text-xs text-slate-500 mb-4"><span data-en="Process air filtration unit" data-fr="Unité de dépoussiérage du procédé">Process air filtration unit</span></p>
+
+        <div class="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
+          <!-- General -->
+          <div>
+            <h3 class="text-xs font-semibold mb-2 text-slate-700" data-en="General" data-fr="Général">General</h3>
+            <ul class="text-xs space-y-1">
+              <li><strong data-en="Installation:" data-fr="Installation :">Installation:</strong> <span data-en="Indoor" data-fr="Intérieur">Indoor</span></li>
+              <li><strong data-en="Explosion zone:" data-fr="Zone ATEX :">Explosion zone:</strong> NFPA 652</li>
+              <li><strong data-en="Service:" data-fr="Service :">Service:</strong> <span data-en="Grinding line 2" data-fr="Ligne de meulage 2">Grinding line 2</span></li>
+            </ul>
+            <p class="text-[10px] text-slate-400 mt-2">Word: &lt;BK:SiteLayout&gt;, &lt;BK:ExplosionZone&gt;</p>
+          </div>
+
+          <!-- Air performance -->
+          <div>
+            <h3 class="text-xs font-semibold mb-2 text-slate-700" data-en="Air performance" data-fr="Performance d’air">Air performance</h3>
+            <ul class="text-xs space-y-1">
+              <li><strong data-en="Design airflow:" data-fr="Débit de conception :">Design airflow:</strong> 12,000 CFM (≈ 20,400 m³/h)</li>
+              <li><strong data-en="Static pressure:" data-fr="Perte de charge :">Static pressure:</strong> 10.5 inWG (≈ 2,615 Pa)</li>
+              <li><strong data-en="ATC:" data-fr="ATC :">ATC:</strong> 4.0</li>
+            </ul>
+            <p class="text-[10px] text-slate-400 mt-2">Word: &lt;BK:Target_CFM&gt;, &lt;BK:Target_SP&gt;, &lt;BK:ATC&gt;</p>
+          </div>
+
+          <!-- Filter / fan -->
+          <div>
+            <h3 class="text-xs font-semibold mb-2 text-slate-700" data-en="Filter / fan" data-fr="Filtration / ventilateur">Filter / fan</h3>
+            <ul class="text-xs space-y-1">
+              <li><strong data-en="Filter type:" data-fr="Type de filtre :">Filter type:</strong> Cartridge (polyester)</li>
+              <li><strong data-en="Filter qty:" data-fr="Nb filtres :">Filter qty:</strong> 96</li>
+              <li><strong data-en="Fan:" data-fr="Ventilateur :">Fan:</strong> 50 HP (≈ 37 kW)</li>
+            </ul>
+            <p class="text-[10px] text-slate-400 mt-2">Word: &lt;BK:FilterType&gt;, &lt;BK:FilterQty&gt;, &lt;BK:FanHP&gt;</p>
+          </div>
+
+          <!-- Safety -->
+          <div>
+            <h3 class="text-xs font-semibold mb-2 text-slate-700" data-en="Safety / NFPA" data-fr="Sécurité / NFPA">Safety / NFPA</h3>
+            <ul class="text-xs space-y-1">
+              <li><strong data-en="Isolation valve:" data-fr="Vanne d’isolement :">Isolation valve:</strong> Yes</li>
+              <li><strong data-en="Explosion panel:" data-fr="Panneau d’explosion :">Explosion panel:</strong> 1.2 ft²</li>
+              <li><strong data-en="Venting direction:" data-fr="Direction de décharge :">Venting direction:</strong> Roof</li>
+            </ul>
+            <p class="text-[10px] text-slate-400 mt-2">Word: &lt;BK:ExplosionPanel&gt;, &lt;BK:VentingDir&gt;</p>
+          </div>
+        </div>
+      </section>
+
+      <!-- Silo / Hopper -->
+      <section class="bg-white rounded-2xl border shadow-sm p-4">
+        <h2 class="text-sm font-semibold mb-2" data-en="Silo / Hopper · SILO-001" data-fr="Silo / Trémie · SILO-001">Silo / Hopper · SILO-001</h2>
+        <div class="grid gap-4 md:grid-cols-3">
+          <div>
+            <h3 class="text-xs font-semibold mb-2" data-en="Geometry & capacity" data-fr="Géométrie & capacité">Geometry & capacity</h3>
+            <ul class="text-xs space-y-1">
+              <li>Ø 3.2 m × 8.5 m</li>
+              <li><span data-en="Volume" data-fr="Volume">Volume</span>: 55 m³ (≈ 1,940 ft³)</li>
+              <li><span data-en="Bulk density" data-fr="Densité apparente">Bulk density</span>: 1.4 t/m³</li>
+              <li><span data-en="Capacity" data-fr="Capacité">Capacity</span>: 77 t</li>
+            </ul>
+          </div>
+          <div>
+            <h3 class="text-xs font-semibold mb-2" data-en="Discharge & instruments" data-fr="Vidange & instrumentation">Discharge & instruments</h3>
+            <ul class="text-xs space-y-1">
+              <li><span data-en="Discharge type" data-fr="Type de vidange">Discharge type</span>: Cone bottom + rotary valve</li>
+              <li><span data-en="Level sensor" data-fr="Détecteur de niveau">Level sensor</span>: Radar</li>
+              <li><span data-en="Pressure relief" data-fr="Soupape de dépression/surpression">Pressure relief</span>: Yes</li>
+            </ul>
+          </div>
+          <div>
+            <h3 class="text-xs font-semibold mb-2" data-en="Safety" data-fr="Sécurité">Safety</h3>
+            <ul class="text-xs space-y-1">
+              <li><span data-en="Grounding" data-fr="Mise à la terre">Grounding</span>: Yes</li>
+              <li><span data-en="Overfill protection" data-fr="Protection de surremplissage">Overfill protection</span>: Yes</li>
+              <li><span data-en="Vent duct" data-fr="Conduit de ventilation">Vent duct</span>: 8 in</li>
+            </ul>
+          </div>
+        </div>
+      </section>
+
+      <!-- 같은 방식으로 RD / ETS / SDRY 계속… -->
+      <p class="text-[10px] text-slate-400">…Rotary dryer, ETS, Silo dryer can follow same pattern.</p>
+    </main>
+
+    <script>
+      const toEN = () => {
+        document.querySelectorAll("[data-en]").forEach((el) => {
+          el.textContent = el.getAttribute("data-en");
+        });
+        document.getElementById("btn-en").classList.add("bg-slate-900","text-white");
+        document.getElementById("btn-fr").classList.remove("bg-slate-900","text-white");
+      };
+      const toFR = () => {
+        document.querySelectorAll("[data-fr]").forEach((el) => {
+          el.textContent = el.getAttribute("data-fr");
+        });
+        document.getElementById("btn-fr").classList.add("bg-slate-900","text-white");
+        document.getElementById("btn-en").classList.remove("bg-slate-900","text-white");
+      };
+      document.getElementById("btn-en").addEventListener("click", toEN);
+      document.getElementById("btn-fr").addEventListener("click", toFR);
+    </script>
+  </body>
+</html>
