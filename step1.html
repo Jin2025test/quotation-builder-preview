@@ -1,0 +1,173 @@
+<!doctype html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8" />
+  <title>Step 1 – Project Header</title>
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <link rel="stylesheet"
+    href="https://cdn.jsdelivr.net/npm/@picocss/pico@1.5.10/css/pico.min.css">
+  <style>
+    body { max-width: 1100px; margin: 0 auto; }
+    header { margin-top: 1rem; margin-bottom: 1.5rem; display:flex; justify-content:space-between; gap:1rem; align-items:center; }
+    .lang-switch button { margin-left:.35rem; }
+    .badge { background:#eef; padding:4px 10px; border-radius: 999px; font-size:.65rem; }
+  </style>
+</head>
+<body>
+  <header>
+    <div>
+      <h2 data-i18n="title">Étape 1. En-tête du projet</h2>
+      <p data-i18n="subtitle" class="meta">Saisir les infos client/projet/commercial pour alimenter les étapes suivantes.</p>
+    </div>
+    <div class="lang-switch">
+      <small>Lang:</small>
+      <button onclick="setLang('fr')" class="secondary">FR</button>
+      <button onclick="setLang('en')" class="secondary">EN</button>
+    </div>
+  </header>
+
+  <article>
+    <h4 data-i18n="client_info">Informations client</h4>
+    <div class="grid" style="display:grid;gap:1rem;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));">
+      <label>
+        <span data-i18n="client_name_label">Nom du client *</span>
+        <input type="text" value="Vibrotech">
+      </label>
+      <label>
+        <span data-i18n="site_label">Site / Usine / Localisation *</span>
+        <input type="text" value="St-Constant, QC">
+      </label>
+      <label>
+        <span data-i18n="contact_person">Personne contact</span>
+        <input type="text" placeholder="Steven Daigle">
+      </label>
+      <label>
+        <span data-i18n="contact_info">Courriel / Téléphone</span>
+        <input type="text" placeholder="sdaigle@...">
+      </label>
+    </div>
+  </article>
+
+  <article>
+    <h4 data-i18n="project_info">Information sur le projet</h4>
+    <div class="grid" style="display:grid;gap:1rem;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));">
+      <label>
+        <span data-i18n="project_title">Titre du projet *</span>
+        <input type="text" value="Modification au système de dépoussiérage existant">
+      </label>
+      <label>
+        <span data-i18n="internal_ref">Référence interne / No. de dossier *</span>
+        <input type="text" value="ST1414 R06">
+      </label>
+    </div>
+  </article>
+
+  <article>
+    <h4 data-i18n="commercial">Paramètres commerciaux</h4>
+    <div class="grid" style="display:grid;gap:1rem;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));">
+      <label>
+        <span data-i18n="currency">Devise</span>
+        <select>
+          <option selected>CAD</option>
+          <option>USD</option>
+          <option>EUR</option>
+        </select>
+      </label>
+      <label>
+        <span data-i18n="tax_rate">Taux de taxe (%)</span>
+        <input type="number" value="14.975" step="0.001">
+      </label>
+      <label>
+        <span data-i18n="locale">Langue / Locale</span>
+        <select>
+          <option value="fr-CA" selected>fr-CA</option>
+          <option value="en-CA">en-CA</option>
+        </select>
+      </label>
+    </div>
+  </article>
+
+  <article>
+    <h4 data-i18n="generated">Champs générés (lecture seule)</h4>
+    <div class="grid" style="display:grid;gap:1rem;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));">
+      <label>
+        <span data-i18n="quote_no">Numéro de soumission</span>
+        <input type="text" value="Q-2025-10-29-001" readonly>
+      </label>
+      <label>
+        <span data-i18n="quote_date">Date</span>
+        <input type="date" value="2025-10-29" readonly>
+      </label>
+      <label>
+        <span data-i18n="prepared_by">Préparé par</span>
+        <input type="text" value="Trustech – Systèmes et Procédés Inc." readonly>
+      </label>
+    </div>
+    <p><span class="badge" data-i18n="will_map">sera mappé vers :</span>
+      &lt;BM:ClientName&gt;, &lt;BM:ProjectTitle&gt;, &lt;BM:QuoteNo&gt;, &lt;BM:Date&gt;, &lt;BM:Currency&gt;, &lt;BM:TaxRate&gt;
+    </p>
+  </article>
+
+  <footer>
+    <small data-i18n="next_step">Étape 1 complétée → Étape 2 (Conditions du site / procédé)</small>
+  </footer>
+
+  <script>
+    const translations = {
+      fr: {
+        title: "Étape 1. En-tête du projet",
+        subtitle: "Saisir les infos client/projet/commercial pour alimenter les étapes suivantes.",
+        client_info: "Informations client",
+        client_name_label: "Nom du client *",
+        site_label: "Site / Usine / Localisation *",
+        contact_person: "Personne contact",
+        contact_info: "Courriel / Téléphone",
+        project_info: "Information sur le projet",
+        project_title: "Titre du projet *",
+        internal_ref: "Référence interne / No. de dossier *",
+        commercial: "Paramètres commerciaux",
+        currency: "Devise",
+        tax_rate: "Taux de taxe (%)",
+        locale: "Langue / Locale",
+        generated: "Champs générés (lecture seule)",
+        quote_no: "Numéro de soumission",
+        quote_date: "Date",
+        prepared_by: "Préparé par",
+        will_map: "sera mappé vers :",
+        next_step: "Étape 1 complétée → Étape 2 (Conditions du site / procédé)"
+      },
+      en: {
+        title: "Step 1. Project Header",
+        subtitle: "Capture client / project / commercial info to feed next steps.",
+        client_info: "Client information",
+        client_name_label: "Client / Customer name *",
+        site_label: "Site / Plant / Location *",
+        contact_person: "Contact person",
+        contact_info: "Email / Phone",
+        project_info: "Project information",
+        project_title: "Project / Proposal title *",
+        internal_ref: "Internal ref / Job no. *",
+        commercial: "Commercial settings",
+        currency: "Currency",
+        tax_rate: "Tax rate (%)",
+        locale: "Locale",
+        generated: "Generated meta (read only)",
+        quote_no: "Quote no.",
+        quote_date: "Quote date",
+        prepared_by: "Prepared by",
+        will_map: "will map to:",
+        next_step: "Step 1 done → Step 2 (Site / Process Conditions)"
+      }
+    };
+
+    function setLang(lang) {
+      const dict = translations[lang];
+      document.documentElement.lang = lang === "fr" ? "fr" : "en";
+      document.querySelectorAll("[data-i18n]").forEach(el => {
+        const key = el.getAttribute("data-i18n");
+        if (dict[key]) el.textContent = dict[key];
+      });
+    }
+  </script>
+</body>
+</html>
