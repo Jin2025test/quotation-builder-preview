@@ -1,173 +1,261 @@
 <!doctype html>
-<html lang="fr">
-<head>
-  <meta charset="UTF-8" />
-  <title>Step 1 – Project Header</title>
-  <meta name="viewport" content="width=device-width,initial-scale=1" />
-  <link rel="stylesheet"
-    href="https://cdn.jsdelivr.net/npm/@picocss/pico@1.5.10/css/pico.min.css">
-  <style>
-    body { max-width: 1100px; margin: 0 auto; }
-    header { margin-top: 1rem; margin-bottom: 1.5rem; display:flex; justify-content:space-between; gap:1rem; align-items:center; }
-    .lang-switch button { margin-left:.35rem; }
-    .badge { background:#eef; padding:4px 10px; border-radius: 999px; font-size:.65rem; }
-  </style>
-</head>
-<body>
-  <header>
-    <div>
-      <h2 data-i18n="title">Étape 1. En-tête du projet</h2>
-      <p data-i18n="subtitle" class="meta">Saisir les infos client/projet/commercial pour alimenter les étapes suivantes.</p>
-    </div>
-    <div class="lang-switch">
-      <small>Lang:</small>
-      <button onclick="setLang('fr')" class="secondary">FR</button>
-      <button onclick="setLang('en')" class="secondary">EN</button>
-    </div>
-  </header>
-
-  <article>
-    <h4 data-i18n="client_info">Informations client</h4>
-    <div class="grid" style="display:grid;gap:1rem;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));">
-      <label>
-        <span data-i18n="client_name_label">Nom du client *</span>
-        <input type="text" value="Vibrotech">
-      </label>
-      <label>
-        <span data-i18n="site_label">Site / Usine / Localisation *</span>
-        <input type="text" value="St-Constant, QC">
-      </label>
-      <label>
-        <span data-i18n="contact_person">Personne contact</span>
-        <input type="text" placeholder="Steven Daigle">
-      </label>
-      <label>
-        <span data-i18n="contact_info">Courriel / Téléphone</span>
-        <input type="text" placeholder="sdaigle@...">
-      </label>
-    </div>
-  </article>
-
-  <article>
-    <h4 data-i18n="project_info">Information sur le projet</h4>
-    <div class="grid" style="display:grid;gap:1rem;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));">
-      <label>
-        <span data-i18n="project_title">Titre du projet *</span>
-        <input type="text" value="Modification au système de dépoussiérage existant">
-      </label>
-      <label>
-        <span data-i18n="internal_ref">Référence interne / No. de dossier *</span>
-        <input type="text" value="ST1414 R06">
-      </label>
-    </div>
-  </article>
-
-  <article>
-    <h4 data-i18n="commercial">Paramètres commerciaux</h4>
-    <div class="grid" style="display:grid;gap:1rem;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));">
-      <label>
-        <span data-i18n="currency">Devise</span>
-        <select>
-          <option selected>CAD</option>
-          <option>USD</option>
-          <option>EUR</option>
-        </select>
-      </label>
-      <label>
-        <span data-i18n="tax_rate">Taux de taxe (%)</span>
-        <input type="number" value="14.975" step="0.001">
-      </label>
-      <label>
-        <span data-i18n="locale">Langue / Locale</span>
-        <select>
-          <option value="fr-CA" selected>fr-CA</option>
-          <option value="en-CA">en-CA</option>
-        </select>
-      </label>
-    </div>
-  </article>
-
-  <article>
-    <h4 data-i18n="generated">Champs générés (lecture seule)</h4>
-    <div class="grid" style="display:grid;gap:1rem;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));">
-      <label>
-        <span data-i18n="quote_no">Numéro de soumission</span>
-        <input type="text" value="Q-2025-10-29-001" readonly>
-      </label>
-      <label>
-        <span data-i18n="quote_date">Date</span>
-        <input type="date" value="2025-10-29" readonly>
-      </label>
-      <label>
-        <span data-i18n="prepared_by">Préparé par</span>
-        <input type="text" value="Trustech – Systèmes et Procédés Inc." readonly>
-      </label>
-    </div>
-    <p><span class="badge" data-i18n="will_map">sera mappé vers :</span>
-      &lt;BM:ClientName&gt;, &lt;BM:ProjectTitle&gt;, &lt;BM:QuoteNo&gt;, &lt;BM:Date&gt;, &lt;BM:Currency&gt;, &lt;BM:TaxRate&gt;
-    </p>
-  </article>
-
-  <footer>
-    <small data-i18n="next_step">Étape 1 complétée → Étape 2 (Conditions du site / procédé)</small>
-  </footer>
-
-  <script>
-    const translations = {
-      fr: {
-        title: "Étape 1. En-tête du projet",
-        subtitle: "Saisir les infos client/projet/commercial pour alimenter les étapes suivantes.",
-        client_info: "Informations client",
-        client_name_label: "Nom du client *",
-        site_label: "Site / Usine / Localisation *",
-        contact_person: "Personne contact",
-        contact_info: "Courriel / Téléphone",
-        project_info: "Information sur le projet",
-        project_title: "Titre du projet *",
-        internal_ref: "Référence interne / No. de dossier *",
-        commercial: "Paramètres commerciaux",
-        currency: "Devise",
-        tax_rate: "Taux de taxe (%)",
-        locale: "Langue / Locale",
-        generated: "Champs générés (lecture seule)",
-        quote_no: "Numéro de soumission",
-        quote_date: "Date",
-        prepared_by: "Préparé par",
-        will_map: "sera mappé vers :",
-        next_step: "Étape 1 complétée → Étape 2 (Conditions du site / procédé)"
-      },
-      en: {
-        title: "Step 1. Project Header",
-        subtitle: "Capture client / project / commercial info to feed next steps.",
-        client_info: "Client information",
-        client_name_label: "Client / Customer name *",
-        site_label: "Site / Plant / Location *",
-        contact_person: "Contact person",
-        contact_info: "Email / Phone",
-        project_info: "Project information",
-        project_title: "Project / Proposal title *",
-        internal_ref: "Internal ref / Job no. *",
-        commercial: "Commercial settings",
-        currency: "Currency",
-        tax_rate: "Tax rate (%)",
-        locale: "Locale",
-        generated: "Generated meta (read only)",
-        quote_no: "Quote no.",
-        quote_date: "Quote date",
-        prepared_by: "Prepared by",
-        will_map: "will map to:",
-        next_step: "Step 1 done → Step 2 (Site / Process Conditions)"
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <title>Step 1 — Project header</title>
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <style>
+      :root {
+        --bg: #0f172a;
+        --card: #ffffff;
+        --muted: #6b7280;
+        --accent: #0ea5e9;
+        --border: #e5e7eb;
+        --radius: 18px;
+        font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
       }
-    };
+      body { margin:0; background:#f3f4f6; }
+      header {
+        background: var(--bg);
+        color: #fff;
+        padding: 14px 24px;
+        display:flex;
+        justify-content:space-between;
+        align-items:center;
+      }
+      .lang-switch button {
+        background: transparent;
+        border: 1px solid rgba(255,255,255,.4);
+        color: #fff;
+        border-radius: 9999px;
+        padding: 4px 10px;
+        font-size: 12px;
+        cursor: pointer;
+        margin-left: 6px;
+      }
+      .shell {
+        max-width: 1200px;
+        margin: 28px auto;
+        padding: 0 16px 48px;
+      }
+      .hero {
+        background: radial-gradient(circle at top, #e0f2fe, #ffffff);
+        border: 1px solid #dbeafe;
+        border-radius: 24px;
+        padding: 20px 32px 18px;
+        margin-bottom: 20px;
+      }
+      .hero-title { font-size: 1.3rem; font-weight: 700; }
+      .hero-sub { color: #475569; margin-top: 6px; }
+      .tabs {
+        display:flex;
+        gap: 10px;
+        margin: 20px 0;
+        flex-wrap: wrap;
+      }
+      .tabs a {
+        background: #fff;
+        border: 1px solid #e2e8f0;
+        border-radius: 9999px;
+        padding: 7px 14px;
+        font-size: 13px;
+        color: #0f172a;
+        text-decoration:none;
+      }
+      .tabs a.active {
+        background: #0ea5e9;
+        border-color: #0ea5e9;
+        color: #fff;
+        font-weight: 600;
+      }
+      .grid {
+        display:grid;
+        grid-template-columns: 1.4fr 1fr;
+        gap: 18px;
+      }
+      .card {
+        background: #fff;
+        border-radius: 18px;
+        border: 1px solid #e2e8f0;
+        padding: 18px 18px 16px;
+      }
+      label {
+        display:block;
+        margin-bottom: 12px;
+        font-size: 13px;
+      }
+      label span {
+        display:block;
+        margin-bottom: 4px;
+        color: #0f172a;
+      }
+      input, select {
+        width: 100%;
+        padding: 7px 10px;
+        border-radius: 12px;
+        border: 1px solid #d1d5db;
+        font-size: 13px;
+      }
+      .bookmark-hint {
+        font-size: 11px;
+        color: #94a3b8;
+      }
+      footer {
+        text-align:center;
+        color:#94a3b8;
+        font-size:12px;
+        padding:20px 0 40px;
+      }
+      pre {
+        background: #0f172a;
+        color: #e2e8f0;
+        font-size: 11px;
+        padding: 12px;
+        border-radius: 12px;
+        max-height: 220px;
+        overflow:auto;
+      }
+      @media (max-width: 900px){
+        .grid { grid-template-columns: 1fr; }
+      }
+    </style>
+  </head>
+  <body data-lang="en">
+    <header>
+      <div>Trustech Systèmes et Procédés Inc. — Step 1</div>
+      <div class="lang-switch">
+        <button onclick="setLang('en')">EN</button>
+        <button onclick="setLang('fr')">FR</button>
+      </div>
+    </header>
+    <main class="shell">
+      <section class="hero">
+        <div class="hero-title" data-en="Step 1 — Project header"
+             data-fr="Étape 1 — En-tête du projet">
+          Step 1 — Project header
+        </div>
+        <p class="hero-sub" data-en="Collect client, project, site and commercial context. Auto-generate quote no. and date."
+           data-fr="Collecter le client, le projet, le site et le contexte commercial. Générer automatiquement le no. de soumission et la date.">
+          Collect client, project, site and commercial context. Auto-generate quote no. and date.
+        </p>
+      </section>
 
-    function setLang(lang) {
-      const dict = translations[lang];
-      document.documentElement.lang = lang === "fr" ? "fr" : "en";
-      document.querySelectorAll("[data-i18n]").forEach(el => {
-        const key = el.getAttribute("data-i18n");
-        if (dict[key]) el.textContent = dict[key];
-      });
-    }
-  </script>
-</body>
+      <nav class="tabs">
+        <a href="./preview.html" data-en="Preview" data-fr="Aperçu">Preview</a>
+        <a href="./index.html" data-en="Index" data-fr="Index">Index</a>
+        <a href="./step1.html" class="active" data-en="1. Project header" data-fr="1. En-tête projet">1. Project header</a>
+        <a href="./step2.html" data-en="2. Site / process" data-fr="2. Site / procédé">2. Site / process</a>
+        <a href="./step3.html" data-en="3. Performance" data-fr="3. Performance">3. Performance</a>
+        <a href="./step4.html" data-en="4. Options" data-fr="4. Options">4. Options</a>
+        <a href="./step5.html" data-en="5. Costing" data-fr="5. Coûts">5. Costing</a>
+        <a href="./step6.html" data-en="6. Terms" data-fr="6. Conditions">6. Terms</a>
+        <a href="./step7.html" data-en="7. Export" data-fr="7. Export">7. Export</a>
+      </nav>
+
+      <section class="grid">
+        <article class="card">
+          <h2 style="margin-top:0;" data-en="Header inputs" data-fr="Saisies d’en-tête">Header inputs</h2>
+          <label>
+            <span data-en="Client name (BM:ClientName)" data-fr="Nom du client (BM:ClientName)">Client name (BM:ClientName)</span>
+            <input type="text" value="MTL Industrial Co." />
+          </label>
+          <label>
+            <span data-en="Client contact" data-fr="Contact client">Client contact</span>
+            <input type="text" value="Julie Tremblay" />
+          </label>
+          <label>
+            <span data-en="Site / plant" data-fr="Site / usine">Site / plant</span>
+            <input type="text" value="Montréal — East plant" />
+          </label>
+          <label>
+            <span data-en="Project title (BM:ProjectTitle)" data-fr="Titre du projet (BM:ProjectTitle)">Project title (BM:ProjectTitle)</span>
+            <input type="text" value="Dust collector retrofit — line 3" />
+          </label>
+          <label>
+            <span data-en="Internal ref." data-fr="Réf. interne">Internal ref.</span>
+            <input type="text" value="TRU-2025-DC-031" />
+          </label>
+          <div style="display:flex; gap:12px;">
+            <label style="flex:1;">
+              <span data-en="Currency" data-fr="Devise">Currency</span>
+              <select>
+                <option>CAD</option>
+                <option>USD</option>
+                <option>EUR</option>
+              </select>
+            </label>
+            <label style="flex:1;">
+              <span data-en="Tax rate" data-fr="Taux de taxe">Tax rate</span>
+              <input type="text" value="14.975%" />
+            </label>
+          </div>
+          <div style="display:flex; gap:12px;">
+            <label style="flex:1;">
+              <span data-en="Quote no. (auto)" data-fr="No. soumission (auto)">Quote no. (auto)</span>
+              <input type="text" value="Q-2025-00128" />
+            </label>
+            <label style="flex:1;">
+              <span data-en="Date" data-fr="Date">Date</span>
+              <input type="date" value="2025-10-30" />
+            </label>
+          </div>
+          <p class="bookmark-hint" data-en="Note: all fields above are mappable to Word bookmarks in the client template."
+             data-fr="Note : tous les champs ci-dessus sont mappables aux signets Word du gabarit client.">
+            Note: all fields above are mappable to Word bookmarks in the client template.
+          </p>
+        </article>
+
+        <article class="card">
+          <h2 style="margin-top:0;" data-en="Output / mapping" data-fr="Sortie / mappage">Output / mapping</h2>
+          <p style="font-size:13px; color:#475569;" data-en="This is what will be sent to Power Automate / Word as JSON."
+             data-fr="Ceci est ce qui sera envoyé à Power Automate / Word en JSON.">
+            This is what will be sent to Power Automate / Word as JSON.
+          </p>
+          <pre id="jsonPreview"></pre>
+        </article>
+      </section>
+    </main>
+    <footer>
+      © 2025 Trustech Systèmes et Procédés Inc. — Quotation Builder
+    </footer>
+    <script>
+      function setLang(lang) {
+        document.body.dataset.lang = lang;
+        document.querySelectorAll("[data-en]").forEach(el => {
+          const text = el.getAttribute(lang === "fr" ? "data-fr" : "data-en");
+          if (text) el.textContent = text;
+        });
+      }
+      // mock payload
+      const payload = {
+        client: {
+          name: "MTL Industrial Co.",
+          contact: "Julie Tremblay",
+          site: "Montréal — East plant"
+        },
+        project: {
+          title: "Dust collector retrofit — line 3",
+          internalRef: "TRU-2025-DC-031"
+        },
+        commercial: {
+          currency: "CAD",
+          taxRate: 0.14975
+        },
+        meta: {
+          quoteNo: "Q-2025-00128",
+          date: "2025-10-30",
+          locale: "en-CA"
+        },
+        bookmarks: {
+          "BM:ClientName": "MTL Industrial Co.",
+          "BM:ProjectTitle": "Dust collector retrofit — line 3",
+          "BM:QuoteNo": "Q-2025-00128",
+          "BM:Date": "2025-10-30",
+          "BM:Currency": "CAD",
+          "BM:TaxRate": "14.975%"
+        }
+      };
+      document.getElementById("jsonPreview").textContent = JSON.stringify(payload, null, 2);
+    </script>
+  </body>
 </html>
