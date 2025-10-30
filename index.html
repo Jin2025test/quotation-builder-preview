@@ -2,194 +2,31 @@
 <html lang="en">
   <head>
     <meta charset="UTF-8" />
-    <title>Quotation Builder — Preview</title>
+    <title>Quotation Builder — Index</title>
     <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <style>
-      :root {
-        --bg: #f3f4f6;
-        --card: #ffffff;
-        --text: #1f2937;
-        --muted: #6b7280;
-        --accent: #0ea5e9;
-        --border: #e5e7eb;
-      }
-      * { box-sizing: border-box; }
-      body {
-        margin: 0;
-        font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI",
-          sans-serif;
-        background: var(--bg);
-        color: var(--text);
-      }
-      header.topbar {
-        background: #0f172a;
-        color: #e2e8f0;
-        font-size: 0.75rem;
-        padding: 0.35rem 1.5rem;
-      }
-      .shell {
-        max-width: 1200px;
-        margin: 1.5rem auto 3rem;
-        padding: 0 1rem;
-      }
-      .hero {
-        background: var(--card);
-        border: 1px solid var(--border);
-        border-radius: 1rem;
-        padding: 1.5rem 1.5rem 1.25rem;
-        margin-bottom: 1.25rem;
-        box-shadow: 0 12px 30px rgba(15, 23, 42, 0.04);
-      }
-      .hero-title {
-        font-size: 1.65rem;
-        font-weight: 700;
-        margin-bottom: 0.35rem;
-        display: flex;
-        gap: 0.5rem;
-        align-items: center;
-      }
-      .badge {
-        display: inline-flex;
-        align-items: center;
-        gap: 0.35rem;
-        background: rgba(14, 165, 233, 0.1);
-        border: 1px solid rgba(14, 165, 233, 0.3);
-        color: #0369a1;
-        font-size: 0.65rem;
-        padding: 0.25rem 0.6rem;
-        border-radius: 999px;
-      }
-      .hero-sub {
-        color: var(--muted);
-        font-size: 0.85rem;
-      }
-      .steps {
-        display: flex;
-        gap: 0.6rem;
-        overflow-x: auto;
-        padding: 0.25rem 0;
-        margin-top: 1rem;
-      }
-      .step {
-        background: #e5e7eb;
-        color: #374151;
-        padding: 0.4rem 0.85rem 0.45rem;
-        border-radius: 9999px;
-        font-size: 0.7rem;
-        text-decoration: none;
-        white-space: nowrap;
-        border: 1px solid transparent;
-      }
-      .step strong {
-        font-size: 0.65rem;
-        opacity: 0.75;
-        margin-right: 0.25rem;
-      }
-      .step.active {
-        background: #0ea5e9;
-        color: #fff;
-        border-color: rgba(14, 165, 233, 0.4);
-      }
-      .cards {
-        display: grid;
-        grid-template-columns: repeat(auto-fit, minmax(230px, 1fr));
-        gap: 1rem;
-        margin-top: 1.25rem;
-      }
-      .card {
-        background: var(--card);
-        border: 1px solid var(--border);
-        border-radius: 1rem;
-        padding: 1rem 1.1rem 1rem;
-        box-shadow: 0 12px 30px rgba(15, 23, 42, 0.03);
-      }
-      .card-title {
-        font-weight: 600;
-        margin-bottom: 0.35rem;
-        font-size: 0.9rem;
-      }
-      .card-text {
-        font-size: 0.75rem;
-        color: var(--muted);
-        margin-bottom: 0.5rem;
-      }
-      .card a {
-        font-size: 0.7rem;
-        text-decoration: none;
-        color: #0ea5e9;
-      }
-      footer {
-        text-align: center;
-        font-size: 0.7rem;
-        color: #94a3b8;
-        margin: 3rem 0 1.5rem;
-      }
-      @media (max-width: 640px) {
-        .hero-title {
-          flex-direction: column;
-          align-items: flex-start;
-        }
-      }
-    </style>
+    <script src="https://cdn.tailwindcss.com"></script>
   </head>
-  <body>
-    <header class="topbar">
-      Trustech Systèmes et Procédés Inc. — Internal Engineering Tools
-    </header>
-    <div class="shell">
-      <section class="hero">
-        <div class="hero-title">
-          Quotation Builder — 7 Step Preview
-          <span class="badge">EN / FR ready</span>
-        </div>
-        <p class="hero-sub">
-          Site capture → process constraints → design options → cost & terms →
-          bilingual export
-        </p>
-        <nav class="steps">
-          <a class="step" href="./step1.html"><strong>1</strong>Project header</a>
-          <a class="step" href="./step2.html"><strong>2</strong>Site / process</a>
-          <a class="step" href="./step3.html"><strong>3</strong>Perf & codes</a>
-          <a class="step" href="./step4.html"><strong>4</strong>Options</a>
-          <a class="step" href="./step5.html"><strong>5</strong>Costing</a>
-          <a class="step" href="./step6.html"><strong>6</strong>Terms</a>
-          <a class="step" href="./step7.html"><strong>7</strong>Preview / export</a>
-        </nav>
-      </section>
+  <body class="min-h-screen bg-slate-50 text-slate-900">
+    <main class="max-w-5xl mx-auto py-20 text-center">
+      <h1 class="text-3xl font-bold mb-4">Quotation Builder · Index</h1>
+      <p class="text-gray-500 mb-6">
+        Trustech Engineering — Interactive 7-Step Builder Preview
+      </p>
 
-      <section class="cards">
-        <article class="card">
-          <h3 class="card-title">Step 1 — Project header</h3>
-          <p class="card-text">
-            Client / site / currency / tax base. Auto quote-id + date.
-          </p>
-          <a href="./step1.html">Open step →</a>
-        </article>
-        <article class="card">
-          <h3 class="card-title">Step 2 — Site & process</h3>
-          <p class="card-text">
-            Indoor/outdoor, floor height, explosion zone, first CFM estimate.
-          </p>
-          <a href="./step2.html">(placeholder)</a>
-        </article>
-        <article class="card">
-          <h3 class="card-title">Step 3 — Perf & codes</h3>
-          <p class="card-text">
-            Target CFM/SP, ATC, NFPA/CSA. Filter area check.
-          </p>
-          <a href="./step3.html">(placeholder)</a>
-        </article>
-        <article class="card">
-          <h3 class="card-title">Step 4 — Options</h3>
-          <p class="card-text">
-            A/B/C modules: filter, fan, hopper, controls, VFD, install.
-          </p>
-          <a href="./step4.html">(placeholder)</a>
-        </article>
-      </section>
-    </div>
-    <footer>
-      © 2025 Trustech Systèmes et Procédés Inc. — Quotation Builder Preview
-    </footer>
+      <div class="flex justify-center gap-4 flex-wrap">
+        <a href="00_preview.html" class="px-4 py-2 bg-slate-900 text-white rounded-full text-sm hover:bg-slate-700">00 Preview</a>
+        <a href="step1.html" class="px-4 py-2 bg-white border border-slate-300 rounded-full text-sm hover:bg-slate-100">Step 1</a>
+        <a href="step2.html" class="px-4 py-2 bg-white border border-slate-300 rounded-full text-sm hover:bg-slate-100">Step 2</a>
+        <a href="step3.html" class="px-4 py-2 bg-white border border-slate-300 rounded-full text-sm hover:bg-slate-100">Step 3</a>
+        <a href="step4.html" class="px-4 py-2 bg-white border border-slate-300 rounded-full text-sm hover:bg-slate-100">Step 4</a>
+        <a href="step5.html" class="px-4 py-2 bg-white border border-slate-300 rounded-full text-sm hover:bg-slate-100">Step 5</a>
+        <a href="step6.html" class="px-4 py-2 bg-white border border-slate-300 rounded-full text-sm hover:bg-slate-100">Step 6</a>
+        <a href="step7.html" class="px-4 py-2 bg-white border border-slate-300 rounded-full text-sm hover:bg-slate-100">Step 7</a>
+      </div>
+
+      <footer class="mt-16 text-xs text-gray-500">
+        © 2025 Trustech Systèmes et Procédés Inc.
+      </footer>
+    </main>
   </body>
 </html>
