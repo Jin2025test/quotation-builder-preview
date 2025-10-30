@@ -1,359 +1,49 @@
 <!doctype html>
-<html lang="en" data-lang="en">
+<html lang="en">
   <head>
     <meta charset="UTF-8" />
-    <title>QB — Step 1 / Project header</title>
+    <title>Step 1 — Project Header</title>
     <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <style>
-      :root {
-        --bg: #f3f4f6;
-        --card: #ffffff;
-        --text: #1f2937;
-        --muted: #6b7280;
-        --accent: #0ea5e9;
-        --border: #e5e7eb;
-      }
-      * { box-sizing: border-box; }
-      body {
-        margin: 0;
-        font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI",
-          sans-serif;
-        background: var(--bg);
-        color: var(--text);
-      }
-      header.topbar {
-        background: #0f172a;
-        color: #e2e8f0;
-        font-size: 0.75rem;
-        padding: 0.35rem 1.5rem;
-      }
-      .shell {
-        max-width: 1100px;
-        margin: 1.5rem auto 3rem;
-        padding: 0 1rem;
-      }
-      .hero {
-        background: var(--card);
-        border: 1px solid var(--border);
-        border-radius: 1rem;
-        padding: 1.25rem 1.25rem 0.75rem;
-        margin-bottom: 1.25rem;
-        box-shadow: 0 12px 30px rgba(15, 23, 42, 0.04);
-        display: flex;
-        justify-content: space-between;
-        gap: 1rem;
-        align-items: center;
-      }
-      .hero-title {
-        font-size: 1.2rem;
-        font-weight: 700;
-        margin-bottom: 0.25rem;
-      }
-      .hero-sub {
-        color: var(--muted);
-        font-size: 0.75rem;
-      }
-      .lang-toggle {
-        display: flex;
-        gap: 0.4rem;
-      }
-      .lang-toggle button {
-        border: 1px solid var(--border);
-        background: #fff;
-        border-radius: 999px;
-        padding: 0.2rem 0.75rem 0.3rem;
-        font-size: 0.7rem;
-        cursor: pointer;
-      }
-      .lang-toggle button.active {
-        background: #0ea5e9;
-        color: #fff;
-        border-color: rgba(14, 165, 233, 0.2);
-      }
-      nav.steps {
-        display: flex;
-        gap: 0.6rem;
-        margin-top: 1rem;
-      }
-      nav.steps a {
-        background: #e5e7eb;
-        color: #374151;
-        padding: 0.35rem 0.8rem;
-        border-radius: 9999px;
-        font-size: 0.65rem;
-        text-decoration: none;
-      }
-      nav.steps a.active {
-        background: #0ea5e9;
-        color: #fff;
-      }
-      .grid {
-        display: grid;
-        grid-template-columns: 1.15fr 0.85fr;
-        gap: 1.25rem;
-        align-items: flex-start;
-      }
-      .panel {
-        background: #fff;
-        border: 1px solid var(--border);
-        border-radius: 1rem;
-        padding: 1.1rem 1.1rem 1rem;
-      }
-      .panel-title {
-        font-weight: 600;
-        margin-bottom: 0.8rem;
-      }
-      label {
-        font-size: 0.7rem;
-        font-weight: 500;
-        display: block;
-        margin-bottom: 0.3rem;
-      }
-      input, select {
-        width: 100%;
-        border: 1px solid #d1d5db;
-        border-radius: 0.6rem;
-        padding: 0.4rem 0.5rem;
-        font-size: 0.7rem;
-        outline: none;
-      }
-      input:focus, select:focus {
-        border-color: #0ea5e9;
-        box-shadow: 0 0 0 3px rgba(14, 165, 233, 0.12);
-      }
-      .field-row {
-        display: grid;
-        grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
-        gap: 0.6rem;
-        margin-bottom: 0.55rem;
-      }
-      .summary-box {
-        background: #f8fafc;
-        border: 1px dashed rgba(15, 23, 42, 0.12);
-        border-radius: 0.75rem;
-        padding: 0.6rem 0.6rem 0.3rem;
-        font-size: 0.68rem;
-      }
-      footer {
-        text-align: center;
-        font-size: 0.7rem;
-        color: #94a3b8;
-        margin: 3rem 0 1.5rem;
-      }
-      @media (max-width: 880px) {
-        .grid { grid-template-columns: 1fr; }
-        .hero { flex-direction: column; align-items: flex-start; }
-      }
-    </style>
+    <script src="https://cdn.tailwindcss.com"></script>
   </head>
-  <body>
-    <header class="topbar">
-      Trustech Systèmes et Procédés Inc. — Internal Engineering Tools
+  <body class="min-h-screen bg-gray-50 text-gray-800">
+    <header class="bg-white border-b p-4 text-center">
+      <h1 class="text-xl font-bold">Step 1 — Project Header</h1>
+      <p class="text-sm text-gray-500">Client & Project Identification</p>
     </header>
-    <div class="shell">
-      <div class="hero">
-        <div>
-          <div class="hero-title" data-i18n="step1.title">
-            Step 1 — Project header
-          </div>
-          <p class="hero-sub" data-i18n="step1.subtitle">
-            Client / project / currency base — this will feed next steps.
-          </p>
+
+    <main class="max-w-4xl mx-auto py-10 px-4">
+      <div class="bg-white shadow-sm rounded-2xl p-6 border">
+        <h2 class="font-semibold mb-4">Client Information</h2>
+        <div class="grid md:grid-cols-2 gap-4 text-sm">
+          <label class="flex flex-col">Client Name<input type="text" placeholder="Vibrotech" class="border rounded p-2 mt-1" /></label>
+          <label class="flex flex-col">Contact<input type="text" placeholder="Steven Daigle" class="border rounded p-2 mt-1" /></label>
+          <label class="flex flex-col">Site Location<input type="text" placeholder="Plessisville, QC" class="border rounded p-2 mt-1" /></label>
+          <label class="flex flex-col">Email<input type="email" placeholder="sdaigle@vibrotech.ca" class="border rounded p-2 mt-1" /></label>
         </div>
-        <div class="lang-toggle">
-          <button data-lang-btn="en" class="active">EN</button>
-          <button data-lang-btn="fr">FR</button>
+
+        <h2 class="font-semibold mt-8 mb-4">Project Information</h2>
+        <div class="grid md:grid-cols-2 gap-4 text-sm">
+          <label class="flex flex-col">Project Title<input type="text" placeholder="Dust Collector Retrofit" class="border rounded p-2 mt-1" /></label>
+          <label class="flex flex-col">Internal Ref No.<input type="text" placeholder="ST1414 R06" class="border rounded p-2 mt-1" /></label>
+          <label class="flex flex-col">Currency<select class="border rounded p-2 mt-1"><option>CAD</option><option>USD</option></select></label>
+          <label class="flex flex-col">Tax Rate<input type="text" placeholder="14.975%" class="border rounded p-2 mt-1" /></label>
+        </div>
+
+        <h2 class="font-semibold mt-8 mb-4">Locale</h2>
+        <div class="flex gap-4">
+          <label><input type="radio" name="locale" checked /> EN-CA</label>
+          <label><input type="radio" name="locale" /> FR-CA</label>
+        </div>
+
+        <div class="mt-10 text-right">
+          <a href="step2.html" class="bg-slate-900 text-white px-5 py-2 rounded-full text-sm hover:bg-slate-700">Next → Step 2</a>
         </div>
       </div>
+    </main>
 
-      <nav class="steps">
-        <a href="./index.html">Overview</a>
-        <a href="./step1.html" class="active">1. Header</a>
-        <a href="./step2.html">2. Site</a>
-        <a href="./step3.html">3. Perf</a>
-        <a href="./step4.html">4. Options</a>
-        <a href="./step5.html">5. Costing</a>
-        <a href="./step6.html">6. Terms</a>
-        <a href="./step7.html">7. Export</a>
-      </nav>
-
-      <div class="grid" style="margin-top:1.1rem;">
-        <section class="panel">
-          <h2 class="panel-title" data-i18n="step1.form.title">Client & project</h2>
-
-          <div class="field-row">
-            <div>
-              <label data-i18n="step1.form.client">Client name</label>
-              <input id="clientName" placeholder="Ex: MTL Industrial Co." />
-            </div>
-            <div>
-              <label data-i18n="step1.form.contact">Contact person</label>
-              <input id="clientContact" placeholder="Ex: Michel Gagnon" />
-            </div>
-          </div>
-
-          <div class="field-row">
-            <div>
-              <label data-i18n="step1.form.site">Site / plant</label>
-              <input id="clientSite" placeholder="Ex: Laval, QC — Line 3" />
-            </div>
-            <div>
-              <label data-i18n="step1.form.titleProject">Project title</label>
-              <input id="projectTitle" placeholder="Dust collection upgrade" />
-            </div>
-          </div>
-
-          <div class="field-row">
-            <div>
-              <label data-i18n="step1.form.currency">Currency</label>
-              <select id="currency">
-                <option value="CAD">CAD $</option>
-                <option value="USD">USD $</option>
-                <option value="EUR">EUR €</option>
-              </select>
-            </div>
-            <div>
-              <label data-i18n="step1.form.tax">Provincial tax / VAT</label>
-              <input id="taxRate" value="14.975%" />
-            </div>
-            <div>
-              <label data-i18n="step1.form.locale">Locale</label>
-              <select id="locale">
-                <option value="en-CA">English (Canada)</option>
-                <option value="fr-CA">Français (Canada)</option>
-              </select>
-            </div>
-          </div>
-
-          <div class="field-row">
-            <div>
-              <label data-i18n="step1.form.internal">Internal ref.</label>
-              <input id="internalRef" placeholder="TRU-2025-QB-001" />
-            </div>
-            <div>
-              <label data-i18n="step1.form.date">Quote date</label>
-              <input id="quoteDate" />
-            </div>
-          </div>
-        </section>
-
-        <aside class="panel">
-          <h3 class="panel-title" data-i18n="step1.preview.title">
-            Live summary
-          </h3>
-          <div class="summary-box" id="previewBox">
-            …
-          </div>
-          <p style="font-size:0.65rem; color:var(--muted); margin-top:0.5rem;">
-            <span data-i18n="step1.preview.note">
-              This object will be passed to Step 2 as a context.
-            </span>
-          </p>
-        </aside>
-      </div>
-    </div>
-
-    <footer>
-      © 2025 Trustech Systèmes et Procédés Inc. — Quotation Builder Preview
+    <footer class="text-center text-xs text-gray-500 border-t py-3 mt-10">
+      © 2025 Trustech Systèmes et Procédés Inc.
     </footer>
-
-    <script>
-      // 날짜 자동 채우기
-      const dateInput = document.getElementById("quoteDate");
-      if (dateInput) {
-        const today = new Date().toISOString().slice(0, 10);
-        dateInput.value = today;
-      }
-
-      const previewBox = document.getElementById("previewBox");
-      const inputs = [
-        "clientName",
-        "clientContact",
-        "clientSite",
-        "projectTitle",
-        "currency",
-        "taxRate",
-        "locale",
-        "internalRef",
-        "quoteDate",
-      ];
-
-      function renderPreview() {
-        const data = {};
-        inputs.forEach((id) => {
-          const el = document.getElementById(id);
-          if (el) data[id] = el.value;
-        });
-        previewBox.textContent = JSON.stringify(data, null, 2);
-      }
-
-      inputs.forEach((id) => {
-        const el = document.getElementById(id);
-        if (el) el.addEventListener("input", renderPreview);
-      });
-      renderPreview();
-
-      // EN/FR 토글
-      const dict = {
-        en: {
-          "step1.title": "Step 1 — Project header",
-          "step1.subtitle":
-            "Client / project / currency base — this will feed next steps.",
-          "step1.form.title": "Client & project",
-          "step1.form.client": "Client name",
-          "step1.form.contact": "Contact person",
-          "step1.form.site": "Site / plant",
-          "step1.form.titleProject": "Project title",
-          "step1.form.currency": "Currency",
-          "step1.form.tax": "Provincial tax / VAT",
-          "step1.form.locale": "Locale",
-          "step1.form.internal": "Internal ref.",
-          "step1.form.date": "Quote date",
-          "step1.preview.title": "Live summary",
-          "step1.preview.note":
-            "This object will be passed to Step 2 as a context.",
-        },
-        fr: {
-          "step1.title": "Étape 1 — En-tête du projet",
-          "step1.subtitle":
-            "Client / projet / base de devise — alimente les étapes suivantes.",
-          "step1.form.title": "Client et projet",
-          "step1.form.client": "Nom du client",
-          "step1.form.contact": "Personne contact",
-          "step1.form.site": "Site / usine",
-          "step1.form.titleProject": "Titre du projet",
-          "step1.form.currency": "Devise",
-          "step1.form.tax": "Taxe / TVQ / TVA",
-          "step1.form.locale": "Langue / locale",
-          "step1.form.internal": "Réf. interne",
-          "step1.form.date": "Date du devis",
-          "step1.preview.title": "Résumé en direct",
-          "step1.preview.note":
-            "Cet objet sera transmis à l'étape 2 comme contexte.",
-        },
-      };
-
-      function setLang(lang) {
-        document.documentElement.setAttribute("data-lang", lang);
-        document
-          .querySelectorAll("[data-i18n]")
-          .forEach((node) => {
-            const key = node.getAttribute("data-i18n");
-            node.textContent = dict[lang][key] || node.textContent;
-          });
-        document
-          .querySelectorAll("[data-lang-btn]")
-          .forEach((btn) =>
-            btn.classList.toggle("active", btn.dataset.langBtn === lang)
-          );
-      }
-
-      document.querySelectorAll("[data-lang-btn]").forEach((btn) => {
-        btn.addEventListener("click", () => setLang(btn.dataset.langBtn));
-      });
-
-      // 기본 영어
-      setLang("en");
-    </script>
   </body>
 </html>
