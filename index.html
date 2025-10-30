@@ -1,393 +1,195 @@
 <!doctype html>
 <html lang="en">
-<head>
-  <meta charset="UTF-8" />
-  <title>Quotation Builder – 7 Step Preview</title>
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <!-- tailwind cdn -->
-  <script src="https://cdn.tailwindcss.com"></script>
-  <style>
-    body { background: #f4f5f7; }
-    .step-active { background: #0f172a; color: #fff; }
-    .badge { font-size: 0.6rem; }
-  </style>
-</head>
-<body class="min-h-screen">
-  <!-- top bar -->
-  <header class="bg-white shadow-sm sticky top-0 z-10">
-    <div class="max-w-6xl mx-auto px-4 py-3 flex items-center justify-between gap-4">
-      <div>
-        <h1 class="text-lg font-bold leading-tight">Quotation Builder — Engineering + Commercial</h1>
-        <p class="text-xs text-gray-500">Trustech Systèmes et Procédés Inc.</p>
-      </div>
-      <div class="flex gap-2 items-center">
-        <span class="text-xs text-gray-400">Preview mode (static)</span>
-        <button class="px-3 py-1 rounded-lg border text-xs">EN</button>
-        <button class="px-3 py-1 rounded-lg border text-xs opacity-40">FR</button>
-      </div>
+  <head>
+    <meta charset="UTF-8" />
+    <title>Quotation Builder — Preview</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <style>
+      :root {
+        --bg: #f3f4f6;
+        --card: #ffffff;
+        --text: #1f2937;
+        --muted: #6b7280;
+        --accent: #0ea5e9;
+        --border: #e5e7eb;
+      }
+      * { box-sizing: border-box; }
+      body {
+        margin: 0;
+        font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI",
+          sans-serif;
+        background: var(--bg);
+        color: var(--text);
+      }
+      header.topbar {
+        background: #0f172a;
+        color: #e2e8f0;
+        font-size: 0.75rem;
+        padding: 0.35rem 1.5rem;
+      }
+      .shell {
+        max-width: 1200px;
+        margin: 1.5rem auto 3rem;
+        padding: 0 1rem;
+      }
+      .hero {
+        background: var(--card);
+        border: 1px solid var(--border);
+        border-radius: 1rem;
+        padding: 1.5rem 1.5rem 1.25rem;
+        margin-bottom: 1.25rem;
+        box-shadow: 0 12px 30px rgba(15, 23, 42, 0.04);
+      }
+      .hero-title {
+        font-size: 1.65rem;
+        font-weight: 700;
+        margin-bottom: 0.35rem;
+        display: flex;
+        gap: 0.5rem;
+        align-items: center;
+      }
+      .badge {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.35rem;
+        background: rgba(14, 165, 233, 0.1);
+        border: 1px solid rgba(14, 165, 233, 0.3);
+        color: #0369a1;
+        font-size: 0.65rem;
+        padding: 0.25rem 0.6rem;
+        border-radius: 999px;
+      }
+      .hero-sub {
+        color: var(--muted);
+        font-size: 0.85rem;
+      }
+      .steps {
+        display: flex;
+        gap: 0.6rem;
+        overflow-x: auto;
+        padding: 0.25rem 0;
+        margin-top: 1rem;
+      }
+      .step {
+        background: #e5e7eb;
+        color: #374151;
+        padding: 0.4rem 0.85rem 0.45rem;
+        border-radius: 9999px;
+        font-size: 0.7rem;
+        text-decoration: none;
+        white-space: nowrap;
+        border: 1px solid transparent;
+      }
+      .step strong {
+        font-size: 0.65rem;
+        opacity: 0.75;
+        margin-right: 0.25rem;
+      }
+      .step.active {
+        background: #0ea5e9;
+        color: #fff;
+        border-color: rgba(14, 165, 233, 0.4);
+      }
+      .cards {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(230px, 1fr));
+        gap: 1rem;
+        margin-top: 1.25rem;
+      }
+      .card {
+        background: var(--card);
+        border: 1px solid var(--border);
+        border-radius: 1rem;
+        padding: 1rem 1.1rem 1rem;
+        box-shadow: 0 12px 30px rgba(15, 23, 42, 0.03);
+      }
+      .card-title {
+        font-weight: 600;
+        margin-bottom: 0.35rem;
+        font-size: 0.9rem;
+      }
+      .card-text {
+        font-size: 0.75rem;
+        color: var(--muted);
+        margin-bottom: 0.5rem;
+      }
+      .card a {
+        font-size: 0.7rem;
+        text-decoration: none;
+        color: #0ea5e9;
+      }
+      footer {
+        text-align: center;
+        font-size: 0.7rem;
+        color: #94a3b8;
+        margin: 3rem 0 1.5rem;
+      }
+      @media (max-width: 640px) {
+        .hero-title {
+          flex-direction: column;
+          align-items: flex-start;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <header class="topbar">
+      Trustech Systèmes et Procédés Inc. — Internal Engineering Tools
+    </header>
+    <div class="shell">
+      <section class="hero">
+        <div class="hero-title">
+          Quotation Builder — 7 Step Preview
+          <span class="badge">EN / FR ready</span>
+        </div>
+        <p class="hero-sub">
+          Site capture → process constraints → design options → cost & terms →
+          bilingual export
+        </p>
+        <nav class="steps">
+          <a class="step" href="./step1.html"><strong>1</strong>Project header</a>
+          <a class="step" href="./step2.html"><strong>2</strong>Site / process</a>
+          <a class="step" href="./step3.html"><strong>3</strong>Perf & codes</a>
+          <a class="step" href="./step4.html"><strong>4</strong>Options</a>
+          <a class="step" href="./step5.html"><strong>5</strong>Costing</a>
+          <a class="step" href="./step6.html"><strong>6</strong>Terms</a>
+          <a class="step" href="./step7.html"><strong>7</strong>Preview / export</a>
+        </nav>
+      </section>
+
+      <section class="cards">
+        <article class="card">
+          <h3 class="card-title">Step 1 — Project header</h3>
+          <p class="card-text">
+            Client / site / currency / tax base. Auto quote-id + date.
+          </p>
+          <a href="./step1.html">Open step →</a>
+        </article>
+        <article class="card">
+          <h3 class="card-title">Step 2 — Site & process</h3>
+          <p class="card-text">
+            Indoor/outdoor, floor height, explosion zone, first CFM estimate.
+          </p>
+          <a href="./step2.html">(placeholder)</a>
+        </article>
+        <article class="card">
+          <h3 class="card-title">Step 3 — Perf & codes</h3>
+          <p class="card-text">
+            Target CFM/SP, ATC, NFPA/CSA. Filter area check.
+          </p>
+          <a href="./step3.html">(placeholder)</a>
+        </article>
+        <article class="card">
+          <h3 class="card-title">Step 4 — Options</h3>
+          <p class="card-text">
+            A/B/C modules: filter, fan, hopper, controls, VFD, install.
+          </p>
+          <a href="./step4.html">(placeholder)</a>
+        </article>
+      </section>
     </div>
-  </header>
-
-  <div class="max-w-6xl mx-auto px-4 py-6 flex gap-5">
-    <!-- left steps -->
-    <aside class="w-60 space-y-2">
-      <button class="w-full text-left px-4 py-2 rounded-xl bg-white flex items-center justify-between step-active">
-        <span>1. Project header</span>
-        <span class="text-[10px] bg-white/20 px-2 py-0.5 rounded-full">done</span>
-      </button>
-      <button class="w-full text-left px-4 py-2 rounded-xl bg-white flex items-center justify-between">
-        <span>2. Site / process</span>
-        <span class="text-[10px] bg-slate-100 px-2 py-0.5 rounded-full">inputs</span>
-      </button>
-      <button class="w-full text-left px-4 py-2 rounded-xl bg-white flex items-center justify-between">
-        <span>3. Performance / codes</span>
-        <span class="text-[10px] bg-slate-100 px-2 py-0.5 rounded-full">CFM</span>
-      </button>
-      <button class="w-full text-left px-4 py-2 rounded-xl bg-white flex items-center justify-between">
-        <span>4. Options (A/B/C)</span>
-        <span class="text-[10px] bg-slate-100 px-2 py-0.5 rounded-full">3x</span>
-      </button>
-      <button class="w-full text-left px-4 py-2 rounded-xl bg-white flex items-center justify-between">
-        <span>5. Costing / price</span>
-        <span class="text-[10px] bg-slate-100 px-2 py-0.5 rounded-full">$</span>
-      </button>
-      <button class="w-full text-left px-4 py-2 rounded-xl bg-white flex items-center justify-between">
-        <span>6. Terms / scope</span>
-        <span class="text-[10px] bg-slate-100 px-2 py-0.5 rounded-full">T&C</span>
-      </button>
-      <button class="w-full text-left px-4 py-2 rounded-xl bg-white flex items-center justify-between">
-        <span>7. Preview / export</span>
-        <span class="text-[10px] bg-emerald-100 text-emerald-700 px-2 py-0.5 rounded-full">PDF</span>
-      </button>
-    </aside>
-
-    <!-- main content -->
-    <main class="flex-1 space-y-6">
-      <!-- STEP 1 CARD -->
-      <section class="bg-white rounded-2xl shadow-sm border p-5">
-        <div class="flex items-center justify-between mb-4">
-          <h2 class="text-lg font-semibold">Step 1 — Project header</h2>
-          <span class="text-xs text-gray-400">Word map: &lt;BM:ClientName&gt;, &lt;BM:ProjectTitle&gt;, &lt;BM:QuoteNo&gt;</span>
-        </div>
-        <div class="grid md:grid-cols-2 gap-4">
-          <div>
-            <label class="block text-xs text-gray-500 mb-1">Client name</label>
-            <input class="w-full rounded-xl border px-3 py-2 bg-gray-50" disabled value="Vibrotech Inc.">
-          </div>
-          <div>
-            <label class="block text-xs text-gray-500 mb-1">Contact person</label>
-            <input class="w-full rounded-xl border px-3 py-2 bg-gray-50" disabled value="Michel L.">
-          </div>
-          <div>
-            <label class="block text-xs text-gray-500 mb-1">Project title</label>
-            <input class="w-full rounded-xl border px-3 py-2 bg-gray-50" disabled value="Retrofit of existing dust collector">
-          </div>
-          <div class="grid grid-cols-2 gap-3">
-            <div>
-              <label class="block text-xs text-gray-500 mb-1">Currency</label>
-              <input class="w-full rounded-xl border px-3 py-2 bg-gray-50" disabled value="CAD">
-            </div>
-            <div>
-              <label class="block text-xs text-gray-500 mb-1">Tax profile</label>
-              <input class="w-full rounded-xl border px-3 py-2 bg-gray-50" disabled value="QC — 14.975%">
-            </div>
-          </div>
-          <div>
-            <label class="block text-xs text-gray-500 mb-1">Quote no.</label>
-            <input class="w-full rounded-xl border px-3 py-2 bg-gray-50" disabled value="Q-2025-00123">
-          </div>
-          <div>
-            <label class="block text-xs text-gray-500 mb-1">Prepared by</label>
-            <input class="w-full rounded-xl border px-3 py-2 bg-gray-50" disabled value="Daelle Y.">
-          </div>
-        </div>
-      </section>
-
-      <!-- STEP 2 CARD -->
-      <section class="bg-white rounded-2xl shadow-sm border p-5">
-        <div class="flex items-center justify-between mb-4">
-          <h2 class="text-lg font-semibold">Step 2 — Site &amp; process conditions</h2>
-          <span class="text-xs text-gray-400">Word map: &lt;BM:SiteSummary&gt;, &lt;BM:Constraints&gt;</span>
-        </div>
-        <div class="grid md:grid-cols-3 gap-4 mb-4">
-          <div>
-            <p class="text-xs text-gray-500 mb-1">Layout</p>
-            <div class="rounded-xl border px-3 py-2 bg-gray-50 text-sm">Indoor (Bay 3)</div>
-          </div>
-          <div>
-            <p class="text-xs text-gray-500 mb-1">Explosion / zone</p>
-            <div class="rounded-xl border px-3 py-2 bg-red-50 text-sm flex items-center gap-2">
-              <span class="w-2 h-2 rounded-full bg-red-500 inline-block"></span>
-              NFPA 21
-            </div>
-          </div>
-          <div>
-            <p class="text-xs text-gray-500 mb-1">Power available</p>
-            <div class="rounded-xl border px-3 py-2 bg-gray-50 text-sm">575 V / 3Ø</div>
-          </div>
-        </div>
-        <div class="grid md:grid-cols-2 gap-4">
-          <div class="bg-slate-50 rounded-xl p-3 border">
-            <p class="text-xs text-gray-400 mb-2">Process capture</p>
-            <p class="text-sm">Capture points: <b>5</b></p>
-            <p class="text-sm">Main duct: <b>38 m</b> / branches: <b>3</b></p>
-            <p class="text-sm">Material: <b>Wood dust, sticky</b></p>
-          </div>
-          <div class="bg-slate-50 rounded-xl p-3 border">
-            <p class="text-xs text-gray-400 mb-2">Auto estimation</p>
-            <p class="text-sm">Estimated airflow: <b>12,600 CFM</b></p>
-            <p class="text-sm">Est. static pressure: <b>10.5 inWG</b></p>
-            <p class="text-sm text-amber-700 mt-1">⚠ Roof venting only · space behind collector limited</p>
-          </div>
-        </div>
-      </section>
-
-      <!-- STEP 3 CARD -->
-      <section class="bg-white rounded-2xl shadow-sm border p-5">
-        <div class="flex items-center justify-between mb-4">
-          <h2 class="text-lg font-semibold">Step 3 — Performance targets &amp; compliance</h2>
-          <span class="text-xs text-gray-400">Word map: &lt;BM:PerfTargets&gt;, &lt;BM:ComplianceFlags&gt;</span>
-        </div>
-        <div class="grid md:grid-cols-4 gap-4 mb-4">
-          <div>
-            <p class="text-xs text-gray-500 mb-1">Target CFM</p>
-            <div class="rounded-xl border px-3 py-2 bg-gray-50 text-sm">12,000</div>
-          </div>
-          <div>
-            <p class="text-xs text-gray-500 mb-1">Max SP (inWG)</p>
-            <div class="rounded-xl border px-3 py-2 bg-gray-50 text-sm">12</div>
-          </div>
-          <div>
-            <p class="text-xs text-gray-500 mb-1">ATC</p>
-            <div class="rounded-xl border px-3 py-2 bg-emerald-50 text-sm">4.0 (OK)</div>
-          </div>
-          <div>
-            <p class="text-xs text-gray-500 mb-1">Standards</p>
-            <div class="rounded-xl border px-3 py-2 bg-gray-50 text-sm">NFPA / CSA / ASHRAE</div>
-          </div>
-        </div>
-        <div class="bg-slate-50 rounded-xl p-3 border text-sm">
-          Required filter area = <b>12,000 / 4.0 = 3,000 ft²</b><br>
-          Explosion protection required → vent panel + isolation valve.<br>
-          Fan est. <b>50 HP (≈ 37 kW)</b>
-        </div>
-      </section>
-
-      <!-- STEP 4 CARD -->
-      <section class="bg-white rounded-2xl shadow-sm border p-5">
-        <div class="flex items-center justify-between mb-4">
-          <h2 class="text-lg font-semibold">Step 4 — Options (A/B/C)</h2>
-          <span class="text-xs text-gray-400">Word map: &lt;BM:OptA_Title&gt;, &lt;TB:OptA_ItemTable&gt; …</span>
-        </div>
-        <div class="flex gap-2 mb-4">
-          <button class="px-4 py-1.5 rounded-full bg-slate-900 text-white text-sm">Option A</button>
-          <button class="px-4 py-1.5 rounded-full bg-slate-100 text-sm">Option B</button>
-          <button class="px-4 py-1.5 rounded-full bg-slate-100 text-sm">Option C</button>
-        </div>
-        <p class="text-sm text-gray-500 mb-3">Option A — Retrofit existing collector, reuse fan, new filter modules.</p>
-        <div class="overflow-auto rounded-xl border">
-          <table class="min-w-full text-sm">
-            <thead class="bg-slate-50">
-              <tr>
-                <th class="text-left px-3 py-2">Item</th>
-                <th class="text-left px-3 py-2">Specs / Notes</th>
-                <th class="text-left px-3 py-2">Qty</th>
-                <th class="text-left px-3 py-2">Unit</th>
-                <th class="text-left px-3 py-2">Subtotal</th>
-              </tr>
-            </thead>
-            <tbody>
-              <tr class="border-t">
-                <td class="px-3 py-2">Filter cartridges</td>
-                <td class="px-3 py-2">Polyester, 99.9%, 325 ft²</td>
-                <td class="px-3 py-2">96</td>
-                <td class="px-3 py-2">220 CAD</td>
-                <td class="px-3 py-2">21,120</td>
-              </tr>
-              <tr class="border-t">
-                <td class="px-3 py-2">Pulse manifold</td>
-                <td class="px-3 py-2">575 V, w/ solenoid valves</td>
-                <td class="px-3 py-2">1</td>
-                <td class="px-3 py-2">4,800</td>
-                <td class="px-3 py-2">4,800</td>
-              </tr>
-              <tr class="border-t">
-                <td class="px-3 py-2">Explosion vent panel</td>
-                <td class="px-3 py-2">1.2 ft², roof direction</td>
-                <td class="px-3 py-2">1</td>
-                <td class="px-3 py-2">3,200</td>
-                <td class="px-3 py-2">3,200</td>
-              </tr>
-            </tbody>
-          </table>
-        </div>
-        <div class="mt-3 flex gap-3 text-sm">
-          <div class="bg-emerald-50 border border-emerald-100 rounded-xl px-3 py-2">CFM: 12,200 (OK)</div>
-          <div class="bg-emerald-50 border border-emerald-100 rounded-xl px-3 py-2">ATC: 3.95 (OK)</div>
-          <div class="bg-amber-50 border border-amber-100 rounded-xl px-3 py-2">Lead: 6 weeks</div>
-        </div>
-      </section>
-
-      <!-- STEP 5 CARD -->
-      <section class="bg-white rounded-2xl shadow-sm border p-5">
-        <div class="flex items-center justify-between mb-4">
-          <h2 class="text-lg font-semibold">Step 5 — Costing &amp; price</h2>
-          <span class="text-xs text-gray-400">Word map: &lt;BM:OptA_TotalBeforeTax&gt;, &lt;BM:OptA_GrandTotal&gt;</span>
-        </div>
-        <div class="grid md:grid-cols-4 gap-4 mb-4">
-          <div>
-            <p class="text-xs text-gray-500 mb-1">Material</p>
-            <div class="rounded-xl border px-3 py-2 bg-gray-50 text-sm">33,620 CAD</div>
-          </div>
-          <div>
-            <p class="text-xs text-gray-500 mb-1">Labor</p>
-            <div class="rounded-xl border px-3 py-2 bg-gray-50 text-sm">5,320 CAD</div>
-          </div>
-          <div>
-            <p class="text-xs text-gray-500 mb-1">Logistics</p>
-            <div class="rounded-xl border px-3 py-2 bg-gray-50 text-sm">1,100 CAD</div>
-          </div>
-          <div>
-            <p class="text-xs text-gray-500 mb-1">Contingency</p>
-            <div class="rounded-xl border px-3 py-2 bg-gray-50 text-sm">5%</div>
-          </div>
-        </div>
-        <div class="bg-slate-50 rounded-xl p-3 border text-sm mb-4">
-          CapEx (before margin): <b>40,040 CAD</b><br>
-          Sell price (15% margin): <b>48,348 CAD</b><br>
-          Tax (14.975%): <b>7,242 CAD</b><br>
-          <span class="text-base font-semibold">Grand total: 55,590 CAD</span>
-        </div>
-        <p class="text-xs text-gray-400 mb-2">Payment schedule (30 / 20 / 30 / 20)</p>
-        <div class="overflow-auto rounded-xl border">
-          <table class="min-w-full text-sm">
-            <thead class="bg-slate-50">
-              <tr>
-                <th class="text-left px-3 py-2">Milestone</th>
-                <th class="text-left px-3 py-2">%</th>
-                <th class="text-left px-3 py-2">Amount</th>
-              </tr>
-            </thead>
-            <tbody>
-              <tr class="border-t">
-                <td class="px-3 py-2">PO / Award</td>
-                <td class="px-3 py-2">30%</td>
-                <td class="px-3 py-2">16,677 CAD</td>
-              </tr>
-              <tr class="border-t">
-                <td class="px-3 py-2">Engineering complete</td>
-                <td class="px-3 py-2">20%</td>
-                <td class="px-3 py-2">11,118 CAD</td>
-              </tr>
-              <tr class="border-t">
-                <td class="px-3 py-2">Delivery to site</td>
-                <td class="px-3 py-2">30%</td>
-                <td class="px-3 py-2">16,677 CAD</td>
-              </tr>
-              <tr class="border-t">
-                <td class="px-3 py-2">Commissioning / SAT</td>
-                <td class="px-3 py-2">20%</td>
-                <td class="px-3 py-2">11,118 CAD</td>
-              </tr>
-            </tbody>
-          </table>
-        </div>
-      </section>
-
-      <!-- STEP 6 CARD -->
-      <section class="bg-white rounded-2xl shadow-sm border p-5">
-        <div class="flex items-center justify-between mb-4">
-          <h2 class="text-lg font-semibold">Step 6 — Terms / delivery / scope</h2>
-          <span class="text-xs text-gray-400">Word map: &lt;BM:LeadTimeTotal&gt;, &lt;BM:ScopeCompany&gt;</span>
-        </div>
-        <div class="grid md:grid-cols-3 gap-4 mb-4">
-          <div>
-            <p class="text-xs text-gray-500 mb-1">Engineering</p>
-            <div class="rounded-xl border px-3 py-2 bg-gray-50 text-sm">2 weeks</div>
-          </div>
-          <div>
-            <p class="text-xs text-gray-500 mb-1">Fabrication</p>
-            <div class="rounded-xl border px-3 py-2 bg-gray-50 text-sm">4 weeks</div>
-          </div>
-          <div>
-            <p class="text-xs text-gray-500 mb-1">Installation</p>
-            <div class="rounded-xl border px-3 py-2 bg-gray-50 text-sm">1 week</div>
-          </div>
-        </div>
-        <div class="bg-slate-50 rounded-xl p-3 border text-sm mb-4">
-          Total delivery: <b>7 weeks ARO</b><br>
-          Warranty: <b>12 months (filters excluded)</b>
-        </div>
-        <div class="grid md:grid-cols-2 gap-4">
-          <div class="border rounded-xl p-3">
-            <p class="text-xs font-semibold mb-2">Scope – Trustech</p>
-            <ul class="text-sm list-disc list-inside space-y-1 text-gray-700">
-              <li>Engineering & drawings</li>
-              <li>Supply equipment</li>
-              <li>Remote FAT</li>
-              <li>Supervision</li>
-            </ul>
-          </div>
-          <div class="border rounded-xl p-3">
-            <p class="text-xs font-semibold mb-2">Scope – Client</p>
-            <ul class="text-sm list-disc list-inside space-y-1 text-gray-700">
-              <li>Access / crane</li>
-              <li>Electrical hook-up</li>
-              <li>Civil / permits</li>
-              <li>Disposal of existing</li>
-            </ul>
-          </div>
-        </div>
-      </section>
-
-      <!-- STEP 7 CARD -->
-      <section class="bg-white rounded-2xl shadow-sm border p-5 mb-16">
-        <div class="flex items-center justify-between mb-4">
-          <h2 class="text-lg font-semibold">Step 7 — Preview &amp; export</h2>
-          <span class="text-xs text-gray-400">Output: Word / PDF / internal</span>
-        </div>
-        <div class="flex flex-wrap gap-3 mb-4">
-          <div>
-            <p class="text-xs text-gray-500 mb-1">Language</p>
-            <div class="flex gap-2">
-              <button class="px-3 py-1 rounded-lg bg-slate-900 text-white text-xs">EN</button>
-              <button class="px-3 py-1 rounded-lg bg-slate-100 text-xs">FR</button>
-            </div>
-          </div>
-          <div>
-            <p class="text-xs text-gray-500 mb-1">Audience</p>
-            <div class="flex gap-2">
-              <button class="px-3 py-1 rounded-lg bg-slate-900 text-white text-xs">Client</button>
-              <button class="px-3 py-1 rounded-lg bg-slate-100 text-xs">Internal</button>
-            </div>
-          </div>
-          <div>
-            <p class="text-xs text-gray-500 mb-1">Options</p>
-            <div class="flex gap-2">
-              <button class="px-3 py-1 rounded-lg bg-slate-900 text-white text-xs">A</button>
-              <button class="px-3 py-1 rounded-lg bg-slate-100 text-xs">B</button>
-              <button class="px-3 py-1 rounded-lg bg-slate-100 text-xs">C</button>
-              <button class="px-3 py-1 rounded-lg bg-emerald-100 text-emerald-800 text-xs">All</button>
-            </div>
-          </div>
-        </div>
-        <div class="border rounded-xl p-4 bg-slate-50">
-          <p class="text-sm text-gray-700 mb-2">Preview pages</p>
-          <ul class="text-sm text-gray-600 space-y-1">
-            <li>1. Project overview</li>
-            <li>2. Site & process conditions</li>
-            <li>3. Options A/B/C (with BOM)</li>
-            <li>4. Commercial & payment</li>
-            <li>5. Scope & terms</li>
-          </ul>
-        </div>
-        <div class="mt-4 flex gap-3">
-          <button class="px-4 py-2 rounded-lg bg-slate-900 text-white text-sm">Export to Word</button>
-          <button class="px-4 py-2 rounded-lg bg-slate-100 text-sm">Export to PDF</button>
-          <button class="px-4 py-2 rounded-lg bg-slate-100 text-sm">Share link</button>
-        </div>
-      </section>
-    </main>
-  </div>
-</body>
+    <footer>
+      © 2025 Trustech Systèmes et Procédés Inc. — Quotation Builder Preview
+    </footer>
+  </body>
 </html>
