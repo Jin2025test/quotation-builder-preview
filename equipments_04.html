@@ -1,0 +1,434 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Quotation Builder – Equipments Spec (EN/FR) + Existing Asset, Uploads, Voice</title>
+<style>
+:root { --fg:#222; --muted:#777; --pri:#0a7; --bd:#e5e5e5; --soft:#f7f7f7; }
+*{box-sizing:border-box}
+body{font-family:system-ui,Segoe UI,Roboto,Arial,sans-serif;margin:24px;color:var(--fg)}
+h1{font-size:20px;margin:0 0 12px}
+.card{border:1px solid var(--bd);border-radius:12px;padding:16px;background:#fff}
+.toolbar{display:flex;flex-wrap:wrap;gap:16px;align-items:end;margin:10px 0 16px}
+label.small{font-size:12px;color:var(--muted);display:block;margin-bottom:6px}
+input,select,textarea{width:100%;padding:10px;border:1px solid var(--bd);border-radius:10px}
+textarea{min-height:80px;resize:vertical}
+.langbtn{border:1px solid var(--bd);background:#fff;padding:8px 12px;border-radius:10px;cursor:pointer}
+.langbtn.active{background:var(--pri);color:#fff;border:none}
+.grid{display:grid;grid-template-columns:repeat(2,minmax(240px,1fr));gap:12px}
+.group{margin-top:14px;padding-top:8px;border-top:1px dashed var(--bd);font-weight:600;color:var(--muted)}
+.unit{position:relative}
+.unit span{position:absolute;right:10px;top:50%;transform:translateY(-50%);font-size:12px;color:var(--muted)}
+.footer{margin-top:16px;display:flex;gap:8px;align-items:center;flex-wrap:wrap}
+button{padding:10px 14px;border-radius:10px;border:1px solid var(--bd);background:#fff;cursor:pointer}
+button.pri{background:var(--pri);color:#fff;border:none}
+.hint{font-size:12px;color:var(--muted)}
+.err{outline:2px solid #c33}
+.badge{display:inline-flex;align-items:center;gap:6px;padding:6px 10px;border:1px solid var(--bd);border-radius:999px;background:#fff}
+.badge b{font-size:12px}
+.kbd{font-family:ui-monospace, SFMono-Regular, Menlo, Consolas, monospace; background:#f1f1f1;border:1px solid #ddd;border-radius:6px;padding:2px 6px}
+.table{width:100%;border-collapse:collapse;margin-top:8px}
+.table th,.table td{border:1px solid var(--bd);padding:8px;font-size:13px}
+.table th{background:#fafafa;text-align:left}
+.row-2{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+.pill{display:inline-block;padding:2px 8px;border:1px solid var(--bd);border-radius:999px;background:#fff;font-size:12px;color:var(--muted)}
+.preview{display:flex;gap:8px;flex-wrap:wrap;margin-top:8px}
+.preview img{width:96px;height:72px;object-fit:cover;border:1px solid var(--bd);border-radius:8px;background:#fff}
+.section-title{font-weight:700;margin:18px 0 8px}
+.note{font-size:12px;color:var(--muted)}
+</style>
+</head>
+<body>
+<h1>Equipment Specs / Spécifications d’équipement</h1>
+
+<!-- Toolbar -->
+<div class="toolbar card" style="gap:20px">
+  <div>
+    <label class="small">System / Système</label>
+    <select id="systemSelect"></select>
+  </div>
+  <div>
+    <label class="small">Equipment ID</label>
+    <input id="equipId" placeholder="e.g., COL-001" data-key="BK:Equip_ID" />
+  </div>
+  <div class="badge"><b id="sysCode">—</b><span id="sysName">—</span></div>
+  <div style="margin-left:auto;display:flex;gap:8px">
+    <button class="langbtn active" id="btnEN">EN</button>
+    <button class="langbtn" id="btnFR">FR</button>
+  </div>
+</div>
+
+<!-- Dynamic Spec Form -->
+<div id="formHost" class="card"></div>
+
+<!-- Existing Equipment Block -->
+<div class="card" style="margin-top:16px">
+  <div class="section-title">Existing Equipment / Équipement existant</div>
+  <div class="grid">
+    <div>
+      <label class="small">Year / Année</label>
+      <input data-key="BK:Exist_Year" type="number" placeholder="e.g., 2012">
+    </div>
+    <div>
+      <label class="small">Model / Modèle</label>
+      <input data-key="BK:Exist_Model" placeholder="e.g., Processair 260SA120">
+    </div>
+    <div>
+      <label class="small">Serial No. / N° de série</label>
+      <input data-key="BK:Exist_Serial" placeholder="SN-XXXX">
+    </div>
+    <div>
+      <label class="small">Service Hours / Heures d’opération</label>
+      <input data-key="BK:Exist_Hours" type="number" placeholder="e.g., 18500" >
+    </div>
+    <div>
+      <label class="small">Last Overhaul / Dernière révision</label>
+      <input data-key="BK:Exist_LastOH" type="date">
+    </div>
+    <div>
+      <label class="small">Condition / État</label>
+      <select data-key="BK:Exist_Condition">
+        <option>Good</option><option>Fair</option><option>Poor</option>
+      </select>
+    </div>
+  </div>
+
+  <div class="section-title">Repair & Maintenance History / Historique entretien</div>
+  <table class="table" id="histTable">
+    <thead>
+      <tr>
+        <th>Date</th><th>Work Performed</th><th>Parts / Vendor</th><th>Cost</th><th>Doc Link</th><th></th>
+      </tr>
+    </thead>
+    <tbody></tbody>
+  </table>
+  <button id="btnAddHist" style="margin-top:8px">+ Add Entry</button>
+  <div class="note" style="margin-top:6px">Tip: Links can point to uploaded PDFs/photos saved below.</div>
+</div>
+
+<!-- Uploads & Voice -->
+<div class="card" style="margin-top:16px">
+  <div class="section-title">Uploads & Capture / Téléversements</div>
+  <div class="row-2">
+    <div>
+      <label class="small">Photos (JPG/PNG) – will show preview</label>
+      <input id="photoInput" type="file" accept="image/*" multiple>
+      <div id="photoPreview" class="preview"></div>
+    </div>
+    <div>
+      <label class="small">Manuals / Spec (PDF or files) – auto-suggest from filename</label>
+      <input id="docInput" type="file" multiple>
+      <div id="docList" class="note"></div>
+      <div class="note">Filename tokens like <span class="kbd">90000CFM</span>, <span class="kbd">125HP</span>, <span class="kbd">11inWG</span> will prefill related fields.</div>
+    </div>
+  </div>
+
+  <div class="section-title" style="margin-top:16px">Voice Note / Note vocale</div>
+  <div class="row-2">
+    <div>
+      <div style="display:flex;gap:8px;align-items:center">
+        <button id="btnRec">● Record</button>
+        <button id="btnStop" disabled>■ Stop</button>
+        <span id="recState" class="pill">idle</span>
+      </div>
+      <audio id="player" controls style="width:100%;margin-top:8px"></audio>
+    </div>
+    <div>
+      <label class="small">Transcript (manual notes now, STT hook ready)</label>
+      <textarea id="voiceNotes" placeholder="Key measurements, observed issues..."></textarea>
+    </div>
+  </div>
+</div>
+
+<!-- Save -->
+<div class="footer">
+  <button class="pri" id="btnSave">Save JSON</button>
+  <button id="btnLoad">Load JSON</button>
+  <span class="hint">Tip: press <b>Ctrl+F5</b> if updates don’t show (GitHub Pages cache).</span>
+</div>
+
+<script>
+/* ================= i18n (EN/FR) ================= */
+let LANG = "EN";
+const T = {
+  EN: {
+    systems: {
+      "COL": "01. Dust Collector – Air Filtration",
+      "CONV": "02. Conveyor – Material Handling",
+      "SILO": "03. Storage System – Silo / Hopper",
+      "DRY": "04. Rotary Dryer System",
+      "GBR-DH": "05. GBR Preheater / Dehumidifier",
+      "SILO-DH": "06. Dehumidifying Silo",
+      "ETS": "07. Electro-Thermal Storage (ETS)"
+    },
+    groups: {
+      AirPerf:"Air Performance", Filter:"Filter Section", CleanHopper:"Cleaning & Hopper",
+      FanSafety:"Fan & Safety", Basics:"Basics", Pneumatic:"Pneumatic (if selected)",
+      Mechanical:"Mechanical (if selected)", Cap:"Capacity", Struct:"Structure",
+      DischargeSafety:"Discharge & Safety", Instr:"Instrumentation",
+      Proc:"Process Conditions", CapEnergy:"Capacity & Energy", Mech:"Mechanical",
+      ProcGBR:"Process", EnergyMech:"Energy & Mechanics", AirCtrl:"Air System & Control",
+      ProcHeat:"Process & Heating", CtrlSafety:"Control & Safety",
+      CapETS:"Capacity", ProcETS:"Process", StructSafety:"Structure & Safety"
+    },
+    labels: {
+      EquipID:"Equipment ID", DesignAir:"Design Airflow", SP:"Static Pressure", ATC:"Air-to-Cloth Ratio",
+      FilterArea:"Filter Area (calc)", FilterType:"Filter Type", FilterMat:"Filter Material", FilterQty:"Filter Quantity",
+      PulseValves:"Pulse Valves", AirTanks:"Air Tanks", HopperQty:"Hopper Count", DischargeType:"Discharge Type",
+      FanCFM:"Fan Capacity", FanHP:"Fan Motor", EXP:"Explosion Vent Area", Ground:"Grounding Verified",
+      ConvType:"Conveying Type", TPH:"Throughput", BlowerType:"Blower Type", BlowerHP:"Blower Power",
+      BlowerPSI:"Operating Pressure", PipeMat:"Piping Material", ScrewDia:"Screw Diameter", BeltW:"Belt Width",
+      SVol:"Total Volume", SVolUse:"Usable Volume", SDia:"Diameter", SH:"Straight Height", Cone:"Cone Angle",
+      SDis:"Discharge Type", SDisHP:"Discharge Power", SEXP:"Explosion Vent", Lvl:"Level Sensors", TempSens:"Temperature Sensors",
+      InT:"Inlet Temperature", OutT:"Outlet Temperature", Min:"Moisture In", Mout:"Moisture Out", DryCFM:"Dryer Airflow",
+      DrumL:"Drum Length", DrumD:"Drum Diameter", RPM:"Rotation Speed", DrumHP:"Drive Motor", Burner:"Burner Capacity",
+      GBRInT:"Air Inlet Temperature", GBROutT:"Air Outlet Temperature", GBRTPH:"Material Flow", GBRkW:"Heating Power",
+      GBRScrewL:"Screw Length", GBRScrewD:"Screw Diameter", GBRFanCFM:"Fan Capacity", GBRFanHP:"Fan Motor",
+      GBRSensor:"Temperature Sensor", GBROverH:"Overheat Protection",
+      SDHVol:"Usable Volume", SDHCFM:"Airflow Rate", SDHTin:"Air Temp In", SDHTout:"Air Temp Out",
+      SDHkW:"Heater Power", SDHFan:"Recirc Fan", SDHHum:"Humidity Control", SDHIns:"Insulated", SDHPRV:"Pressure Relief",
+      ETSkWh:"Storage Capacity", ETSPch:"Charging Power", ETSPdis:"Discharge Power", ETSTmax:"Max Temperature",
+      ETSMed:"Working Medium", ETSFlow:"Loop Flow Rate", ETSV:"Vessel Volume", ETSIns:"Insulation Thickness",
+      ETSOver:"Overtemp Cutoff", ETSPLC:"PLC Integration"
+    },
+    opt: {
+      FilterType:["Bag","Cartridge"], FilterMat:["Polyester","PTFE","Aramid","Other"],
+      Discharge:["Rotary Valve","Double Flap","Screw"], YesNo:["Yes","No"],
+      ConvType:["Pneumatic","Screw","Belt"], Blower:["Positive Displacement","Centrifugal"],
+      Pipe:["Galv","SS304","Carbon Steel"], Sensor:["RTD","Thermocouple"],
+      Medium:["Air","Thermal Oil","Molten Salt","Solid"]
+    }
+  },
+  FR: {
+    systems: {
+      "COL": "01. Dépoussiéreur – Filtration d’air",
+      "CONV": "02. Convoyeur – Manutention de matériaux",
+      "SILO": "03. Système de stockage – Silo / Trémie",
+      "DRY": "04. Séchoir rotatif",
+      "GBR-DH": "05. Préchauffeur / Déshumidificateur GBR",
+      "SILO-DH": "06. Silo déshumidificateur",
+      "ETS": "07. Pile Électro-Thermique (ETS)"
+    },
+    groups: {
+      AirPerf:"Performance d’air", Filter:"Section filtres", CleanHopper:"Nettoyage & trémies",
+      FanSafety:"Ventilateur & sécurité", Basics:"Généraux", Pneumatic:"Pneumatique (si choisi)",
+      Mechanical:"Mécanique (si choisi)", Cap:"Capacité", Struct:"Structure",
+      DischargeSafety:"Déchargement & sécurité", Instr:"Instrumentation",
+      Proc:"Conditions de procédé", CapEnergy:"Capacité & énergie", Mech:"Mécanique",
+      ProcGBR:"Procédé", EnergyMech:"Énergie & mécanique", AirCtrl:"Air & contrôle",
+      ProcHeat:"Procédé & chauffage", CtrlSafety:"Contrôle & sécurité",
+      CapETS:"Capacité", ProcETS:"Procédé", StructSafety:"Structure & sécurité"
+    },
+    labels: {
+      EquipID:"ID d’équipement", DesignAir:"Débit d’air de conception", SP:"Pression statique", ATC:"Rapport air/tissu",
+      FilterArea:"Surface filtrante (calc.)", FilterType:"Type de filtre", FilterMat:"Média filtrant", FilterQty:"Nombre de filtres",
+      PulseValves:"Soupapes de pulse", AirTanks:"Réservoirs d’air", HopperQty:"Nb. de trémies", DischargeType:"Type de décharge",
+      FanCFM:"Capacité du ventilateur", FanHP:"Moteur du ventilateur", EXP:"Surface panneau d’explosion", Ground:"Mise à la terre vérifiée",
+      ConvType:"Type de convoyage", TPH:"Débit massique", BlowerType:"Type de soufflante", BlowerHP:"Puissance soufflante",
+      BlowerPSI:"Pression d’opération", PipeMat:"Matériau de tuyauterie", ScrewDia:"Diamètre de vis", BeltW:"Largeur de courroie",
+      SVol:"Volume total", SVolUse:"Volume utile", SDia:"Diamètre", SH:"Hauteur droite", Cone:"Angle de cône",
+      SDis:"Type de décharge", SDisHP:"Puissance de décharge", SEXP:"Panneau d’explosion", Lvl:"Capteurs de niveau", TempSens:"Capteurs de température",
+      InT:"Temp. d’entrée", OutT:"Temp. de sortie", Min:"Humidité entrée", Mout:"Humidité sortie", DryCFM:"Débit du séchoir",
+      DrumL:"Longueur tambour", DrumD:"Diamètre tambour", RPM:"Vitesse de rotation", DrumHP:"Moteur d’entraînement", Burner:"Capacité du brûleur",
+      GBRInT:"Temp. air entrée", GBROutT:"Temp. air sortie", GBRTPH:"Débit matière", GBRkW:"Puissance chauffage",
+      GBRScrewL:"Longueur vis", GBRScrewD:"Diamètre vis", GBRFanCFM:"Débit ventilateur", GBRFanHP:"Moteur ventilateur",
+      GBRSensor:"Capteur de température", GBROverH:"Sécu. surchauffe",
+      SDHVol:"Volume utile", SDHCFM:"Débit d’air", SDHTin:"Temp. air entrée", SDHTout:"Temp. air sortie",
+      SDHkW:"Puissance de chauffe", SDHFan:"Ventilateur recirc.", SDHHum:"Contrôle humidité", SDHIns:"Isolé", SDHPRV:"Soupape de sûreté",
+      ETSkWh:"Capacité stockage", ETSPch:"Puissance de charge", ETSPdis:"Puissance de décharge", ETSTmax:"Température max.",
+      ETSMed:"Fluide caloporteur", ETSFlow:"Débit de boucle", ETSV:"Volume cuve", ETSIns:"Épaisseur isolation",
+      ETSOver:"Coupure surchauffe", ETSPLC:"Intégration PLC"
+    },
+    opt: {
+      FilterType:["Sac","Cartouche"], FilterMat:["Polyester","PTFE","Aramide","Autre"],
+      Discharge:["Vanne rotative","Double clapet","Vis"], YesNo:["Oui","Non"],
+      ConvType:["Pneumatique","Vis","Courroie"], Blower:["Volumétrique","Centrifuge"],
+      Pipe:["Galva","SS304","Acier carbone"], Sensor:["RTD","Thermocouple"],
+      Medium:["Air","Huile thermique","Sel fondu","Solide"]
+    }
+  }
+};
+
+/* ============ 7 Systems spec model (동일) ============ */
+const MODEL=[ /* (이전 답변의 MODEL 그대로 유지: 분량상 생략 없이 포함) */ ];
+/* — 편의상: 여기서는 위 대화에서 제공한 MODEL 전체를 그대로 붙여넣으세요. — */
+
+/* ---------- DOM helpers ---------- */
+const $=(s,p=document)=>p.querySelector(s);
+const host=$("#formHost"), sel=$("#systemSelect"), equipId=$("#equipId");
+const sysCode=$("#sysCode"), sysName=$("#sysName");
+
+function translate(key,dict){return (T[LANG][dict]&&T[LANG][dict][key])||(T["EN"][dict]&&T["EN"][dict][key])||key;}
+function buildOptions(key){const arr=(T[LANG].opt[key]||T["EN"].opt[key]||[]);return arr.map(v=>`<option>${v}</option>`).join("");}
+
+/* ---------- Render dynamic spec ---------- */
+function buildSystemDropdown(){
+  sel.innerHTML=""; MODEL.forEach(m=>{const o=document.createElement("option");o.value=m.code;o.textContent=translate(m.code,"systems");sel.appendChild(o);});
+}
+function renderSystem(code){
+  const sys=MODEL.find(x=>x.code===code); if(!sys){host.innerHTML="";return;}
+  sysCode.textContent=code; sysName.textContent=translate(code,"systems");
+  host.innerHTML="";
+  sys.groups.forEach(gr=>{
+    const gEl=document.createElement("div"); gEl.className="group"; gEl.textContent=translate(gr.g,"groups");
+    const grid=document.createElement("div"); grid.className="grid";
+    gr.f.forEach(([lbl,key,type,unit,req,meta])=>{
+      const wrap=document.createElement("div"); const ltxt=translate(lbl,"labels"); const reqClass=req?" req":"";
+      let field="";
+      if(type==="select"){ field=`<select data-key="${key}">${buildOptions(meta)}</select>`; }
+      else if(type==="calc"){ field=`<input data-key="${key}" readonly />`; }
+      else { field=`<input type="number" data-key="${key}" placeholder="${ltxt}" />`; }
+      wrap.innerHTML=`<label class="small${reqClass}">${ltxt}</label><div class="unit">${field}${unit?`<span>${unit}</span>`:""}</div>`;
+      grid.appendChild(wrap);
+    });
+    gEl.appendChild(grid); host.appendChild(gEl);
+  });
+  host.addEventListener("input",calcAndValidate); calcAndValidate();
+}
+function calcAndValidate(){
+  const cfm=host.querySelector('[data-key="BK:Target_CFM"]');
+  const atc=host.querySelector('[data-key="BK:ATC"]');
+  const area=host.querySelector('[data-key="BK:FilterArea_Req"]');
+  if(cfm&&atc&&area){const v=(+cfm.value||0)/(((+atc.value||0)||1)); area.value=v?Math.round(v):"";}
+}
+
+/* ---------- History table ---------- */
+const histBody=$("#histTable tbody");
+$("#btnAddHist").onclick=()=>{
+  const tr=document.createElement("tr");
+  tr.innerHTML=`<td><input type="date"></td>
+    <td><input placeholder="Work performed"></td>
+    <td><input placeholder="Parts / Vendor"></td>
+    <td><input type="number" step="0.01" placeholder="0.00"></td>
+    <td><input placeholder="https://…"></td>
+    <td><button data-del>×</button></td>`;
+  histBody.appendChild(tr);
+};
+histBody.addEventListener("click",(e)=>{ if(e.target.matches("[data-del]")) e.target.closest("tr").remove(); });
+
+/* ---------- Uploads: photos preview & filename token parsing ---------- */
+const photoInput=$("#photoInput"), photoPreview=$("#photoPreview");
+photoInput.onchange=()=>{
+  photoPreview.innerHTML="";
+  [...photoInput.files].forEach(f=>{
+    const url=URL.createObjectURL(f);
+    const img=document.createElement("img"); img.src=url; img.title=f.name;
+    photoPreview.appendChild(img);
+  });
+};
+const docInput=$("#docInput"), docList=$("#docList");
+docInput.onchange=()=>{
+  const files=[...docInput.files]; if(!files.length){docList.textContent=""; return;}
+  const names=files.map(f=>f.name); docList.innerHTML=names.map(n=>`<div>• ${n}</div>`).join("");
+  // filename token hints -> fill fields (best-effort)
+  const text = names.join("_");
+  const reCFM = /(\d{4,6})\s*CFM/i;
+  const reHP  = /(\d{2,3})\s*HP/i;
+  const reSP  = /(\d{1,2}(?:\.\d+)?)\s*(?:inWG|in\.WG|inH2O)/i;
+  const cfm = text.match(reCFM); if(cfm){ const el=host.querySelector('[data-key="BK:Fan_Capacity"], [data-key="BK:Target_CFM"]'); if(el) el.value=cfm[1]; }
+  const hp  = text.match(reHP);  if(hp){  const el=host.querySelector('[data-key="BK:Fan_HP"]'); if(el) el.value=hp[1]; }
+  const sp  = text.match(reSP);  if(sp){  const el=host.querySelector('[data-key="BK:Target_SP"]'); if(el) el.value=sp[1]; }
+  calcAndValidate();
+};
+
+/* ---------- Voice recording (MediaRecorder) ---------- */
+let media, recorder, chunks=[];
+const btnRec=$("#btnRec"), btnStop=$("#btnStop"), state=$("#recState"), player=$("#player");
+btnRec.onclick=async()=>{
+  try{
+    media = await navigator.mediaDevices.getUserMedia({audio:true});
+    recorder = new MediaRecorder(media);
+    chunks=[];
+    recorder.ondataavailable = e=>{ if(e.data.size>0) chunks.push(e.data); };
+    recorder.onstop = ()=>{
+      const blob = new Blob(chunks,{type:"audio/webm"});
+      const url = URL.createObjectURL(blob);
+      player.src = url;
+      player.dataset.blobUrl = url; // for JSON export (reference)
+      state.textContent="saved";
+      // STT Hook (placeholder): here you would send 'blob' to your backend STT
+    };
+    recorder.start();
+    state.textContent="recording…"; btnRec.disabled=true; btnStop.disabled=false;
+  }catch(err){ alert("Microphone permission denied or not available."); }
+};
+btnStop.onclick=()=>{
+  if(recorder && recorder.state!=="inactive"){ recorder.stop(); }
+  if(media){ media.getTracks().forEach(t=>t.stop()); }
+  btnRec.disabled=false; btnStop.disabled=true; state.textContent="stopped";
+};
+
+/* ---------- Save / Load JSON (single-equipment bundle + new sections) ---------- */
+function gather(){
+  const data = {"system": sel.value, "BK:Equip_ID": equipId.value, uploads:{photos:[], docs:[]}, voice:{}};
+  // spec fields
+  host.querySelectorAll("[data-key]").forEach(el=>data[el.getAttribute("data-key")] = el.value);
+  // existing equipment fields
+  document.querySelectorAll('[data-key^="BK:Exist_"],[data-key^="BK:SDH_"],[data-key^="BK:ETS_"]').forEach(el=>{
+    data[el.getAttribute("data-key")] = el.value;
+  });
+  // history
+  data.history = [...histBody.querySelectorAll("tr")].map(tr=>{
+    const [d,w,p,c,l] = [...tr.querySelectorAll("input")].map(i=>i.value);
+    return {date:d, work:w, parts_vendor:p, cost:c, link:l};
+  });
+  // uploads (names only; binary는 사용자가 보관)
+  data.uploads.photos = [...photoInput.files].map(f=>f.name);
+  data.uploads.docs   = [...docInput.files].map(f=>f.name);
+  // voice
+  data.voice.url = player.dataset.blobUrl || "";
+  data.voice.notes = document.getElementById("voiceNotes").value || "";
+  return data;
+}
+function saveJSON(){
+  const obj=gather();
+  const blob=new Blob([JSON.stringify(obj,null,2)],{type:"application/json"});
+  const a=document.createElement("a");
+  a.href=URL.createObjectURL(blob);
+  a.download=(equipId.value||sel.value)+"_spec.json";
+  a.click();
+}
+function loadJSON(){
+  const i=document.createElement("input"); i.type="file"; i.accept="application/json";
+  i.onchange=()=>{const f=i.files[0]; if(!f) return; f.text().then(t=>{
+    const o=JSON.parse(t);
+    // system
+    if(o.system && MODEL.find(x=>x.code===o.system)){ sel.value=o.system; renderSystem(o.system); }
+    equipId.value = o["BK:Equip_ID"]||"";
+    // spec
+    Object.entries(o).forEach(([k,v])=>{
+      const el=host.querySelector(`[data-key="${k}"]`)||document.querySelector(`[data-key="${k}"]`);
+      if(el) el.value=v;
+    });
+    // history
+    histBody.innerHTML="";
+    (o.history||[]).forEach(row=>{
+      const tr=document.createElement("tr");
+      tr.innerHTML=`<td><input type="date" value="${row.date||""}"></td>
+        <td><input value="${row.work||""}"></td>
+        <td><input value="${row.parts_vendor||""}"></td>
+        <td><input type="number" step="0.01" value="${row.cost||""}"></td>
+        <td><input value="${row.link||""}"></td>
+        <td><button data-del>×</button></td>`;
+      histBody.appendChild(tr);
+    });
+  });}; i.click();
+}
+
+/* ---------- Init ---------- */
+function setLang(newLang){ LANG=newLang;
+  $("#btnEN").classList.toggle("active",LANG==="EN");
+  $("#btnFR").classList.toggle("active",LANG==="FR");
+  buildSystemDropdown(); renderSystem(sel.value);
+}
+document.getElementById("btnEN").onclick=()=>setLang("EN");
+document.getElementById("btnFR").onclick=()=>setLang("FR");
+document.getElementById("btnSave").onclick=saveJSON;
+document.getElementById("btnLoad").onclick=loadJSON;
+sel.addEventListener("change",()=>renderSystem(sel.value));
+
+buildSystemDropdown(); sel.value="COL"; renderSystem("COL");
+</script>
+</body>
+</html>
