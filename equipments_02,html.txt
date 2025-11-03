@@ -1,0 +1,188 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Quotation Builder – Equipments Spec</title>
+<style>
+:root {
+  --fg:#222; --muted:#777; --pri:#0a7; --bd:#e5e5e5;
+}
+body { font-family: system-ui, Roboto, Arial; margin:24px; color:var(--fg);}
+h1 { font-size:20px; margin-bottom:12px;}
+.card { border:1px solid var(--bd); border-radius:10px; padding:16px; margin-top:12px;}
+.grid { display:grid; grid-template-columns:repeat(2,minmax(220px,1fr)); gap:12px;}
+label { font-size:13px; color:var(--muted); display:block; margin-bottom:4px;}
+.req::after{content:" *";color:#c33;}
+input,select{width:100%;padding:8px;border:1px solid var(--bd);border-radius:8px;}
+.toolbar{display:flex;align-items:center;gap:16px;margin:10px 0 16px;}
+.langbtn{border:1px solid var(--bd);background:#fff;padding:6px 10px;border-radius:6px;cursor:pointer;}
+.langbtn.active{background:var(--pri);color:#fff;border:none;}
+.group{margin-top:14px;padding-top:6px;border-top:1px dashed var(--bd);}
+.unit{position:relative;}
+.unit span{position:absolute;right:8px;top:50%;transform:translateY(-50%);font-size:12px;color:var(--muted);}
+.footer{margin-top:20px;display:flex;gap:8px;}
+button{padding:8px 14px;border-radius:8px;cursor:pointer;border:1px solid var(--bd);}
+button.pri{background:var(--pri);color:#fff;border:none;}
+.hint{font-size:12px;color:var(--muted);}
+</style>
+</head>
+<body>
+
+<h1>Equipment Specs / Spécifications d’équipement</h1>
+<div class="toolbar">
+  <div>
+    <label>System / Système</label>
+    <select id="systemSelect"></select>
+  </div>
+  <div>
+    <label>Equipment ID</label>
+    <input id="equipId" placeholder="e.g., COL-001">
+  </div>
+  <div>
+    <button class="langbtn active" id="btnEN">EN</button>
+    <button class="langbtn" id="btnFR">FR</button>
+  </div>
+</div>
+
+<div id="formHost" class="card"></div>
+
+<div class="footer">
+  <button class="pri" id="btnSave">Save JSON</button>
+  <button id="btnLoad">Load JSON</button>
+  <span class="hint">Use data-key="BK:*" for mapping.</span>
+</div>
+
+<script>
+const texts = {
+  EN: {
+    "01. Dust Collector – Air Filtration":"01. Dust Collector – Air Filtration",
+    "02. Conveyor – Material Handling":"02. Conveyor – Material Handling",
+    "03. Storage System – Silo / Hopper":"03. Storage System – Silo / Hopper",
+    "04. Rotary Dryer System":"04. Rotary Dryer System",
+    "05. GBR Preheater / Dehumidifier":"05. GBR Preheater / Dehumidifier",
+    "06. Dehumidifying Silo":"06. Dehumidifying Silo",
+    "07. Electro-Thermal Storage (ETS)":"07. Electro-Thermal Storage (ETS)",
+    "Design Airflow":"Design Airflow",
+    "Static Pressure":"Static Pressure",
+    "Air-to-Cloth Ratio":"Air-to-Cloth Ratio",
+    "Filter Type":"Filter Type",
+    "Filter Quantity":"Filter Quantity",
+    "Fan Capacity":"Fan Capacity",
+    "Hopper Count":"Hopper Count"
+  },
+  FR: {
+    "01. Dust Collector – Air Filtration":"01. Dépoussiéreur – Filtration d’air",
+    "02. Conveyor – Material Handling":"02. Convoyeur – Manutention de matériaux",
+    "03. Storage System – Silo / Hopper":"03. Système de stockage – Silo / Trémie",
+    "04. Rotary Dryer System":"04. Séchoir rotatif",
+    "05. GBR Preheater / Dehumidifier":"05. Préchauffeur / Déshumidificateur GBR",
+    "06. Dehumidifying Silo":"06. Silo déshumidificateur",
+    "07. Electro-Thermal Storage (ETS)":"07. Pile Électro-Thermique (ETS)",
+    "Design Airflow":"Débit d’air de conception",
+    "Static Pressure":"Pression statique",
+    "Air-to-Cloth Ratio":"Rapport air/tissu",
+    "Filter Type":"Type de filtre",
+    "Filter Quantity":"Nombre de filtres",
+    "Fan Capacity":"Capacité du ventilateur",
+    "Hopper Count":"Nombre de trémies"
+  }
+};
+
+const specs = [
+  {code:"COL", name:"01. Dust Collector – Air Filtration", fields:[
+    {label:"Design Airflow", key:"BK:Target_CFM", unit:"CFM"},
+    {label:"Static Pressure", key:"BK:Target_SP", unit:"in.WG"},
+    {label:"Air-to-Cloth Ratio", key:"BK:ATC", unit:"ft/min"},
+    {label:"Filter Type", key:"BK:Filter_Type"},
+    {label:"Filter Quantity", key:"BK:Filter_Qty"},
+    {label:"Fan Capacity", key:"BK:Fan_Capacity", unit:"CFM"},
+    {label:"Hopper Count", key:"BK:Hopper_Qty"}
+  ]},
+  {code:"CONV", name:"02. Conveyor – Material Handling", fields:[
+    {label:"Throughput", key:"BK:Conv_TPH", unit:"tph"},
+    {label:"Conveying Type", key:"BK:Conv_Type"}
+  ]},
+  {code:"SILO", name:"03. Storage System – Silo / Hopper", fields:[
+    {label:"Total Volume", key:"BK:Silo_Vol", unit:"m³"},
+    {label:"Discharge Type", key:"BK:Silo_Discharge"}
+  ]},
+  {code:"DRY", name:"04. Rotary Dryer System", fields:[
+    {label:"Inlet Temperature", key:"BK:Dry_In_T", unit:"°C"},
+    {label:"Outlet Temperature", key:"BK:Dry_Out_T", unit:"°C"}
+  ]},
+  {code:"GBR-DH", name:"05. GBR Preheater / Dehumidifier", fields:[
+    {label:"Air Inlet Temperature", key:"BK:GBR_In_T", unit:"°C"},
+    {label:"Material Flow", key:"BK:GBR_TPH", unit:"tph"}
+  ]},
+  {code:"SILO-DH", name:"06. Dehumidifying Silo", fields:[
+    {label:"Airflow Rate", key:"BK:SDH_CFM", unit:"CFM"},
+    {label:"Heater Power", key:"BK:SDH_kW", unit:"kW"}
+  ]},
+  {code:"ETS", name:"07. Electro-Thermal Storage (ETS)", fields:[
+    {label:"Storage Capacity", key:"BK:ETS_kWh", unit:"kWh"},
+    {label:"Max Temperature", key:"BK:ETS_Tmax", unit:"°C"}
+  ]}
+];
+
+const sel = document.getElementById("systemSelect");
+const host = document.getElementById("formHost");
+const btnEN = document.getElementById("btnEN");
+const btnFR = document.getElementById("btnFR");
+let lang = "EN";
+
+specs.forEach(s=>{
+  const o=document.createElement("option");
+  o.value=s.code;
+  o.textContent=texts[lang][s.name]||s.name;
+  sel.appendChild(o);
+});
+
+function render(system){
+  host.innerHTML="";
+  const sys=specs.find(x=>x.code===system);
+  if(!sys) return;
+  const grid=document.createElement("div");
+  grid.className="grid";
+  sys.fields.forEach(f=>{
+    const lbl=texts[lang][f.label]||f.label;
+    const div=document.createElement("div");
+    div.innerHTML=`
+      <label>${lbl}</label>
+      <div class="unit">
+        <input data-key="${f.key}" placeholder="${lbl}">
+        ${f.unit?`<span>${f.unit}</span>`:""}
+      </div>`;
+    grid.appendChild(div);
+  });
+  host.appendChild(grid);
+}
+sel.addEventListener("change",()=>render(sel.value));
+btnEN.onclick=()=>{lang="EN";btnEN.classList.add("active");btnFR.classList.remove("active");refreshLang();};
+btnFR.onclick=()=>{lang="FR";btnFR.classList.add("active");btnEN.classList.remove("active");refreshLang();};
+
+function refreshLang(){
+  // update dropdown labels
+  [...sel.options].forEach(o=>{
+    const s=specs.find(x=>x.code===o.value);
+    o.textContent=texts[lang][s.name]||s.name;
+  });
+  render(sel.value);
+}
+
+document.getElementById("btnSave").onclick=()=>{
+  const data={system:sel.value};
+  host.querySelectorAll("input").forEach(i=>data[i.dataset.key]=i.value);
+  const blob=new Blob([JSON.stringify(data,null,2)],{type:"application/json"});
+  const a=document.createElement("a");a.href=URL.createObjectURL(blob);a.download=sel.value+"_spec.json";a.click();
+};
+document.getElementById("btnLoad").onclick=()=>{
+  const i=document.createElement("input");i.type="file";i.accept="application/json";
+  i.onchange=()=>{const f=i.files[0];if(!f)return;f.text().then(t=>{const o=JSON.parse(t);
+    Object.entries(o).forEach(([k,v])=>{const el=host.querySelector(`[data-key="${k}"]`);if(el)el.value=v;});
+  });};i.click();
+};
+sel.value="COL";render("COL");
+</script>
+</body>
+</html>
