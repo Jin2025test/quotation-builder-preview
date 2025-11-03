@@ -1,0 +1,444 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Quotation Builder – Equipments Spec (EN/FR)</title>
+<style>
+:root { --fg:#222; --muted:#777; --pri:#0a7; --bd:#e5e5e5; }
+*{box-sizing:border-box}
+body{font-family:system-ui,Segoe UI,Roboto,Arial,sans-serif;margin:24px;color:var(--fg)}
+h1{font-size:20px;margin:0 0 12px}
+.card{border:1px solid var(--bd);border-radius:12px;padding:16px}
+.toolbar{display:flex;flex-wrap:wrap;gap:16px;align-items:end;margin:10px 0 16px}
+label.small{font-size:12px;color:var(--muted);display:block;margin-bottom:6px}
+input,select{width:100%;padding:10px;border:1px solid var(--bd);border-radius:10px}
+.langbtn{border:1px solid var(--bd);background:#fff;padding:8px 12px;border-radius:10px;cursor:pointer}
+.langbtn.active{background:var(--pri);color:#fff;border:none}
+.grid{display:grid;grid-template-columns:repeat(2,minmax(220px,1fr));gap:12px}
+.group{margin-top:14px;padding-top:8px;border-top:1px dashed var(--bd);font-weight:600;color:var(--muted)}
+.unit{position:relative}
+.unit span{position:absolute;right:10px;top:50%;transform:translateY(-50%);font-size:12px;color:var(--muted)}
+.footer{margin-top:16px;display:flex;gap:8px;align-items:center}
+button{padding:10px 14px;border-radius:10px;border:1px solid var(--bd);background:#fff;cursor:pointer}
+button.pri{background:var(--pri);color:#fff;border:none}
+.hint{font-size:12px;color:var(--muted)}
+.err{outline:2px solid #c33}
+.badge{display:inline-flex;align-items:center;gap:6px;padding:6px 10px;border:1px solid var(--bd);border-radius:999px}
+.badge b{font-size:12px}
+</style>
+</head>
+<body>
+<h1>Equipment Specs / Spécifications d’équipement</h1>
+
+<div class="toolbar">
+  <div>
+    <label class="small">System / Système</label>
+    <select id="systemSelect"></select>
+  </div>
+  <div>
+    <label class="small">Equipment ID</label>
+    <input id="equipId" placeholder="e.g., COL-001" data-key="BK:Equip_ID" />
+  </div>
+  <div class="badge"><b id="sysCode">—</b><span id="sysName">—</span></div>
+  <div style="margin-left:auto;display:flex;gap:8px">
+    <button class="langbtn active" id="btnEN">EN</button>
+    <button class="langbtn" id="btnFR">FR</button>
+  </div>
+</div>
+
+<div id="formHost" class="card"></div>
+
+<div class="footer">
+  <button class="pri" id="btnSave">Save JSON</button>
+  <button id="btnLoad">Load JSON</button>
+  <span class="hint">Tip: press <b>Ctrl+F5</b> if updates don’t show (GitHub Pages cache).</span>
+</div>
+
+<script>
+/* ------------------ i18n ------------------ */
+let LANG = "EN";
+const T = {
+  EN: {
+    systems: {
+      "COL": "01. Dust Collector – Air Filtration",
+      "CONV": "02. Conveyor – Material Handling",
+      "SILO": "03. Storage System – Silo / Hopper",
+      "DRY": "04. Rotary Dryer System",
+      "GBR-DH": "05. GBR Preheater / Dehumidifier",
+      "SILO-DH": "06. Dehumidifying Silo",
+      "ETS": "07. Electro-Thermal Storage (ETS)"
+    },
+    groups: {
+      AirPerf:"Air Performance", Filter:"Filter Section", CleanHopper:"Cleaning & Hopper",
+      FanSafety:"Fan & Safety", Basics:"Basics", Pneumatic:"Pneumatic (if selected)",
+      Mechanical:"Mechanical (if selected)", Cap:"Capacity", Struct:"Structure",
+      DischargeSafety:"Discharge & Safety", Instr:"Instrumentation",
+      Proc:"Process Conditions", CapEnergy:"Capacity & Energy", Mech:"Mechanical",
+      ProcGBR:"Process", EnergyMech:"Energy & Mechanics", AirCtrl:"Air System & Control",
+      ProcHeat:"Process & Heating", CtrlSafety:"Control & Safety",
+      CapETS:"Capacity", ProcETS:"Process", StructSafety:"Structure & Safety"
+    },
+    labels: {
+      EquipID:"Equipment ID", DesignAir:"Design Airflow", SP:"Static Pressure", ATC:"Air-to-Cloth Ratio",
+      FilterArea:"Filter Area (calc)", FilterType:"Filter Type", FilterMat:"Filter Material", FilterQty:"Filter Quantity",
+      PulseValves:"Pulse Valves", AirTanks:"Air Tanks", HopperQty:"Hopper Count", DischargeType:"Discharge Type",
+      FanCFM:"Fan Capacity", FanHP:"Fan Motor", EXP:"Explosion Vent Area", Ground:"Grounding Verified",
+      ConvType:"Conveying Type", TPH:"Throughput", BlowerType:"Blower Type", BlowerHP:"Blower Power",
+      BlowerPSI:"Operating Pressure", PipeMat:"Piping Material", ScrewDia:"Screw Diameter", BeltW:"Belt Width",
+      SVol:"Total Volume", SVolUse:"Usable Volume", SDia:"Diameter", SH:"Straight Height", Cone:"Cone Angle",
+      SDis:"Discharge Type", SDisHP:"Discharge Power", SEXP:"Explosion Vent", Lvl:"Level Sensors", TempSens:"Temperature Sensors",
+      InT:"Inlet Temperature", OutT:"Outlet Temperature", Min:"Moisture In", Mout:"Moisture Out", DryCFM:"Dryer Airflow",
+      DrumL:"Drum Length", DrumD:"Drum Diameter", RPM:"Rotation Speed", DrumHP:"Drive Motor", Burner:"Burner Capacity",
+      GBRInT:"Air Inlet Temperature", GBROutT:"Air Outlet Temperature", GBRTPH:"Material Flow", GBRkW:"Heating Power",
+      GBRScrewL:"Screw Length", GBRScrewD:"Screw Diameter", GBRFanCFM:"Fan Capacity", GBRFanHP:"Fan Motor",
+      GBRSensor:"Temperature Sensor", GBROverH:"Overheat Protection",
+      SDHVol:"Usable Volume", SDHCFM:"Airflow Rate", SDHTin:"Air Temp In", SDHTout:"Air Temp Out",
+      SDHkW:"Heater Power", SDHFan:"Recirc Fan", SDHHum:"Humidity Control", SDHIns:"Insulated", SDHPRV:"Pressure Relief",
+      ETSkWh:"Storage Capacity", ETSPch:"Charging Power", ETSPdis:"Discharge Power", ETSTmax:"Max Temperature",
+      ETSMed:"Working Medium", ETSFlow:"Loop Flow Rate", ETSV:"Vessel Volume", ETSIns:"Insulation Thickness",
+      ETSOver:"Overtemp Cutoff", ETSPLC:"PLC Integration"
+    },
+    opt: {
+      FilterType:["Bag","Cartridge"], FilterMat:["Polyester","PTFE","Aramid","Other"],
+      Discharge:["Rotary Valve","Double Flap","Screw"], YesNo:["Yes","No"],
+      ConvType:["Pneumatic","Screw","Belt"], Blower:["Positive Displacement","Centrifugal"],
+      Pipe:["Galv","SS304","Carbon Steel"], Sensor:["RTD","Thermocouple"],
+      Medium:["Air","Thermal Oil","Molten Salt","Solid"]
+    }
+  },
+  FR: {
+    systems: {
+      "COL": "01. Dépoussiéreur – Filtration d’air",
+      "CONV": "02. Convoyeur – Manutention de matériaux",
+      "SILO": "03. Système de stockage – Silo / Trémie",
+      "DRY": "04. Séchoir rotatif",
+      "GBR-DH": "05. Préchauffeur / Déshumidificateur GBR",
+      "SILO-DH": "06. Silo déshumidificateur",
+      "ETS": "07. Pile Électro-Thermique (ETS)"
+    },
+    groups: {
+      AirPerf:"Performance d’air", Filter:"Section filtres", CleanHopper:"Nettoyage & trémies",
+      FanSafety:"Ventilateur & sécurité", Basics:"Généraux", Pneumatic:"Pneumatique (si choisi)",
+      Mechanical:"Mécanique (si choisi)", Cap:"Capacité", Struct:"Structure",
+      DischargeSafety:"Déchargement & sécurité", Instr:"Instrumentation",
+      Proc:"Conditions de procédé", CapEnergy:"Capacité & énergie", Mech:"Mécanique",
+      ProcGBR:"Procédé", EnergyMech:"Énergie & mécanique", AirCtrl:"Air & contrôle",
+      ProcHeat:"Procédé & chauffage", CtrlSafety:"Contrôle & sécurité",
+      CapETS:"Capacité", ProcETS:"Procédé", StructSafety:"Structure & sécurité"
+    },
+    labels: {
+      EquipID:"ID d’équipement", DesignAir:"Débit d’air de conception", SP:"Pression statique", ATC:"Rapport air/tissu",
+      FilterArea:"Surface filtrante (calc.)", FilterType:"Type de filtre", FilterMat:"Média filtrant", FilterQty:"Nombre de filtres",
+      PulseValves:"Soupapes de pulse", AirTanks:"Réservoirs d’air", HopperQty:"Nb. de trémies", DischargeType:"Type de décharge",
+      FanCFM:"Capacité du ventilateur", FanHP:"Moteur du ventilateur", EXP:"Surface de panneau d’explosion", Ground:"Mise à la terre vérifiée",
+      ConvType:"Type de convoyage", TPH:"Débit massique", BlowerType:"Type de soufflante", BlowerHP:"Puissance soufflante",
+      BlowerPSI:"Pression d’opération", PipeMat:"Matériau de tuyauterie", ScrewDia:"Diamètre de vis", BeltW:"Largeur de courroie",
+      SVol:"Volume total", SVolUse:"Volume utile", SDia:"Diamètre", SH:"Hauteur droite", Cone:"Angle de cône",
+      SDis:"Type de décharge", SDisHP:"Puissance de décharge", SEXP:"Panneau d’explosion", Lvl:"Capteurs de niveau", TempSens:"Capteurs de température",
+      InT:"Température d’entrée", OutT:"Température de sortie", Min:"Humidité entrée", Mout:"Humidité sortie", DryCFM:"Débit d’air du séchoir",
+      DrumL:"Longueur du tambour", DrumD:"Diamètre du tambour", RPM:"Vitesse de rotation", DrumHP:"Moteur d’entraînement", Burner:"Capacité du brûleur",
+      GBRInT:"Temp. d’air entrée", GBROutT:"Temp. d’air sortie", GBRTPH:"Débit matière", GBRkW:"Puissance de chauffage",
+      GBRScrewL:"Longueur de vis", GBRScrewD:"Diamètre de vis", GBRFanCFM:"Débit ventilateur", GBRFanHP:"Moteur ventilateur",
+      GBRSensor:"Capteur de température", GBROverH:"Sécurité surchauffe",
+      SDHVol:"Volume utile", SDHCFM:"Débit d’air", SDHTin:"Temp. air entrée", SDHTout:"Temp. air sortie",
+      SDHkW:"Puissance de chauffe", SDHFan:"Ventilateur recirc.", SDHHum:"Contrôle humidité", SDHIns:"Isolé", SDHPRV:"Soupape de sûreté",
+      ETSkWh:"Capacité stockage", ETSPch:"Puissance de charge", ETSPdis:"Puissance de décharge", ETSTmax:"Température max.",
+      ETSMed:"Fluide caloporteur", ETSFlow:"Débit de boucle", ETSV:"Volume de cuve", ETSIns:"Épaisseur d’isolation",
+      ETSOver:"Coupure surchauffe", ETSPLC:"Intégration PLC"
+    },
+    opt: {
+      FilterType:["Sac","Cartouche"], FilterMat:["Polyester","PTFE","Aramide","Autre"],
+      Discharge:["Vanne rotative","Double clapet","Vis"], YesNo:["Oui","Non"],
+      ConvType:["Pneumatique","Vis","Courroie"], Blower:["Volumétrique","Centrifuge"],
+      Pipe:["Galva","SS304","Acier carbone"], Sensor:["RTD","Thermocouple"],
+      Medium:["Air","Huile thermique","Sel fondu","Solide"]
+    }
+  }
+};
+
+/* -------------- Spec Model 7 Systems -------------- */
+const MODEL = [
+  {code:"COL", groups:[
+    {g:"AirPerf", f:[
+      ["DesignAir","BK:Target_CFM","number","CFM",true,"90000"],
+      ["SP","BK:Target_SP","number","in.WG",true,"11"],
+      ["ATC","BK:ATC","number","ft/min",true,"4.2"],
+      ["FilterArea","BK:FilterArea_Req","calc","ft²",false,""] // CFM/ATC
+    ]},
+    {g:"Filter", f:[
+      ["FilterType","BK:Filter_Type","select","",true,"FilterType"],
+      ["FilterMat","BK:Filter_Media","select","",true,"FilterMat"],
+      ["FilterQty","BK:Filter_Qty","number","ea",true,"680"]
+    ]},
+    {g:"CleanHopper", f:[
+      ["PulseValves","BK:Pulse_Valves","number","ea",false,""],
+      ["AirTanks","BK:Pulse_Tanks","number","ea",false,""],
+      ["HopperQty","BK:Hopper_Qty","number","ea",true,"3"],
+      ["DischargeType","BK:Discharge_Type","select","",false,"Discharge"]
+    ]},
+    {g:"FanSafety", f:[
+      ["FanCFM","BK:Fan_Capacity","number","CFM",false,"45000"],
+      ["FanHP","BK:Fan_HP","number","HP",false,"125"],
+      ["EXP","BK:EXP_VentArea","number","ft²",false,""],
+      ["Ground","BK:Grounding_OK","select","",false,"YesNo"]
+    ]}
+  ]},
+  {code:"CONV", groups:[
+    {g:"Basics", f:[
+      ["ConvType","BK:Conv_Type","select","",true,"ConvType"],
+      ["TPH","BK:Conv_TPH","number","tph",true,"25"]
+    ]},
+    {g:"Pneumatic", f:[
+      ["BlowerType","BK:Blower_Type","select","",false,"Blower"],
+      ["BlowerHP","BK:Blower_HP","number","HP",false,"50"],
+      ["BlowerPSI","BK:Blower_PSI","number","psi",false,"15"],
+      ["PipeMat","BK:Piping_Material","select","",false,"Pipe"]
+    ]},
+    {g:"Mechanical", f:[
+      ["ScrewDia","BK:Screw_Dia","number","in",false,""],
+      ["BeltW","BK:Belt_Width","number","in",false,""]
+    ]}
+  ]},
+  {code:"SILO", groups:[
+    {g:"Cap", f:[
+      ["SVol","BK:Silo_Vol","number","m³",true,"200"],
+      ["SVolUse","BK:Silo_Vol_Usable","number","m³",false,"180"]
+    ]},
+    {g:"Struct", f:[
+      ["SDia","BK:Silo_Dia","number","ft",true,"15"],
+      ["SH","BK:Silo_H","number","ft",true,"50"],
+      ["Cone","BK:Cone_Angle","number","°",false,"60"]
+    ]},
+    {g:"DischargeSafety", f:[
+      ["SDis","BK:Silo_Discharge","select","",true,"Discharge"],
+      ["SDisHP","BK:Silo_Discharge_HP","number","HP",false,""],
+      ["SEXP","BK:Silo_EXP","select","",false,"YesNo"]
+    ]},
+    {g:"Instr", f:[
+      ["Lvl","BK:Silo_Level_Sensor","number","ea",false,""],
+      ["TempSens","BK:Silo_T_Sensor","number","ea",false,""]
+    ]}
+  ]},
+  {code:"DRY", groups:[
+    {g:"Proc", f:[
+      ["InT","BK:Dry_In_T","number","°C",true,"350"],
+      ["OutT","BK:Dry_Out_T","number","°C",true,"100"],
+      ["Min","BK:Dry_Moist_In","number","%",true,"6"],
+      ["Mout","BK:Dry_Moist_Out","number","%",true,"1"]
+    ]},
+    {g:"CapEnergy", f:[
+      ["TPH","BK:Dry_TPH","number","tph",true,"30"],
+      ["Burner","BK:Burner_MMBTUH","number","MMBtu/h",true,"6.5"],
+      ["DryCFM","BK:Dry_CFM","number","CFM",false,"60000"]
+    ]},
+    {g:"Mech", f:[
+      ["DrumL","BK:Drum_L","number","ft",false,""],
+      ["DrumD","BK:Drum_D","number","ft",false,""],
+      ["RPM","BK:Drum_RPM","number","rpm",false,""],
+      ["DrumHP","BK:Drum_HP","number","HP",false,""]
+    ]}
+  ]},
+  {code:"GBR-DH", groups:[
+    {g:"ProcGBR", f:[
+      ["GBRInT","BK:GBR_In_T","number","°C",true,"180"],
+      ["GBROutT","BK:GBR_Out_T","number","°C",true,"120"],
+      ["GBRTPH","BK:GBR_TPH","number","tph",true,"20"]
+    ]},
+    {g:"EnergyMech", f:[
+      ["GBRkW","BK:GBR_kW","number","kW",true,"150"],
+      ["GBRScrewL","BK:GBR_Screw_L","number","ft",false,""],
+      ["GBRScrewD","BK:GBR_Screw_D","number","in",false,""]
+    ]},
+    {g:"AirCtrl", f:[
+      ["GBRFanCFM","BK:GBR_Fan_CFM","number","CFM",false,""],
+      ["GBRFanHP","BK:GBR_Fan_HP","number","HP",false,""],
+      ["GBRSensor","BK:GBR_Sensor","select","",false,"Sensor"],
+      ["GBROverH","BK:GBR_Overheat","select","",false,"YesNo"]
+    ]}
+  ]},
+  {code:"SILO-DH", groups:[
+    {g:"Cap", f:[
+      ["SDHVol","BK:SDH_Vol_Usable","number","m³",true,"60"]
+    ]},
+    {g:"ProcHeat", f:[
+      ["SDHCFM","BK:SDH_CFM","number","CFM",true,"10000"],
+      ["SDHTin","BK:SDH_T_In","number","°C",true,"100"],
+      ["SDHTout","BK:SDH_T_Out","number","°C",false,"70"],
+      ["SDHkW","BK:SDH_kW","number","kW",true,"60"],
+      ["SDHFan","BK:SDH_Fan_CFM","number","CFM",false,""]
+    ]},
+    {g:"CtrlSafety", f:[
+      ["SDHHum","BK:SDH_HumCtrl","select","",false,"YesNo"],
+      ["SDHIns","BK:SDH_Insul","select","",false,"YesNo"],
+      ["SDHPRV","BK:SDH_PRV","select","",false,"YesNo"]
+    ]}
+  ]},
+  {code:"ETS", groups:[
+    {g:"CapETS", f:[
+      ["ETSkWh","BK:ETS_kWh","number","kWh",true,"500"],
+      ["ETSPch","BK:ETS_Pch_kW","number","kW",true,"150"],
+      ["ETSPdis","BK:ETS_Pdis_kW","number","kW",true,"100"]
+    ]},
+    {g:"ProcETS", f:[
+      ["ETSTmax","BK:ETS_Tmax","number","°C",true,"800"],
+      ["ETSMed","BK:ETS_Medium","select","",true,"Medium"],
+      ["ETSFlow","BK:ETS_Flow","number","kg/s",false,""]
+    ]},
+    {g:"StructSafety", f:[
+      ["ETSV","BK:ETS_Vessel_m3","number","m³",false,""],
+      ["ETSIns","BK:ETS_Insul_mm","number","mm",false,""],
+      ["ETSOver","BK:ETS_OverT","select","",false,"YesNo"],
+      ["ETSPLC","BK:ETS_PLC","select","",true,"YesNo"]
+    ]}
+  ]}
+];
+
+/* -------------- Helpers -------------- */
+const $ = (s,p=document)=>p.querySelector(s);
+const host = $("#formHost");
+const sel = $("#systemSelect");
+const equipId = $("#equipId");
+const sysCode = $("#sysCode");
+const sysName = $("#sysName");
+
+function translate(key, dict){ return (T[LANG][dict] && T[LANG][dict][key]) || (T["EN"][dict] && T["EN"][dict][key]) || key; }
+
+function buildOptions(key){
+  const arr = (T[LANG].opt[key] || T["EN"].opt[key] || []);
+  return arr.map(v=>`<option value="${v}">${v}</option>`).join("");
+}
+
+function renderSystem(code){
+  const sys = MODEL.find(x=>x.code===code);
+  if(!sys){ host.innerHTML=""; return; }
+  sysCode.textContent = code;
+  sysName.textContent = translate(code,"systems");
+
+  host.innerHTML = "";
+  sys.groups.forEach(gr=>{
+    const gEl = document.createElement("div");
+    gEl.className = "group";
+    gEl.textContent = translate(gr.g,"groups");
+    const grid = document.createElement("div");
+    grid.className = "grid";
+
+    gr.f.forEach(([lbl,key,type,unit,req,meta])=>{
+      const wrap = document.createElement("div");
+      const ltxt = translate(lbl,"labels");
+      const reqClass = req ? " req" : "";
+      let field = "";
+
+      if(type==="select"){
+        const opts = buildOptions(meta);
+        field = `<select data-key="${key}">${opts}</select>`;
+      }else if(type==="calc"){
+        field = `<input data-key="${key}" readonly />`;
+      }else{
+        field = `<input type="number" data-key="${key}" placeholder="${ltxt}" />`;
+      }
+
+      wrap.innerHTML = `
+        <label class="small${reqClass}">${ltxt}</label>
+        <div class="unit">${field}${unit?`<span>${unit}</span>`:""}</div>
+      `;
+      grid.appendChild(wrap);
+    });
+
+    gEl.appendChild(grid);
+    host.appendChild(gEl);
+  });
+
+  // default calc + validation wiring
+  host.addEventListener("input", calcAndValidate);
+  calcAndValidate(); // initial
+}
+
+function calcAndValidate(){
+  // COL: FilterArea = CFM / ATC
+  const cfm = host.querySelector('[data-key="BK:Target_CFM"]');
+  const atc = host.querySelector('[data-key="BK:ATC"]');
+  const area = host.querySelector('[data-key="BK:FilterArea_Req"]');
+  if(cfm && atc && area){
+    const v = (+cfm.value||0) / ((+atc.value||0) || 1);
+    area.value = v ? Math.round(v) : "";
+  }
+  // simple required highlight
+  host.querySelectorAll("label.req").forEach(l=>{
+    const key = l.nextElementSibling?.querySelector("[data-key]")?.getAttribute("data-key");
+    if(!key) return;
+    const input = host.querySelector(`[data-key="${key}"]`);
+    if(input){
+      if(!input.value) input.classList.add("err"); else input.classList.remove("err");
+    }
+  });
+}
+
+function saveJSON(){
+  const data = {"BK:Equip_ID": equipId.value, system: sel.value};
+  host.querySelectorAll("[data-key]").forEach(el=>{
+    data[el.getAttribute("data-key")] = el.value;
+  });
+  const blob = new Blob([JSON.stringify(data,null,2)],{type:"application/json"});
+  const a = document.createElement("a");
+  a.href = URL.createObjectURL(blob);
+  a.download = (equipId.value || sel.value) + "_spec.json";
+  a.click();
+}
+
+function loadJSON(){
+  const i = document.createElement("input");
+  i.type="file"; i.accept="application/json";
+  i.onchange = () => {
+    const f = i.files[0]; if(!f) return;
+    f.text().then(t=>{
+      try{
+        const o = JSON.parse(t);
+        equipId.value = o["BK:Equip_ID"] || "";
+        if(o.system && MODEL.find(x=>x.code===o.system)){
+          sel.value = o.system;
+          renderSystem(o.system);
+        }
+        Object.entries(o).forEach(([k,v])=>{
+          const el = host.querySelector(`[data-key="${k}"]`);
+          if(el) el.value = v;
+        });
+        calcAndValidate();
+      }catch(e){ alert("Invalid JSON"); }
+    });
+  };
+  i.click();
+}
+
+/* -------------- Init -------------- */
+function buildSystemDropdown(){
+  sel.innerHTML = "";
+  MODEL.forEach(m=>{
+    const opt = document.createElement("option");
+    opt.value = m.code;
+    opt.textContent = translate(m.code,"systems");
+    sel.appendChild(opt);
+  });
+}
+
+function setLang(newLang){
+  LANG = newLang;
+  $("#btnEN").classList.toggle("active", LANG==="EN");
+  $("#btnFR").classList.toggle("active", LANG==="FR");
+  buildSystemDropdown();
+  renderSystem(sel.value);
+}
+
+document.getElementById("btnEN").addEventListener("click", ()=>setLang("EN"));
+document.getElementById("btnFR").addEventListener("click", ()=>setLang("FR"));
+document.getElementById("btnSave").addEventListener("click", saveJSON);
+document.getElementById("btnLoad").addEventListener("click", loadJSON);
+sel.addEventListener("change", ()=>renderSystem(sel.value));
+
+// first paint
+buildSystemDropdown();
+sel.value = "COL";
+renderSystem("COL");
+</script>
+</body>
+</html>
