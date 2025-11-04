@@ -1,0 +1,379 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Quotation Builder – Project • Equipments • Draft Process</title>
+<style>
+:root{--fg:#1c1d20;--muted:#68707a;--bd:#e6e8eb;--pri:#0a7;--bg:#fafafa}
+*{box-sizing:border-box}
+html,body{height:100%}
+body{margin:0;font-family:system-ui,Segoe UI,Roboto,Arial,sans-serif;color:var(--fg);background:var(--bg)}
+header{padding:16px 20px;border-bottom:1px solid var(--bd);background:#fff;position:sticky;top:0;z-index:5}
+header h1{font-size:18px;margin:0}
+.container{display:grid;grid-template-columns:300px 1fr;gap:16px;padding:16px}
+.card{border:1px solid var(--bd);border-radius:12px;background:#fff}
+.card>.hd{padding:12px 14px;border-bottom:1px solid var(--bd);font-weight:700}
+.card>.bd{padding:14px}
+label.small{font-size:12px;color:var(--muted);display:block;margin:0 0 6px}
+input,select,textarea{width:100%;padding:10px;border:1px solid var(--bd);border-radius:10px;background:#fff}
+textarea{min-height:88px;resize:vertical}
+.btn{padding:9px 12px;border:1px solid var(--bd);border-radius:10px;background:#fff;cursor:pointer}
+.btn.pri{background:var(--pri);color:#fff;border:none}
+.btn.ghost{background:#fff}
+.row{display:grid;grid-template-columns:repeat(2,minmax(160px,1fr));gap:12px}
+.row3{display:grid;grid-template-columns:repeat(3,minmax(120px,1fr));gap:12px}
+.kbd{font-family:ui-monospace,Menlo,Consolas,monospace;background:#f1f3f5;border:1px solid var(--bd);border-radius:6px;padding:2px 6px}
+.list{display:flex;flex-direction:column;gap:8px}
+.item{display:flex;gap:8px;align-items:center;justify-content:space-between;padding:8px;border:1px solid var(--bd);border-radius:10px}
+.badge{display:inline-flex;align-items:center;gap:6px;padding:4px 8px;border:1px solid var(--bd);border-radius:999px;color:var(--muted)}
+.grid{display:grid;grid-template-columns:repeat(2,minmax(240px,1fr));gap:12px}
+.group{margin-top:14px;padding-top:8px;border-top:1px dashed var(--bd);font-weight:600;color:var(--muted)}
+.unit{position:relative}
+.unit span{position:absolute;right:10px;top:50%;transform:translateY(-50%);font-size:12px;color:var(--muted)}
+.table{width:100%;border-collapse:collapse}
+.table th,.table td{border:1px solid var(--bd);padding:8px;font-size:13px}
+.table th{background:#f8f9fa;text-align:left}
+.toolbar{display:flex;gap:8px;flex-wrap:wrap}
+.smallnote{font-size:12px;color:var(--muted)}
+.tabs{display:flex;gap:6px;border-bottom:1px solid var(--bd)}
+.tab{padding:10px 12px;border:1px solid var(--bd);border-bottom:none;border-radius:10px 10px 0 0;background:#fff;cursor:pointer}
+.tab.active{background:#f3fcf9;border-color:#bfeadd}
+.section{padding:12px;border:1px solid var(--bd);border-top:none;border-radius:0 0 10px 10px;background:#fff}
+.split{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+pre{background:#0b1021;color:#d0e5ff;padding:12px;border-radius:10px;overflow:auto}
+hr{border:none;border-top:1px dashed var(--bd);margin:10px 0}
+</style>
+</head>
+<body>
+<header>
+  <h1>Quotation Builder — Project • Equipments • Draft Process</h1>
+</header>
+<div class="container">
+  <!-- LEFT: Equipment list & actions -->
+  <aside class="card">
+    <div class="hd">Equipments</div>
+    <div class="bd">
+      <div class="toolbar" style="margin-bottom:8px">
+        <select id="systemSelect" class="btn"></select>
+        <button class="btn" id="btnAdd">+ Add</button>
+        <button class="btn" id="btnDup">Duplicate</button>
+        <button class="btn" id="btnDel">Delete</button>
+      </div>
+      <div id="equipList" class="list"></div>
+      <hr>
+      <div class="toolbar">
+        <button class="btn pri" id="btnSaveProject">Save Project JSON</button>
+        <button class="btn" id="btnLoadProject">Load Project JSON</button>
+      </div>
+      <div class="smallnote" style="margin-top:8px">Tip: Use <span class="kbd">Ctrl+F5</span> if cache sticks.</div>
+    </div>
+  </aside>
+
+  <!-- RIGHT: Tabs -->
+  <main>
+    <div class="tabs">
+      <div class="tab active" data-tab="site">1) Project / Site Capture</div>
+      <div class="tab" data-tab="specs">2) Equipment Specs</div>
+      <div class="tab" data-tab="common">2b) Equipment Common</div>
+      <div class="tab" data-tab="process">3) Draft Process (AI)</div>
+      <div class="tab" data-tab="diff">Δ Site Differences</div>
+    </div>
+
+    <!-- Site Capture -->
+    <section id="tab-site" class="section">
+      <div class="row">
+        <div><label class="small">Project Name</label><input id="BK:Project_Name"></div>
+        <div><label class="small">Client Name</label><input id="BK:Client_Name"></div>
+        <div><label class="small">Site Address</label><input id="BK:Site_Address"></div>
+        <div><label class="small">Install Context</label>
+          <select id="BK:Install_Context"><option>Indoor</option><option>Outdoor</option><option>Roof</option><option>Yard</option></select>
+        </div>
+      </div>
+      <div class="row">
+        <div><label class="small">Process Area / Line</label><input id="BK:Process_Area"></div>
+        <div><label class="small">Dust Type</label><input id="BK:Dust_Type" placeholder="e.g., limestone, GBR fines"></div>
+      </div>
+      <div class="row3">
+        <div><label class="small">Ambient Tmin (°C)</label><input id="BK:Ambient_TminC" type="number"></div>
+        <div><label class="small">Ambient Tmax (°C)</label><input id="BK:Ambient_TmaxC" type="number"></div>
+        <div><label class="small">Weather Exposure</label><select id="BK:Weather_Exposure"><option>None</option><option>Rain</option><option>Snow/Ice</option><option>Wind</option></select></div>
+      </div>
+      <div class="row">
+        <div><label class="small">Space Constraints (H×W×L / access)</label><input id="BK:Space_Constraints"></div>
+        <div><label class="small">Explosion Zone</label><select id="BK:ExplosionZone"><option>None</option><option>NFPA 652</option><option>ATEX 21</option><option>ATEX 22</option></select></div>
+      </div>
+      <div class="row3">
+        <div><label class="small">Voltage Service</label><input id="BK:Voltage_Service" placeholder="e.g., 575V/3P"></div>
+        <div><label class="small">Compressed Air</label><input id="BK:Compressed_Air" placeholder="e.g., 6 bar / 500 SCFM"></div>
+        <div><label class="small">Permits Required</label><select id="BK:Permits_Req"><option>No</option><option>Yes</option></select></div>
+      </div>
+      <div class="row">
+        <div><label class="small">Emissions Limit</label><input id="BK:Emissions_Limit" placeholder="mg/Nm³"></div>
+        <div><label class="small">Noise Limit</label><input id="BK:Noise_Limit" placeholder="dBA"></div>
+      </div>
+      <div class="row">
+        <div><label class="small">PLC/DCS Integration Notes</label><input id="BK:PLC_DCS_Notes"></div>
+        <div><label class="small">Conduit Policy</label><select id="BK:Conduit_Policy"><option>Separate Quotation</option><option>Included</option></select></div>
+      </div>
+      <div class="row">
+        <div>
+          <label class="small">Attachments (names only, for ref)</label>
+          <textarea id="BK:Site_Attach" placeholder="site_a.jpg; layout_v3.pdf"></textarea>
+        </div>
+        <div>
+          <label class="small">Baseline Site (for Δ compare)</label>
+          <input id="baselineName" placeholder="e.g., Plant A baseline">
+          <div class="toolbar" style="margin-top:6px"><button id="btnSaveBaseline" class="btn">Save as Baseline</button><button id="btnLoadBaseline" class="btn">Load Baseline</button></div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Equipment Specs (system-specific) -->
+    <section id="tab-specs" class="section" hidden>
+      <div class="toolbar" style="margin-bottom:8px">
+        <div class="badge"><b id="activeEquip">—</b><span id="activeSystem">—</span></div>
+      </div>
+      <div id="specHost"></div>
+    </section>
+
+    <!-- Equipment Common (universal) -->
+    <section id="tab-common" class="section" hidden>
+      <div class="grid">
+        <div>
+          <label class="small">Year / Année</label><input data-key="BK:Exist_Year" type="number" placeholder="e.g., 2012">
+        </div>
+        <div>
+          <label class="small">Model / Modèle</label><input data-key="BK:Exist_Model" placeholder="e.g., Processair 260SA120">
+        </div>
+        <div>
+          <label class="small">Serial No. / N° de série</label><input data-key="BK:Exist_Serial" placeholder="SN-XXXX">
+        </div>
+        <div>
+          <label class="small">Service Hours / Heures d’opération</label><input data-key="BK:Exist_Hours" type="number" placeholder="e.g., 18500">
+        </div>
+        <div>
+          <label class="small">Last Overhaul (YYYY-MM-DD)</label><input data-key="BK:Exist_LastOH" type="date">
+        </div>
+        <div>
+          <label class="small">Condition / État</label>
+          <select data-key="BK:Exist_Condition"><option>Good</option><option>Fair</option><option>Poor</option></select>
+        </div>
+      </div>
+      <hr>
+      <div style="font-weight:700;margin:6px 0">Repair & Maintenance History</div>
+      <table class="table" id="histTable"><thead><tr><th>Date</th><th>Work Performed</th><th>Parts / Vendor</th><th>Cost</th><th>Doc Link</th><th></th></tr></thead><tbody></tbody></table>
+      <button id="btnAddHist" class="btn" style="margin-top:8px">+ Add Entry</button>
+      <hr>
+      <div class="split">
+        <div>
+          <label class="small">Upload Manuals / Specs (files) — client-side extract via filename or pasted text</label>
+          <input id="docInput" type="file" multiple>
+          <textarea id="docText" placeholder="Paste paragraphs from PDF if needed to auto-extract numbers…"></textarea>
+          <div class="smallnote">Tokens like <span class="kbd">90000CFM</span>, <span class="kbd">125HP</span>, <span class="kbd">11inWG</span> will prefill fields.</div>
+          <div id="docHints" class="smallnote" style="margin-top:6px"></div>
+        </div>
+        <div>
+          <label class="small">Voice Notes (record locally)</label>
+          <div class="toolbar"><button id="btnRec" class="btn">● Record</button><button id="btnStop" class="btn" disabled>■ Stop</button><span id="recState" class="badge">idle</span></div>
+          <audio id="player" controls style="width:100%;margin-top:8px"></audio>
+          <textarea id="voiceNotes" placeholder="Manual transcript or key issues here… (STT hook ready)"></textarea>
+        </div>
+      </div>
+    </section>
+
+    <!-- Draft Process (AI heuristic placeholder) -->
+    <section id="tab-process" class="section" hidden>
+      <div class="toolbar" style="margin-bottom:8px">
+        <button id="btnGenProcess" class="btn pri">Generate Draft Process</button>
+        <button id="btnMarkReviewed" class="btn">Mark as Reviewed</button>
+        <span class="badge">confidence: <span id="conf">—</span></span>
+      </div>
+      <div class="split">
+        <div>
+          <label class="small">Generated Process Steps</label>
+          <textarea id="processDraft" style="min-height:220px" placeholder="Draft will appear here…"></textarea>
+        </div>
+        <div>
+          <label class="small">Engineer Review Notes (clarify constraints / confirm flows)</label>
+          <textarea id="processReview" style="min-height:220px" placeholder="Add confirmations, corrections, and open questions…"></textarea>
+        </div>
+      </div>
+      <div class="smallnote" style="margin-top:6px">Rule-based draft here; plug LLM later via API. Draft uses site capture + equipment counts to propose sequencing.</div>
+    </section>
+
+    <!-- Differences (Site baselines) -->
+    <section id="tab-diff" class="section" hidden>
+      <div class="toolbar" style="margin-bottom:8px">
+        <button id="btnComputeDiff" class="btn">Compute Δ vs Baseline</button>
+      </div>
+      <pre id="diffOut">(no diff yet)</pre>
+    </section>
+
+  </main>
+</div>
+
+<script>
+/************ i18n minimal ************/
+const SYS_LABELS={
+  COL:"01. Dust Collector – Air Filtration",
+  CONV:"02. Conveyor – Material Handling",
+  SILO:"03. Storage – Silo/Hopper",
+  DRY:"04. Rotary Dryer",
+  "GBR-DH":"05. GBR Preheater / Dehumidifier",
+  "SILO-DH":"06. Dehumidifying Silo",
+  ETS:"07. Electro-Thermal Storage (ETS)"
+};
+
+/************ Spec model (short for demo; extend later) ************/
+const MODEL={
+  COL:[
+    {g:"Air Performance", f:[
+      ["Design Airflow","BK:Target_CFM","number","CFM",true,"90000"],
+      ["Static Pressure","BK:Target_SP","number","in.WG",true,"11"],
+      ["Air-to-Cloth","BK:ATC","number","ft/min",true,"4.2"],
+      ["Filter Area (calc)","BK:FilterArea_Req","calc","ft²",false,""]
+    ]},
+    {g:"Filter", f:[
+      ["Filter Type","BK:Filter_Type","select","",true,["Bag","Cartridge"]],
+      ["Filter Media","BK:Filter_Media","select","",true,["Polyester","PTFE","Aramid","Other"]],
+      ["Filter Qty","BK:Filter_Qty","number","ea",true,"680"]
+    ]}
+  ],
+  CONV:[
+    {g:"Basics", f:[["Conveying Type","BK:Conv_Type","select","",true,["Pneumatic","Screw","Belt"]],["Throughput","BK:Conv_TPH","number","tph",true,"25"]]}
+  ],
+  SILO:[
+    {g:"Capacity", f:[["Total Volume","BK:Silo_Vol","number","m³",true,"200"],["Usable Volume","BK:Silo_Vol_Usable","number","m³",false,"180"]]}
+  ],
+  DRY:[
+    {g:"Process", f:[["Inlet T","BK:Dry_In_T","number","°C",true,"350"],["Outlet T","BK:Dry_Out_T","number","°C",true,"100"],["Moist In","BK:Dry_Moist_In","number","%",true,"6"],["Moist Out","BK:Dry_Moist_Out","number","%",true,"1"]]}
+  ],
+  "GBR-DH":[
+    {g:"Process", f:[["Air Inlet T","BK:GBR_In_T","number","°C",true,"180"],["Air Outlet T","BK:GBR_Out_T","number","°C",true,"120"],["Material Flow","BK:GBR_TPH","number","tph",true,"20"]]}
+  ],
+  "SILO-DH":[
+    {g:"Capacity", f:[["Usable Volume","BK:SDH_Vol_Usable","number","m³",true,"60"]]}
+  ],
+  ETS:[
+    {g:"Capacity", f:[["Storage","BK:ETS_kWh","number","kWh",true,"500"],["P charge","BK:ETS_Pch_kW","number","kW",true,"150"],["P discharge","BK:ETS_Pdis_kW","number","kW",true,"100"]]}
+  ]
+};
+
+/************ State ************/
+const state={
+  project:{},
+  equipments:[], // {id, system, data:{ BK:* }, history:[], uploads:{docs:[],text:""}, voice:{url:"",notes:""}}
+  baseline:null,
+  active:null // index
+};
+
+/************ Helpers ************/
+const $=(s,p=document)=>p.querySelector(s);
+const specHost=$("#specHost");
+const equipList=$("#equipList");
+const systemSelect=$("#systemSelect");
+
+function h(tag,attrs={},html=""){const el=document.createElement(tag);for(const k in attrs){if(k==="class")el.className=attrs[k];else el.setAttribute(k,attrs[k]);}el.innerHTML=html;return el;}
+function renderSystems(){systemSelect.innerHTML="";Object.keys(MODEL).forEach(k=>{const o=h("option",{value:k},SYS_LABELS[k]||k);systemSelect.appendChild(o);});}
+function uid(prefix){return prefix+"-"+Math.random().toString(36).slice(2,7).toUpperCase();}
+
+/************ Equipment List ************/
+function addEquipment(sys){const id=uid(sys);state.equipments.push({id,system:sys,data:{"BK:Equip_ID":id},history:[],uploads:{docs:[],text:""},voice:{url:"",notes:""}});state.active=state.equipments.length-1;paintList();paintSpecs();paintCommon();}
+function duplicateEquipment(){if(state.active==null) return; const src=state.equipments[state.active]; const copy=JSON.parse(JSON.stringify(src)); copy.id=uid(src.system); copy.data["BK:Equip_ID"]=copy.id; state.equipments.push(copy); state.active=state.equipments.length-1; paintList();}
+function deleteEquipment(){if(state.active==null) return; state.equipments.splice(state.active,1); state.active=state.equipments.length?0:null; paintList(); paintSpecs(); paintCommon();}
+function paintList(){equipList.innerHTML=""; state.equipments.forEach((eq,i)=>{const it=h("div",{class:"item"}); it.innerHTML=`<span class="badge"><b>${eq.id}</b> ${SYS_LABELS[eq.system]||eq.system}</span>`; it.onclick=()=>{state.active=i; paintSpecs(); paintCommon();}; if(i===state.active) it.style.background="#f3fcf9"; equipList.appendChild(it);});}
+
+/************ Specs Renderer ************/
+function paintSpecs(){const idx=state.active; $("#activeEquip").textContent= idx==null?"—": state.equipments[idx]?.id||"—"; $("#activeSystem").textContent= idx==null?"—": SYS_LABELS[state.equipments[idx]?.system]||"—"; specHost.innerHTML=""; if(idx==null) return; const eq=state.equipments[idx]; const model=MODEL[eq.system]||[]; model.forEach(gr=>{const gEl=h("div",{class:"group"},gr.g); const grid=h("div",{class:"grid"}); gr.f.forEach(([lbl,key,type,unit,req,meta])=>{const wrap=h("div"); let field=""; if(type==="select"){field=`<select data-key="${key}"> ${(meta||[]).map(v=>`<option>${v}</option>`).join("")}</select>`;} else if(type==="calc"){field=`<input data-key="${key}" readonly />`;} else {field=`<input type="number" data-key="${key}" placeholder="${lbl}" />`;} wrap.innerHTML=`<label class="small">${lbl}${req?" *":""}</label><div class="unit">${field}${unit?`<span>${unit}</span>`:``}</div>`; grid.appendChild(wrap);}); gEl.appendChild(grid); specHost.appendChild(gEl);});
+  // preload values
+  specHost.querySelectorAll('[data-key]').forEach(el=>{const k=el.getAttribute('data-key'); if(state.equipments[idx].data[k]!=null) el.value=state.equipments[idx].data[k];});
+  // calc example
+  const cfm=specHost.querySelector('[data-key="BK:Target_CFM"]'); const atc=specHost.querySelector('[data-key="BK:ATC"]'); const area=specHost.querySelector('[data-key="BK:FilterArea_Req"]');
+  function calc(){ if(cfm&&atc&&area){ const v=(+cfm.value||0)/(((+atc.value||0)||1)); area.value=v?Math.round(v):""; saveField(area); } }
+  function saveField(el){const k=el.getAttribute('data-key'); state.equipments[idx].data[k]=el.value;}
+  specHost.addEventListener('input',e=>{const t=e.target; if(t.hasAttribute('data-key')){ saveField(t); if(t===cfm||t===atc) calc(); }});
+}
+
+/************ Common Tab ************/
+const histBody=$("#histTable tbody");
+function paintCommon(){const idx=state.active; if(idx==null) return; // load fields
+  document.querySelectorAll('#tab-common [data-key]').forEach(el=>{const k=el.getAttribute('data-key'); el.value=state.equipments[idx].data[k]||''; el.oninput=()=>{state.equipments[idx].data[k]=el.value;};});
+  // history
+  histBody.innerHTML=""; (state.equipments[idx].history||[]).forEach(r=>addHistRow(r));
+}
+function addHistRow(row={date:"",work:"",parts_vendor:"",cost:"",link:""}){const tr=h('tr'); tr.innerHTML=`<td><input type="date" value="${row.date}"></td><td><input value="${row.work}"></td><td><input value="${row.parts_vendor}"></td><td><input type="number" step="0.01" value="${row.cost}"></td><td><input value="${row.link}"></td><td><button class="btn ghost" data-del>×</button></td>`; histBody.appendChild(tr);} 
+$("#btnAddHist").onclick=()=>{addHistRow();};
+$('#tab-common').addEventListener('click',e=>{if(e.target.matches('[data-del]')) e.target.closest('tr').remove();});
+
+/************ Manual upload & text token extraction (client-side regex) ************/
+const docInput=$("#docInput"), docText=$("#docText"), docHints=$("#docHints");
+function extractTokens(str){const hints=[]; const pairs=[
+  [/([0-9]{4,6})\s*CFM/i,'BK:Target_CFM'],
+  [/([0-9]{2,3})\s*HP/i,'BK:Fan_HP'],
+  [/([0-9]{1,2}(?:\.[0-9]+)?)\s*(?:inWG|in\.WG|inH2O)/i,'BK:Target_SP'],
+  [/ATC\s*[:=]?\s*([0-9]{1,2}(?:\.[0-9]+)?)/i,'BK:ATC']
+];
+  pairs.forEach(([re,key])=>{const m=str.match(re); if(m){hints.push(`${key} → ${m[1]}`);} });
+  return hints;
+}
+function applyHintsToActive(str){const idx=state.active; if(idx==null) return; const pairs=[
+  [/([0-9]{4,6})\s*CFM/i,'BK:Target_CFM'],
+  [/([0-9]{2,3})\s*HP/i,'BK:Fan_HP'],
+  [/([0-9]{1,2}(?:\.[0-9]+)?)\s*(?:inWG|in\.WG|inH2O)/i,'BK:Target_SP'],
+  [/ATC\s*[:=]?\s*([0-9]{1,2}(?:\.[0-9]+)?)/i,'BK:ATC']
+];
+  pairs.forEach(([re,key])=>{const m=str.match(re); if(m){ state.equipments[idx].data[key]=m[1]; }});
+  paintSpecs();
+}
+
+docInput.onchange=()=>{const names=[...docInput.files].map(f=>f.name).join(' '); const hnts=extractTokens(names); docHints.innerHTML = hnts.length? ('Hints: '+hnts.join(' · ')) : 'No tokens detected'; applyHintsToActive(names);} 
+docText.oninput=()=>{const txt=docText.value; const hnts=extractTokens(txt); docHints.innerHTML = hnts.length? ('Hints: '+hnts.join(' · ')) : 'No tokens detected'; applyHintsToActive(txt);} 
+
+/************ Voice (local record) ************/
+let media,recorder,chunks=[]; const btnRec=$("#btnRec"), btnStop=$("#btnStop"), recState=$("#recState"), player=$("#player"), voiceNotes=$("#voiceNotes");
+btnRec.onclick=async()=>{try{media=await navigator.mediaDevices.getUserMedia({audio:true}); recorder=new MediaRecorder(media); chunks=[]; recorder.ondataavailable=e=>{if(e.data.size>0)chunks.push(e.data)}; recorder.onstop=()=>{const blob=new Blob(chunks,{type:'audio/webm'}); const url=URL.createObjectURL(blob); player.src=url; recState.textContent='saved'; const idx=state.active; if(idx!=null){state.equipments[idx].voice.url=url; state.equipments[idx].voice.notes=voiceNotes.value||'';}}; recorder.start(); btnRec.disabled=true; btnStop.disabled=false; recState.textContent='recording…'; }catch(e){alert('Mic not available or permission denied.');}};
+btnStop.onclick=()=>{if(recorder&&recorder.state!=='inactive'){recorder.stop();} if(media){media.getTracks().forEach(t=>t.stop());} btnRec.disabled=false; btnStop.disabled=true; recState.textContent='stopped';};
+
+/************ Tabs ************/
+const tabs=document.querySelectorAll('.tab');
+tabs.forEach(t=>t.onclick=()=>{tabs.forEach(x=>x.classList.remove('active')); t.classList.add('active'); document.querySelectorAll('.section').forEach(s=>s.hidden=true); document.querySelector('#tab-'+t.dataset.tab).hidden=false; if(t.dataset.tab==='specs'){paintSpecs();} if(t.dataset.tab==='common'){paintCommon();}});
+
+/************ Save / Load Project ************/
+function readProjectFromUI(){['BK:Project_Name','BK:Client_Name','BK:Site_Address','BK:Install_Context','BK:Process_Area','BK:Dust_Type','BK:Ambient_TminC','BK:Ambient_TmaxC','BK:Weather_Exposure','BK:Space_Constraints','BK:ExplosionZone','BK:Voltage_Service','BK:Compressed_Air','BK:Permits_Req','BK:Emissions_Limit','BK:Noise_Limit','BK:PLC_DCS_Notes','BK:Conduit_Policy','BK:Site_Attach'].forEach(id=>{state.project[id]=$('#'+CSS.escape(id)).value||'';});}
+function writeProjectToUI(){Object.entries(state.project||{}).forEach(([k,v])=>{const el=$('#'+CSS.escape(k)); if(el) el.value=v;});}
+$('#btnSaveProject').onclick=()=>{readProjectFromUI(); const blob=new Blob([JSON.stringify({project:state.project,equipments:state.equipments},null,2)],{type:'application/json'}); const a=document.createElement('a'); a.href=URL.createObjectURL(blob); a.download=(state.project['BK:Project_Name']||'project')+'_specs.json'; a.click();};
+$('#btnLoadProject').onclick=()=>{const i=document.createElement('input'); i.type='file'; i.accept='application/json'; i.onchange=()=>{const f=i.files[0]; if(!f) return; f.text().then(t=>{const o=JSON.parse(t); state.project=o.project||{}; state.equipments=o.equipments||[]; state.active=state.equipments.length?0:null; writeProjectToUI(); renderSystems(); paintList(); paintSpecs(); paintCommon();});}; i.click();};
+
+/************ Baseline save/load and Δ compare ************/
+$('#btnSaveBaseline').onclick=()=>{readProjectFromUI(); state.baseline=JSON.parse(JSON.stringify(state.project)); alert('Baseline saved: '+($('#baselineName').value||'unnamed'));};
+$('#btnLoadBaseline').onclick=()=>{ if(state.baseline){ state.project=JSON.parse(JSON.stringify(state.baseline)); writeProjectToUI(); } else alert('No baseline saved'); };
+$('#btnComputeDiff').onclick=()=>{ const now={}; readProjectFromUI(); Object.assign(now,state.project); const base=state.baseline||{}; const keys=new Set([...Object.keys(base),...Object.keys(now)]); const diff=[]; keys.forEach(k=>{ if((base[k]||'')!== (now[k]||'')) diff.push(`${k}:\n  baseline → ${base[k]||''}\n  current  → ${now[k]||''}`); }); $('#diffOut').textContent = diff.length? diff.join('\n\n') : '(no change)'; };
+
+/************ Draft Process (heuristic demo) ************/
+$('#btnGenProcess').onclick=()=>{readProjectFromUI(); const lines=[]; const eqs=state.equipments; const site=state.project; if(!eqs.length){ $('#processDraft').value='(no equipments)'; return; }
+  lines.push(`# Process Draft for ${site['BK:Project_Name']||'Unnamed Project'}`);
+  // simple sequence suggestion
+  const has=(sys)=>eqs.filter(e=>e.system===sys).length;
+  if(has('SILO')) lines.push('- Storage (SILO) situated near receiving; discharge via rotary valve to conveying.');
+  if(has('CONV')) lines.push('- Conveying (CONV) routes material from storage to preheater/dryer.');
+  if(has('GBR-DH')) lines.push('- GBR Preheater/Dehumidifier to reduce moisture before drying.');
+  if(has('DRY')) lines.push('- Rotary Dryer for thermal drying to target moisture.');
+  if(has('COL')) lines.push('- Dust Collection (COL) sized to design CFM/SP, connected to transfer points.');
+  if(has('ETS')) lines.push('- ETS integrated for heat recovery / peak shaving.');
+  // notes from site
+  if(site['BK:ExplosionZone'] && site['BK:ExplosionZone']!=='None') lines.push(`- Explosion safety per ${site['BK:ExplosionZone']}.`);
+  if(site['BK:Voltage_Service']) lines.push(`- Electrical service: ${site['BK:Voltage_Service']}.`);
+  // confidence heuristic
+  const filled = eqs.reduce((n,e)=>n+Object.values(e.data||{}).filter(v=>v!==''&&v!=null).length,0); const conf=Math.min(95, 30 + Math.round(filled/8)); $('#conf').textContent=conf+'%';
+  $('#processDraft').value=lines.join('\n'); };
+$('#btnMarkReviewed').onclick=()=>{ const note=$('#processReview').value||''; alert('Review saved. (In real app, this would lock version and timestamp reviewer.)'); };
+
+/************ Boot ************/
+renderSystems();
+// seed one equipment for demo
+addEquipment('COL');
+// activate Site tab initially
+</script>
+</body>
+</html>
