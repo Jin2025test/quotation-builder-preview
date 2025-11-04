@@ -1,0 +1,452 @@
+<!doctype html>
+<html>
+<head>
+  <meta charset="utf-8"/>
+  <meta name="viewport" content="width=device-width,initial-scale=1"/>
+  <title>Quote Builder – Quick Preview (ALT)</title>
+  <!-- Tailwind (jsDelivr) -->
+  <script src="https://cdn.jsdelivr.net/npm/tailwindcss@3.4.13/lib/index.min.js"></script>
+  <style>body{background:#f8fafc}</style>
+
+  <!-- React 18 UMD (jsDelivr) -->
+  <script src="https://cdn.jsdelivr.net/npm/react@18/umd/react.production.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/react-dom@18/umd/react-dom.production.min.js"></script>
+
+  <!-- Babel (JSX 변환) -->
+  <script src="https://cdn.jsdelivr.net/npm/@babel/standalone/babel.min.js"></script>
+
+  <!-- Zustand UMD -->
+  <script src="https://cdn.jsdelivr.net/npm/zustand/umd/zustand.production.min.js"></script>
+</head>
+<body>
+  <div id="debug" style="padding:12px;font:12px/1.4 system-ui; color:#334155;">
+    <b>Loading…</b> (스크립트 로딩 상태가 여기 표시됩니다)
+  </div>
+  <div id="root"></div>
+
+  <script>
+    // 간단한 로딩 상태/에러 표시
+    try {
+      document.getElementById('debug').innerText = 'CDN scripts loaded. Mounting React…';
+      setTimeout(() => {
+        const r = document.getElementById('root');
+        if (!r || r.childElementCount===0) {
+          document.getElementById('debug').innerText = '⚠️ React 렌더링이 시작되지 않았습니다. 네트워크/콘솔 에러를 확인하세요.';
+        }
+      }, 4000);
+    } catch(e) {
+      document.getElementById('debug').innerText = '❌ 초기화 에러: ' + e.message;
+    }
+  </script>
+
+  <!-- 실제 앱 (JSX) -->
+  <script type="text/babel">
+    const { useState, useMemo, useRef } = React;
+    const { create } = zustand;
+
+    const cur = (n,c,l)=> new Intl.NumberFormat(l,{style:'currency',currency:c}).format(n||0);
+
+    const useQB = create((set,get)=>({
+      step:0, lang:'en',
+      meta:{ id:'Q-2025-001', date:new Date().toISOString(), currency:'CAD', locale:'en-CA' },
+      client:{ name:'', site:'', contact:'' },
+      project:{ title:'', ref:'' },
+      targets:{ cfm:null, atc:null, max_sp_in:null, standards:[] },
+      options:[ mkOpt('A','retrofit'), mkOpt('B','new') ],
+      delivery:{ engineering_weeks:2, fabrication_weeks:8, installation_weeks:2 },
+      scope:{ company:[], client:[] },
+      files:[],
+      setStep:(s)=>set({step:Math.max(0,Math.min(6,s))}),
+      setLang:(l)=>set({lang:l}),
+      patch:(p)=>set((st)=>({...st,...p})),
+      addItem:(id)=>set(st=>{ const d={...st}; const o=d.options.find(x=>x.id===id);
+        const rid=Math.random().toString(36).slice(2,8);
+        o.items=[...o.items,{id:rid,cat:'filter',title:'Filter Module',qty:1,unit:'ea',unit_cost:5000}];
+        return d;}),
+      removeItem:(id,row)=>set(st=>{ const d={...st}; const o=d.options.find(x=>x.id===id);
+        o.items=o.items.filter(i=>i.id!==row); return d;}),
+    }));
+
+    function mkOpt(id,type){
+      return { id, title:\`Option \${id}\`, type, marginPct:0.2, discountPct:0.0, contingencyPct:0.1,
+        items:[], labor:[], logistics:{km:0,lodging_nights:0,meals:0},
+        calc:{ capex:0, lead_weeks:id==='A'?12:14, hp_kw: id==='A'?112:130 }
+      };
+    }
+
+    const Card=({title,children})=>(<div className="bg-white border rounded-2xl shadow-sm p-4">{title && <h3 className="font-semibold mb-3">{title}</h3>}{children}</div>);
+    const Label=({children})=>(<label className="text-sm text-gray-700 font-medium mb-1 block">{children}</label>);
+    const Input=(p)=>(<input {...p} className={"w-full rounded-xl border border-gray-300 px-3 py-2 focus:outline-none focus:ring-2 focus:ring-gray-700 "+(p.className||"")}/>); 
+    const Select=(p)=>(<select {...p} className={"w-full rounded-xl border border-gray-300 px-3 py-2 focus:outline-none focus:ring-2 focus:ring-gray-700 "+(p.className||"")}/>);
+
+    const Stepper=()=>{
+      const {step,setStep,lang}=useQB();
+      const steps=[['Header','En-tête'],['Site','Site'],['Perf','Cibles'],['Options','Options'],['Pricing','Prix'],['Terms','Clauses'],['Export','Aperçu']];
+      return (
+        <div className="flex flex-wrap gap-2 mb-6">
+          {steps.map(([en,fr],i)=>(
+            <button key={i} onClick={()=>setStep(i)}
+              className={"px-3 py-2 rounded-full text-sm border "+(step===i?"bg-gray-900 text-white border-gray-900":"bg-white border-gray-300 text-gray-700")}>
+              {lang==='en'?en:fr}
+            </button>
+          ))}
+        </div>
+      );
+    };
+
+    const Uploader=()=>{
+      const {files,patch}=useQB();
+      const inputRef=useRef(null);
+      const onPick=(e)=>{
+        const f=[...e.target.files];
+        if(!f.length) return;
+        const readers=f.map(file=>new Promise(res=>{
+          const r=new FileReader();
+          r.onload=()=>res({name:file.name,type:file.type.startsWith('image')?'image':(file.type||'file'),desc:'',dataUrl:r.result});
+          r.readAsDataURL(file);
+        }));
+        Promise.all(readers).then(list=>patch({files:[...files,...list]}));
+      };
+      return (
+        <div>
+          <input ref={inputRef} type="file" accept="image/*,application/pdf" multiple className="hidden" onChange={onPick}/>
+          <button onClick={()=>inputRef.current?.click()} className="rounded-xl px-3 py-2 border">+ Add files</button>
+        </div>
+      );
+    };
+
+    const FileThumbs=()=>{
+      const {files,patch}=useQB();
+      if(!files.length) return <p className="text-sm text-gray-500 mt-2">No files yet.</p>;
+      return (
+        <div className="mt-3 grid grid-cols-3 gap-2">
+          {files.map((f,i)=>(
+            <div key={i} className="border rounded-lg p-2 text-xs">
+              {f.type==='image'? <img src={f.dataUrl} alt={f.name} className="w-full h-20 object-cover rounded"/> : <div className="h-20 grid place-items-center text-gray-500">PDF</div>}
+              <div className="mt-1 font-medium truncate" title={f.name}>{f.name}</div>
+              <input className="mt-1 w-full border rounded px-2 py-1" placeholder="desc…" value={f.desc}
+                     onChange={e=>{ const copy=[...files]; copy[i]={...copy[i],desc:e.target.value}; patch({files:copy}); }}/>
+            </div>
+          ))}
+        </div>
+      );
+    };
+
+    const StepHeader=()=>{
+      const {meta,client,project,patch}=useQB();
+      return (
+        <div className="grid md:grid-cols-3 gap-4">
+          <Card title="Client">
+            <Label>Name</Label><Input value={client.name} onChange={e=>patch({client:{...client,name:e.target.value}})} />
+            <Label className="mt-3">Site</Label><Input value={client.site} onChange={e=>patch({client:{...client,site:e.target.value}})} />
+            <Label className="mt-3">Contact</Label><Input value={client.contact} onChange={e=>patch({client:{...client,contact:e.target.value}})} />
+          </Card>
+          <Card title="Project">
+            <Label>Title</Label><Input value={project.title} onChange={e=>patch({project:{...project,title:e.target.value}})} />
+            <Label className="mt-3">Internal Ref</Label><Input value={project.ref} onChange={e=>patch({project:{...project,ref:e.target.value}})} />
+            <Label className="mt-3">Currency</Label>
+            <Select value={meta.currency} onChange={e=>patch({meta:{...meta,currency:e.target.value}})}>
+              <option>CAD</option><option>USD</option><option>EUR</option>
+            </Select>
+          </Card>
+          <Card title="Site Capture (Images/PDF)">
+            <Uploader/><FileThumbs/>
+          </Card>
+        </div>
+      );
+    };
+
+    const StepSite=()=>{
+      const {patch}=useQB();
+      const [layout,setLayout]=useState('indoor'); const [points,setPoints]=useState(4);
+      return (
+        <div className="grid md:grid-cols-2 gap-4">
+          <Card title="Layout / Constraints">
+            <Label>Layout</Label>
+            <Select value={layout} onChange={e=>setLayout(e.target.value)}>
+              <option value="indoor">Indoor</option><option value="outdoor">Outdoor</option>
+            </Select>
+            <Label className="mt-3">Explosion Zone</Label>
+            <Select onChange={e=>patch({constraints:{zone:e.target.value}})}>
+              <option value="none">None</option><option value="ATEX">ATEX</option><option value="NFPA">NFPA</option>
+            </Select>
+            <p className="text-xs text-gray-500 mt-2">Saved into payload at export.</p>
+          </Card>
+          <Card title="Process Points">
+            <Label>Number of points</Label>
+            <Input type="number" value={points} onChange={e=>setPoints(+e.target.value||0)}/>
+            <p className="text-xs text-gray-500 mt-2">Used to pre-size CFM/SP (informational).</p>
+          </Card>
+        </div>
+      );
+    };
+
+    const StepPerf=()=>{
+      const {targets,patch}=useQB();
+      const filterAreaReq=useMemo(()=>{
+        if(!targets.cfm || !targets.atc || targets.atc===0) return 0;
+        return targets.cfm/targets.atc;
+      },[targets]);
+      const toggleStd=(s)=>{
+        const arr=[...targets.standards];
+        const i=arr.indexOf(s); if(i>=0) arr.splice(i,1); else arr.push(s);
+        patch({targets:{...targets,standards:arr}});
+      };
+      return (
+        <div className="grid md:grid-cols-3 gap-4">
+          <Card title="Targets">
+            <Label>CFM</Label><Input type="number" value={targets.cfm??''} onChange={e=>patch({targets:{...targets,cfm:+e.target.value||0}})} />
+            <Label className="mt-3">ATC</Label><Input type="number" step="0.1" value={targets.atc??''} onChange={e=>patch({targets:{...targets,atc:+e.target.value||0}})} />
+            <Label className="mt-3">Max SP (inWG)</Label><Input type="number" step="0.1" value={targets.max_sp_in??''} onChange={e=>patch({targets:{...targets,max_sp_in:+e.target.value||0}})} />
+          </Card>
+          <Card title="Standards">
+            <div className="flex flex-wrap gap-2">
+              {['NFPA','CSA','ASHRAE','ATEX'].map(s=>(
+                <button key={s} onClick={()=>toggleStd(s)}
+                  className={"px-3 py-2 rounded-full border "+(targets.standards.includes(s)?"bg-gray-900 text-white border-gray-900":"bg-white border-gray-300")}>{s}</button>
+              ))}
+            </div>
+          </Card>
+          <Card title="Derived">
+            <div className="text-sm text-gray-700 space-y-1">
+              <div>Req. Filter Area ≈ <b>{filterAreaReq.toFixed(1)}</b> ft²</div>
+              <div>Standards: {targets.standards.join(', ')||'—'}</div>
+              <div className="text-amber-700">Note: ATC recommended 3.5–5.0</div>
+            </div>
+          </Card>
+        </div>
+      );
+    };
+
+    const KPI=({opt})=>{
+      const {meta}=useQB();
+      const mat=opt.items.reduce((s,i)=>s+i.qty*i.unit_cost,0);
+      const capex=mat; const sell=capex*(1+Math.max(0,opt.marginPct-opt.discountPct));
+      const tax=sell*0.14975, grand=sell+tax;
+      return (
+        <div className="text-sm space-y-2">
+          <Row k="Subtotal (internal)" v={cur(mat,meta.currency,meta.locale)}/>
+          <Row k="Sell Price (before tax)" v={cur(sell,meta.currency,meta.locale)}/>
+          <Row k="Tax" v={cur(tax,meta.currency,meta.locale)}/>
+          <Row k="Grand Total" v={cur(grand,meta.currency,meta.locale)}/>
+        </div>
+      );
+    };
+    const Row=({k,v})=>(<div className="flex items-center justify-between"><span className="text-gray-600">{k}</span><span className="font-semibold">{v}</span></div>);
+
+    const CompareTable=()=>{
+      const {options,meta}=useQB();
+      const rows=options.map(o=>{
+        const capex=o.items.reduce((s,i)=>s+i.qty*i.unit_cost,0);
+        const sell=capex*(1+Math.max(0,o.marginPct-o.discountPct));
+        const tax=sell*0.14975, grand=sell+tax;
+        return {id:o.id, capex, lead:o.calc.lead_weeks, kw:o.calc.hp_kw, grand};
+      });
+      const norm=(arr,key)=>{const xs=arr.map(a=>a[key]); const min=Math.min(...xs), max=Math.max(...xs)||1; return a=>(a[key]-min)/((max-min)||1);};
+      const nPrice=norm(rows,'grand'), nLead=norm(rows,'lead');
+      const scored=rows.map(r=>({...r,score:0.7*nPrice(r)+0.3*nLead(r)}));
+      const bestId=(scored.slice().sort((a,b)=>a.score-b.score)[0]||{}).id;
+
+      return (
+        <Card title="Options Compare (with recommendation)">
+          <div className="overflow-auto">
+            <table className="min-w-full text-sm">
+              <thead className="bg-gray-50">
+                <tr><th className="p-2">Option</th><th className="p-2 text-right">CapEx</th><th className="p-2">Lead (wks)</th><th className="p-2">Power (kW)</th><th className="p-2 text-right">Total (with tax)</th><th className="p-2">Recommended</th></tr>
+              </thead>
+              <tbody>
+                {rows.map(r=>(
+                  <tr key={r.id} className="border-t">
+                    <td className="p-2">{r.id}</td>
+                    <td className="p-2 text-right">{cur(r.capex,meta.currency,meta.locale)}</td>
+                    <td className="p-2">{r.lead}</td>
+                    <td className="p-2">{r.kw}</td>
+                    <td className="p-2 text-right">{cur(r.grand,meta.currency,meta.locale)}</td>
+                    <td className="p-2">{r.id===bestId ? <span className="px-2 py-1 text-xs rounded-full bg-emerald-100 text-emerald-700">Recommended</span> : ''}</td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        </Card>
+      );
+    };
+
+    const StepOptions=()=>{
+      const {options,addItem,removeItem}=useQB();
+      return (
+        <div className="grid gap-4">
+          {options.map(o=>(
+            <Card key={o.id} title={\`\${o.title} – \${o.type}\`}>
+              <div className="grid md:grid-cols-5 gap-4">
+                <div className="md:col-span-3">
+                  <div className="flex items-center justify-between mb-2">
+                    <h4 className="font-semibold">Items</h4>
+                    <button onClick={()=>addItem(o.id)} className="rounded-xl px-3 py-2 border">+ Add Item</button>
+                  </div>
+                  <div className="overflow-auto border rounded-xl">
+                    <table className="min-w-full text-sm">
+                      <thead className="bg-gray-50">
+                        <tr><th className="p-2 text-left">Cat</th><th className="p-2 text-left">Title</th><th className="p-2 text-right">Qty</th><th className="p-2">Unit</th><th className="p-2 text-right">Unit Cost</th><th className="p-2">Actions</th></tr>
+                      </thead>
+                      <tbody>
+                        {o.items.length===0 && <tr><td colSpan="6" className="p-3 text-center text-gray-400">No items</td></tr>}
+                        {o.items.map(r=>(
+                          <tr key={r.id} className="border-t">
+                            <td className="p-2">{r.cat}</td>
+                            <td className="p-2">{r.title}</td>
+                            <td className="p-2 text-right">{r.qty}</td>
+                            <td className="p-2">{r.unit}</td>
+                            <td className="p-2 text-right">{r.unit_cost.toFixed(2)}</td>
+                            <td className="p-2 text-center"><button onClick={()=>removeItem(o.id,r.id)} className="text-red-600 text-xs">remove</button></td>
+                          </tr>
+                        ))}
+                      </tbody>
+                    </table>
+                  </div>
+                </div>
+                <div className="md:col-span-2"><KPI opt={o}/></div>
+              </div>
+            </Card>
+          ))}
+          <CompareTable/>
+        </div>
+      );
+    };
+
+    const StepPricing=()=>{
+      const {options,patch}=useQB();
+      const set=(i,field,val)=>{ const copy=options.map((o,idx)=> idx===i? {...o,[field]:val}:o); patch({options:copy}); };
+      return (
+        <div className="grid md:grid-cols-3 gap-4">
+          {options.map((o,i)=>(
+            <Card key={o.id} title={\`Option \${o.id} – Pricing\`}>
+              <Label>Margin %</Label><Input type="number" step="0.01" value={o.marginPct} onChange={e=>set(i,'marginPct',+e.target.value||0)} />
+              <Label className="mt-2">Discount %</Label><Input type="number" step="0.01" value={o.discountPct} onChange={e=>set(i,'discountPct',+e.target.value||0)} />
+              <Label className="mt-2">Contingency %</Label><Input type="number" step="0.01" value={o.contingencyPct} onChange={e=>set(i,'contingencyPct',+e.target.value||0)} />
+            </Card>
+          ))}
+        </div>
+      );
+    };
+
+    const StepTerms=()=>{
+      const {delivery,patch,scope}=useQB();
+      const total=delivery.engineering_weeks+delivery.fabrication_weeks+delivery.installation_weeks;
+      const addTo=(side,text)=>{ if(!text.trim()) return; const arr=[...scope[side], text.trim()]; patch({scope:{...scope,[side]:arr}}); };
+      const [a,setA]=useState(''); const [b,setB]=useState('');
+      return (
+        <div className="grid md:grid-cols-3 gap-4">
+          <Card title="Delivery (weeks)">
+            <Label>Engineering</Label><Input type="number" value={delivery.engineering_weeks} onChange={e=>patch({delivery:{...delivery,engineering_weeks:+e.target.value||0}})}/>
+            <Label className="mt-2">Fabrication</Label><Input type="number" value={delivery.fabrication_weeks} onChange={e=>patch({delivery:{...delivery,fabrication_weeks:+e.target.value||0}})}/>
+            <Label className="mt-2">Installation</Label><Input type="number" value={delivery.installation_weeks} onChange={e=>patch({delivery:{...delivery,installation_weeks:+e.target.value||0}})}/>
+            <div className="mt-2 text-sm"><b>Total:</b> {total} weeks</div>
+          </Card>
+          <Card title="Scope – Company">
+            <div className="flex gap-2 mb-2">
+              <Input placeholder="Add responsibility" value={a} onChange={e=>setA(e.target.value)}/>
+              <button className="px-3 py-2 border rounded-xl" onClick={()=>{addTo('company',a); setA('');}}>Add</button>
+            </div>
+            <ul className="list-disc pl-5 text-sm space-y-1">
+              {scope.company.map((s,i)=>(<li key={i}>{s}</li>))}
+            </ul>
+          </Card>
+          <Card title="Scope – Client">
+            <div className="flex gap-2 mb-2">
+              <Input placeholder="Add responsibility" value={b} onChange={e=>setB(e.target.value)}/>
+              <button className="px-3 py-2 border rounded-xl" onClick={()=>{addTo('client',b); setB('');}}>Add</button>
+            </div>
+            <ul className="list-disc pl-5 text-sm space-y-1">
+              {scope.client.map((s,i)=>(<li key={i}>{s}</li>))}
+            </ul>
+          </Card>
+        </div>
+      );
+    };
+
+    const StepExport=()=>{
+      const state=useQB(s=>s);
+      const {meta,client,project,targets,options,delivery,scope,files,lang}=state;
+      const totals = options.map(o=>{
+        const capex=o.items.reduce((s,i)=>s+i.qty*i.unit_cost,0);
+        const sell=capex*(1+Math.max(0,o.marginPct-o.discountPct));
+        const tax=sell*0.14975, grand=sell+tax;
+        return { id:o.id, sell_before_tax:sell, tax, grand };
+      });
+      const payload={ meta, client, project, targets, options: options.map((o,i)=>({...o, pricing: totals[i]})),
+        delivery, scope, files: files.map(f=>({name:f.name, type:f.type, desc:f.desc})), lang };
+      const [status,setStatus]=React.useState('');
+      const postToFlow = async ()=>{
+        try{
+          setStatus('Sending…');
+          const FLOW_URL = "https://YOUR_FLOW_URL_HERE"; // 교체
+          const r = await fetch(FLOW_URL,{ method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify(payload) });
+          if(!r.ok) throw new Error('HTTP '+r.status);
+          setStatus('Done ✅ (Flow accepted payload)');
+        }catch(e){ setStatus('Failed ❌ '+e.message); }
+      };
+      return (
+        <div className="grid md:grid-cols-2 gap-4">
+          <Card title="Preview">
+            <div className="text-sm space-y-2">
+              <div><b>Client:</b> {client.name||'—'} — <b>Project:</b> {project.title||'—'}</div>
+              <div><b>Targets:</b> CFM {targets.cfm??'—'}, ATC {targets.atc??'—'}, SP {targets.max_sp_in??'—'} inWG</div>
+              <div><b>Files:</b> {files.length} attached</div>
+              <ul className="list-disc pl-5">
+                {totals.map(t=> <li key={t.id}>Option {t.id}: {cur(t.grand,meta.currency,meta.locale)}</li>)}
+              </ul>
+            </div>
+          </Card>
+          <Card title="Actions">
+            <div className="flex gap-2">
+              <button className="rounded-xl px-4 py-2 bg-gray-900 text-white" onClick={postToFlow}>Export to Word/PDF (POST)</button>
+              <button className="rounded-xl px-4 py-2 border" onClick={()=>print()}>Print / Save PDF</button>
+            </div>
+            <div className="text-sm mt-3" id="status">{status}</div>
+          </Card>
+        </div>
+      );
+    };
+
+    const App=()=>{
+      const {step,setStep,lang,setLang}=useQB();
+      return (
+        <div className="min-h-screen">
+          <header className="sticky top-0 bg-white/80 backdrop-blur border-b">
+            <div className="max-w-6xl mx-auto px-4 py-3 flex items-center justify-between">
+              <div className="flex items-center gap-2">
+                <span className="font-black text-xl">Quote Builder</span>
+                <span className="text-gray-400">·</span>
+                <span className="text-gray-600">Quick Preview (ALT)</span>
+              </div>
+              <select value={lang} onChange={e=>setLang(e.target.value)} className="rounded-xl border px-3 py-1.5">
+                <option value="en">EN</option><option value="fr">FR</option>
+              </select>
+            </div>
+          </header>
+
+          <main className="max-w-6xl mx-auto px-4 py-6">
+            <Stepper/>
+            <div className="mb-6">
+              {step===0 && <StepHeader/>}
+              {step===1 && <StepSite/>}
+              {step===2 && <StepPerf/>}
+              {step===3 && <StepOptions/>}
+              {step===4 && <StepPricing/>}
+              {step===5 && <StepTerms/>}
+              {step===6 && <StepExport/>}
+            </div>
+            <div className="flex justify-between">
+              <button onClick={()=>setStep(step-1)} disabled={step===0} className="rounded-xl px-4 py-2 border">◀ Back</button>
+              <button onClick={()=>setStep(step+1)} disabled={step===6} className="rounded-xl px-4 py-2 border">Next ▶</button>
+            </div>
+          </main>
+        </div>
+      );
+    };
+
+    ReactDOM.createRoot(document.getElementById('root')).render(<App/>);
+  </script>
+</body>
+</html>
