@@ -1,0 +1,181 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Quotation Builder Preview – Steps 2/3/4</title>
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<style>
+  body{font-family:system-ui,Segoe UI,Roboto,AppleSDGothicNeo,Helvetica,Arial,sans-serif;margin:24px;background:#f7f8fa}
+  h1{margin:0 0 16px}
+  .grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(320px,1fr));gap:16px}
+  .card{background:#fff;border:1px solid #e6e8eb;border-radius:14px;box-shadow:0 2px 8px rgba(16,24,40,.05)}
+  .card h2{font-size:18px;margin:0;padding:16px;border-bottom:1px solid #eef0f2}
+  .card .content{padding:14px 16px 18px}
+  .kv{display:flex;justify-content:space-between;padding:6px 0;border-bottom:1px dashed #eef0f2}
+  .kv:last-child{border-bottom:0}
+  .pill{display:inline-block;padding:2px 8px;border-radius:999px;background:#eef4ff;color:#1f4bff;font-size:12px;margin-left:6px}
+  .table{width:100%;border-collapse:collapse;font-size:14px}
+  .table th,.table td{border-bottom:1px solid #eef0f2;padding:8px 6px;text-align:left}
+  .status-ok{color:#117b34;font-weight:600}
+  .status-warn{color:#945d00;font-weight:600}
+  .status-bad{color:#b42318;font-weight:600}
+  .muted{color:#6b7280}
+</style>
+</head>
+<body>
+<h1>Preview – Steps 2 / 3 / 4</h1>
+
+<div class="grid">
+  <div class="card">
+    <h2>Step 2 · Site & Process <span class="pill">User View</span></h2>
+    <div class="content" id="site"></div>
+  </div>
+
+  <div class="card">
+    <h2>Step 3 · Performance Targets</h2>
+    <div class="content">
+      <table class="table" id="kpiTbl">
+        <thead><tr><th>Metric</th><th>Target</th><th>Design</th><th>Δ %</th><th>Status</th></tr></thead>
+        <tbody></tbody>
+      </table>
+      <div class="muted" id="warnings"></div>
+    </div>
+  </div>
+
+  <div class="card">
+    <h2>Step 4 · Option Builder (A/B/C)</h2>
+    <div class="content" id="opts"></div>
+  </div>
+</div>
+
+<script>
+// ---------- SAMPLE PAYLOADS (edit freely) ----------
+const step2 = {
+  "site": {
+    "project_id": "ST-EX001",
+    "site_name": "Lafarge – St-Constant",
+    "location": "QC, Canada",
+    "units": { "flow": "CFM", "pressure": "inH2O", "temp": "C" }
+  },
+  "constraints": {
+    "space_m": { "L": 9.0, "W": 5.5, "H": 8.0 },
+    "power_kW_max": 150,
+    "noise_dBA_max": 85,
+    "explosion_zone": "NFPA"
+  },
+  "capture_points": [
+    {"id":"CP01","area":"Primary Crusher","source":"Transfer chute","target_flow":12000,"current_flow":9000,"dust_type":"Aggregate","temp":15},
+    {"id":"CP02","area":"Secondary Crusher","source":"Screen discharge","target_flow":8000,"current_flow":null,"dust_type":"Aggregate","temp":18}
+  ],
+  "notes": "Client prefers retrofit; chimney routing TBD.",
+  "_normalized": { "flow": "CFM","pressure":"inH2O","temp":"C" },
+  "_missing": ["CP02.current_flow"],
+  "_contradictions": [],
+  "_conversion_log": ["No unit conversion applied (already CFM/inH2O/C)."]
+};
+
+const step3 = {
+  "kpi_table":[
+    {"metric":"AirToCloth","unit":"ft/min","target":4.5,"design":4.3,"tolerance_pct":5,"delta_pct":((4.3-4.5)/4.5*100).toFixed(1),"status":"✅"},
+    {"metric":"FilterArea","unit":"ft2","target":10000,"design":9800,"tolerance_pct":5,"delta_pct":((9800-10000)/10000*100).toFixed(1),"status":"⚠️"},
+    {"metric":"FanSP","unit":"inH2O","target":12,"design":12.8,"tolerance_pct":5,"delta_pct":((12.8-12)/12*100).toFixed(1),"status":"⚠️"}
+  ],
+  "cross_checks":{
+    "formulas":[ "CFM = FilterArea(ft2) × AirToCloth(ft/min)" ],
+    "warnings":[ "FilterArea short by ~2%. Consider +20 filter bags or reduce A/C." ]
+  }
+};
+
+const step4 = {
+  "options":[
+    {
+      "id":"A","title":"Retrofit – 70,000 CFM","scope":"Retrofit",
+      "assumptions":["Reuse existing fan","Add 2 hoppers"],
+      "equipment":[
+        {"type":"DustCollector","qty":1,"key_specs":{"flow_CFM":70000,"ACR_ftmin":4.4}},
+        {"type":"Fan","qty":1,"key_specs":{"flow_CFM":30000,"SP_inH2O":11,"motor_HP":75}}
+      ],
+      "impacts":{"performance_score":78,"cost_estimate":{"currency":"CAD","value":433880},"leadtime_weeks":12,"risk_score":35}
+    },
+    {
+      "id":"B","title":"Retrofit+Module – 90,000 CFM","scope":"Hybrid",
+      "assumptions":["Add secondary module","3 hoppers"],
+      "equipment":[
+        {"type":"DustCollector","qty":1,"key_specs":{"flow_CFM":90000,"ACR_ftmin":4.2}},
+        {"type":"Fan","qty":1,"key_specs":{"flow_CFM":45000,"SP_inH2O":11,"motor_HP":125}}
+      ],
+      "impacts":{"performance_score":88,"cost_estimate":{"currency":"CAD","value":585000},"leadtime_weeks":16,"risk_score":42}
+    },
+    {
+      "id":"C","title":"New System – 2×45,000 CFM","scope":"New",
+      "assumptions":["Two collectors, split network"],
+      "equipment":[
+        {"type":"DustCollector","qty":2,"key_specs":{"flow_CFM":45000,"ACR_ftmin":4.3}},
+        {"type":"Fan","qty":2,"key_specs":{"flow_CFM":45000,"SP_inH2O":12,"motor_HP":125}}
+      ],
+      "impacts":{"performance_score":92,"cost_estimate":{"currency":"CAD","value":940000},"leadtime_weeks":22,"risk_score":28}
+    }
+  ],
+  "diff_highlights":{
+    "common":["A/C ~4.2–4.4 ft/min","NFPA vent/isolation required"],
+    "different":[
+      {"field":"Total Flow (CFM)","A":70000,"B":90000,"C":90000},
+      {"field":"Leadtime (weeks)","A":12,"B":16,"C":22},
+      {"field":"Est. Cost (CAD)","A":433880,"B":585000,"C":940000}
+    ]
+  }
+};
+// ---------- RENDER ----------
+const $ = (sel)=>document.querySelector(sel);
+(function renderStep2(){
+  const s = step2;
+  const el = $("#site");
+  const lines = [];
+  lines.push(`<div class="kv"><span>Project</span><span>${s.site.project_id} – ${s.site.site_name}</span></div>`);
+  lines.push(`<div class="kv"><span>Location</span><span>${s.site.location}</span></div>`);
+  lines.push(`<div class="kv"><span>Units</span><span>${s.site.units.flow}, ${s.site.units.pressure}, ${s.site.units.temp}</span></div>`);
+  lines.push(`<div class="kv"><span>Constraints</span><span>${s.constraints.power_kW_max} kW, ≤${s.constraints.noise_dBA_max} dBA, ${s.constraints.explosion_zone}</span></div>`);
+  lines.push(`<div class="kv"><span>Space (m)</span><span>${s.constraints.space_m.L} × ${s.constraints.space_m.W} × ${s.constraints.space_m.H}</span></div>`);
+  lines.push(`<div class="kv"><strong>Capture Points</strong><span class="muted">${s.capture_points.length} pts</span></div>`);
+  s.capture_points.forEach(cp=>{
+    lines.push(`<div class="kv"><span>${cp.id} – ${cp.area}</span><span>${cp.target_flow} ${s.site.units.flow} tgt</span></div>`);
+  });
+  if(s._missing?.length) lines.push(`<div class="kv"><span>Missing</span><span class="status-warn">${s._missing.join(", ")}</span></div>`);
+  el.innerHTML = lines.join("");
+})();
+(function renderStep3(){
+  const tbody = document.querySelector("#kpiTbl tbody");
+  tbody.innerHTML = step3.kpi_table.map(r=>{
+    const cls = r.status==="✅"?"status-ok":(r.status==="⚠️"?"status-warn":"status-bad");
+    return `<tr>
+      <td>${r.metric} <span class="muted">(${r.unit})</span></td>
+      <td>${r.target}</td>
+      <td>${r.design ?? "-"}</td>
+      <td>${r.delta_pct ?? "-"}%</td>
+      <td class="${cls}">${r.status}</td>
+    </tr>`;
+  }).join("");
+  $("#warnings").textContent = (step3.cross_checks.warnings||[]).join(" · ");
+})();
+(function renderStep4(){
+  const box = $("#opts");
+  box.innerHTML = step4.options.map(o=>{
+    return `<div style="margin-bottom:12px;padding-bottom:12px;border-bottom:1px dashed #eef0f2">
+      <div class="kv"><strong>Option ${o.id}: ${o.title}</strong><span>${o.scope}</span></div>
+      <div class="kv"><span>Perf. Score</span><span>${o.impacts.performance_score}</span></div>
+      <div class="kv"><span>Cost</span><span>${o.impacts.cost_estimate.currency} ${o.impacts.cost_estimate.value.toLocaleString()}</span></div>
+      <div class="kv"><span>Leadtime</span><span>${o.impacts.leadtime_weeks} weeks</span></div>
+      <div class="kv"><span>Risk</span><span>${o.impacts.risk_score}</span></div>
+    </div>`;
+  }).join("");
+
+  // Diff highlight (simple)
+  const diff = step4.diff_highlights;
+  const diffDiv = document.createElement("div");
+  diffDiv.innerHTML = `<div class="kv"><strong>Common</strong><span class="muted">${diff.common.join(", ")}</span></div>` +
+    diff.different.map(d=>`<div class="kv"><span>${d.field}</span><span>A:${d.A} · B:${d.B} · C:${d.C}</span></div>`).join("");
+  box.appendChild(diffDiv);
+})();
+</script>
+</body>
+</html>
