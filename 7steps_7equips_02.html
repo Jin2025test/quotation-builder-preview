@@ -1,0 +1,800 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1"/>
+<title>Quotation Builder – 7 Steps • 7 Equipments (Pro)</title>
+<style>
+:root{--bg:#f6f8fb;--fg:#1e293b;--pri:#0aa574;--pri-weak:#e6fbf4;--mut:#64748b;--card:#fff;--bd:#e2e8f0;--warn:#ef4444}
+*{box-sizing:border-box}html,body{height:100%}
+body{margin:0;background:var(--bg);color:var(--fg);font-family:Inter,Segoe UI,system-ui,Arial,sans-serif}
+header{position:sticky;top:0;z-index:5;background:#fff;border-bottom:1px solid var(--bd)}
+.wrap{max-width:1280px;margin:0 auto;padding:12px 16px;display:flex;gap:10px;align-items:center}
+h1{font-size:18px;margin:0;color:#0b7a57}
+.lang{margin-left:auto;display:flex;gap:6px}
+.lang button{padding:6px 10px;border:1px solid var(--bd);background:#fff;border-radius:8px;cursor:pointer}
+nav.tabs{background:#fff;border-bottom:1px solid var(--bd)}
+nav.tabs .wrap{gap:8px;flex-wrap:wrap}
+.tabbtn{padding:8px 10px;border:1px solid var(--bd);background:#fff;border-radius:8px;cursor:pointer;font-weight:600}
+.tabbtn.active{border-color:var(--pri);color:#075;background:var(--pri-weak)}
+main{max-width:1280px;margin:14px auto;display:grid;grid-template-columns:300px 1fr;gap:14px;padding:0 16px}
+aside{background:var(--card);border:1px solid var(--bd);border-radius:12px;padding:12px;height:calc(100vh - 180px);overflow:auto}
+section.view{background:var(--card);border:1px solid var(--bd);border-radius:12px;padding:14px;min-height:520px}
+h2{margin:4px 0 10px}
+.small{font-size:12px;color:var(--mut)}
+hr{border:none;border-top:1px solid var(--bd);margin:12px 0}
+.row{display:grid;grid-template-columns:repeat(12,1fr);gap:10px}
+.f1{grid-column:span 3}.f2{grid-column:span 4}.f3{grid-column:span 6}.f4{grid-column:span 12}
+label{display:block;font-size:12px;color:#334;margin:4px 0}
+input,select,textarea{width:100%;padding:8px;border:1px solid #cfd6dd;border-radius:8px;background:#fff}
+textarea{min-height:84px}
+.badge{display:inline-block;padding:3px 8px;border:1px solid #cfe8de;background:#f2fffa;border-radius:999px;color:#095;font-size:12px}
+.list{display:flex;flex-direction:column;gap:6px}
+.card{border:1px solid var(--bd);border-radius:10px;padding:10px}
+.card.sel{border-color:var(--pri);box-shadow:0 0 0 2px #bfe}
+.btn{padding:8px 10px;border:1px solid var(--bd);background:#fff;border-radius:8px;cursor:pointer}
+.btn.pri{border-color:var(--pri);background:var(--pri-weak);color:#075;font-weight:700}
+.btn.dan{border-color:#fca5a5;color:#a00}
+table{width:100%;border-collapse:collapse}
+td,th{padding:8px;border:1px solid var(--bd);text-align:left;font-size:13px}
+pre{background:#0b1020;color:#dfe7ff;padding:10px;border-radius:8px;white-space:pre-wrap}
+.hidden{display:none}
+.flex{display:flex;gap:8px;align-items:center;flex-wrap:wrap}
+.mono{font-family:ui-monospace,Consolas,Menlo,monospace}
+.kpi{display:grid;grid-template-columns:repeat(4,1fr);gap:10px}
+.progress{height:8px;background:#e2e8f0;border-radius:999px;overflow:hidden}
+.progress>span{display:block;height:100%;background:linear-gradient(90deg,#10b981,#22c55e);width:0%}
+.req label::after{content:" *";color:#ef4444}
+.note{background:#fffbeb;border:1px solid #fde68a;border-radius:8px;padding:8px}
+</style>
+</head>
+<body>
+<header>
+  <div class="wrap">
+    <h1>Quotation Builder • 7 Steps / 7 Equipments (Pro)</h1>
+    <div class="flex" style="min-width:260px">
+      <div class="progress" style="flex:1"><span id="progressBar"></span></div>
+      <span class="small" id="progressText" style="width:64px;text-align:right">0%</span>
+    </div>
+    <div class="lang">
+      <button id="btnEN">EN</button>
+      <button id="btnFR">FR</button>
+    </div>
+    <div class="flex">
+      <button class="btn" id="saveProject">Save JSON</button>
+      <input type="file" id="loadProject" class="hidden" accept=".json"/>
+      <button class="btn" id="loadBtn">Load JSON</button>
+      <button class="btn" id="printBtn">Print</button>
+    </div>
+  </div>
+  <nav class="tabs">
+    <div class="wrap" id="navTabs"></div>
+  </nav>
+</header>
+
+<main>
+  <aside>
+    <div class="flex">
+      <select id="sysSelect" class="f4">
+        <option value="COL">01. Dust Collector / Air Filtration</option>
+        <option value="CONV">02. Conveyor (Pneumatic/Mechanical)</option>
+        <option value="STO">03. Storage System (Silo/Bin/Hopper)</option>
+        <option value="DRY">04. Drying System (Rotary Dryer)</option>
+        <option value="GBR">05. GBR Dehumidifier</option>
+        <option value="DHS">06. Dehumidifying Silo</option>
+        <option value="ETS">07. ETS (Electro-Thermal Storage)</option>
+      </select>
+    </div>
+    <div class="flex" style="margin:8px 0">
+      <button class="btn pri" id="addEquip">Add</button>
+      <button class="btn" id="dupEquip">Duplicate</button>
+      <button class="btn dan" id="delEquip">Delete</button>
+    </div>
+    <hr/>
+    <div class="small">Equipments in Project</div>
+    <div id="equipList" class="list"></div>
+    <hr/>
+    <div class="small">Δ Baseline (Site Head)</div>
+    <div class="flex">
+      <button class="btn" id="saveBaseline">Save as Baseline</button>
+      <button class="btn" id="computeDiff">Compute Δ</button>
+    </div>
+    <pre id="diffBox" class="mono" style="margin-top:8px"></pre>
+  </aside>
+
+  <section class="view">
+    <div id="stepContainer"></div>
+  </section>
+</main>
+
+<script>
+/* ========= i18n (EN/FR only) ========= */
+const T={
+  EN:{project:'Step 1 • Project Header',site:'Step 2 • Site Capture – Head',
+      perf:'Step 3 • Performance Targets',opts:'Step 4 • Option Builder',
+      cost:'Step 5 • Cost & Pricing',contract:'Step 6 • Contract & Warranty',
+      preview:'Step 7 • Preview & Export',equip:'Equip Specs',
+      required:'Please fill required fields.'},
+  FR:{project:'Étape 1 • En-tête du projet',site:'Étape 2 • Capture du site',
+      perf:'Étape 3 • Objectifs de performance',opts:'Étape 4 • Options',
+      cost:'Étape 5 • Coûts & Prix',contract:'Étape 6 • Contrat & Garantie',
+      preview:'Étape 7 • Aperçu & Export',equip:'Spécifications',
+      required:'Veuillez remplir les champs requis.'}
+};
+let LANG='EN';
+const $=sel=>document.querySelector(sel);
+const el=(t,cls)=>{const x=document.createElement(t); if(cls) x.className=cls; return x;};
+
+/* ========= State ========= */
+let state={
+  project:{
+    header:{quote_id:'',rev:'R00',currency:'CAD',tax_scheme:'GST5',client_ref:'',fx_ts:'',
+            project_name:'', client:'', prepared_by:'', approved_by:'',
+            valid_until:'', site_location:'', incoterms:'EXW',
+            bid_type:'Budgetary', nda:'No', vendor_onboarding:'No',
+            customer_notes:'', internal_notes:''},
+    site:{install:'Outdoor',ambient_min:-10,ambient_max:35,explosion:'None',voltage:'575V/3P',
+          utilities:'',emission_mgNm3:'',noise_dBA:'',access:'Truck;Crane',floor_area_m2:'',headroom_m:'',
+          photos:[], drawings:[], notes:''},
+    targets:{emission:'',moisture:'',throughput:'',delivery:'',energy_kwh_t:'',availability_pct:'',contacts:''},
+    options:{A:{summary:'',items:[]},B:{summary:'',items:[]},C:{summary:'' ,items:[]}},
+    pricing:{currency:'CAD', base_tax:'GST5', freight:0, install:0, overhead_pct:10, margin_pct:15,
+             taxes:{GST:5,QST:0}, selection:'A'},
+    cost:{A:[],B:[],C:[]},
+    contract:{payment:'30% PO • 50% FAT • 20% SAT',delivery:'12 weeks ARO',
+              warranty:'12 months from commissioning',
+              clauses:[], scope:'',exclusions:''},
+    baseline:null
+  },
+  equipments:[],
+  active:null
+};
+const CLAUSES=[
+ {k:'warranty_std',title:'Standard Warranty', text:'Supplier warrants supplied equipment for twelve (12) months from commissioning against defects in materials and workmanship.'},
+ {k:'delivery_terms',title:'Delivery Terms', text:'Delivery per Incoterms 2020. Packing suitable for road transport. Insurance by client unless otherwise stated.'},
+ {k:'startup_training',title:'Start-up & Training', text:'Includes on-site commissioning and operator training (2 days) unless specified.'},
+ {k:'spares',title:'Recommended Spares', text:'A recommended spare parts list will be provided. Spares pricing valid for 90 days.'},
+ {k:'change_mgmt',title:'Change Management', text:'Any changes after PO may impact cost and schedule and require written approval.'}
+];
+
+/* ========= Templates ========= */
+const TEMPLATES={
+  COL:[
+    {k:'Design_CFM',label:'Design Airflow',u:'CFM',req:true},
+    {k:'Static_Pressure',label:'Static Pressure',u:'in.WG',req:true},
+    {k:'Air_to_Cloth',label:'Air-to-Cloth Ratio',u:'ft/min',req:true},
+    {k:'Filter_Type',label:'Filter Type',type:'select',opts:['Bag','Cartridge','Envelope'],req:true},
+    {k:'Filter_Qty',label:'Filter Quantity',type:'number',u:'ea'},
+    {k:'Filter_Material',label:'Filter Material',type:'select',opts:['Polyester','PTFE','Aramid']},
+    {k:'Pulse_Valves',label:'Pulse Valves',u:'ea'},
+    {k:'Hopper_Count',label:'Hopper Count',u:'ea'},
+    {k:'Discharge_Type',label:'Discharge Type',type:'select',opts:['Rotary Valve','Double Flap','Screw']},
+    {k:'Explosion_Vent_Area',label:'Explosion Vent Area',u:'ft²'},
+    {k:'Fan_Motor_HP',label:'Fan Motor',u:'HP',calc:'hp'},
+    {k:'Filter_Area',label:'Filter Area (calc)',u:'ft²',calc:'area'}
+  ],
+  CONV:[
+    {k:'Mode',label:'Conveyor Mode',type:'select',opts:['Pneumatic','Screw','Belt']},
+    {k:'Throughput',label:'Throughput',u:'tph',req:true},
+    {k:'Distance',label:'Convey Distance',u:'m'},
+    {k:'Lift',label:'Lift (Static Head)',u:'m'},
+    {k:'Elbows',label:'Bends/Elbows',u:'ea'},
+    {k:'Drive_HP',label:'Drive Motor',u:'HP'}
+  ],
+  STO:[
+    {k:'Type',label:'Vessel Type',type:'select',opts:['Silo','Bin','Hopper']},
+    {k:'Volume',label:'Nominal Volume',u:'m³',req:true},
+    {k:'Material',label:'Construction',type:'select',opts:['CS','SS304','Al']},
+    {k:'Level_Sensor',label:'Level Sensor',type:'select',opts:['None','Rotary Paddle','Radar','Vibro']},
+    {k:'Discharge_Aid',label:'Discharge Aid',type:'select',opts:['None','Air Cannon','Fluidizing Pad','Vibrator']},
+  ],
+  DRY:[
+    {k:'Type',label:'Dryer Type',type:'select',opts:['Rotary','Fluidized Bed']},
+    {k:'Inlet_Moisture',label:'Inlet Moisture',u:'%',req:true},
+    {k:'Outlet_Moisture',label:'Target Outlet Moisture',u:'%',req:true},
+    {k:'Inlet_Temp',label:'Inlet Temp',u:'°C'},
+    {k:'Outlet_Temp',label:'Outlet Temp',u:'°C'},
+    {k:'Fuel',label:'Fuel',type:'select',opts:['Natural Gas','Propane','Biomass','Steam']},
+    {k:'Evap_Rate',label:'Evaporation Rate',u:'kg/h'}
+  ],
+  GBR:[
+    {k:'Airflow',label:'Process Airflow',u:'CFM',req:true},
+    {k:'Pressure',label:'Process Pressure',u:'in.WG'},
+    {k:'Dewpoint',label:'Target Dew Point',u:'°C'},
+    {k:'Heater_Type',label:'Heater Type',type:'select',opts:['Electric','Steam','Gas']},
+    {k:'Power_kW',label:'Power',u:'kW'}
+  ],
+  DHS:[
+    {k:'Volume',label:'Silo Volume',u:'m³',req:true},
+    {k:'Airflow',label:'Drying Airflow',u:'CFM'},
+    {k:'Residence',label:'Residence Time',u:'min'},
+    {k:'Heater_kW',label:'Heater Power',u:'kW'},
+    {k:'Blower_HP',label:'Blower',u:'HP'}
+  ],
+  ETS:[
+    {k:'Capacity_kWh',label:'Storage Capacity',u:'kWh',req:true},
+    {k:'Charge_kW',label:'Charge Power',u:'kW'},
+    {k:'Discharge_kW',label:'Discharge Power',u:'kW'},
+    {k:'Cycle_Eff',label:'Round-trip Efficiency',u:'%'},
+    {k:'Temp_Max',label:'Max Operating Temp',u:'°C'}
+  ],
+};
+const uid=sys=>`${sys}-${Math.random().toString(36).slice(2,7).toUpperCase()}`;
+
+/* ========= Tabs ========= */
+const STEPS=['project','site','perf','opts','cost','contract','preview'];
+function paintTabs(){
+  const nav=$('#navTabs'); nav.innerHTML='';
+  for(const id of STEPS){
+    const b=el('button','tabbtn'); b.textContent=T[LANG][id]; b.dataset.tab=id;
+    b.onclick=()=>showStep(id);
+    nav.appendChild(b);
+  }
+  const b2=el('button','tabbtn'); b2.textContent=T[LANG].equip; b2.dataset.tab='equip'; b2.onclick=()=>showStep('equip'); nav.appendChild(b2);
+}
+function activateTab(id){ document.querySelectorAll('.tabbtn').forEach(x=>x.classList.toggle('active',x.dataset.tab===id)); }
+
+/* ========= Progress ========= */
+function computeProgress(){
+  let req=0, ok=0;
+  // Step1 required
+  ['project.header.project_name','project.header.client','project.header.quote_id','project.header.rev'].forEach(p=>{req++; if(getv(p)) ok++;});
+  // Step2 required
+  ['project.site.install','project.site.ambient_min','project.site.ambient_max','project.site.voltage'].forEach(p=>{req++; if(getv(p)!==''&&getv(p)!=null) ok++;});
+  // Step3 required
+  ['project.targets.throughput','project.targets.moisture','project.targets.emission'].forEach(p=>{req++; if(getv(p)) ok++;});
+  // At least one equipment
+  req++; if(state.equipments.length>0) ok++;
+  const pct = req? Math.round((ok/req)*100):0;
+  $('#progressBar').style.width=pct+'%'; $('#progressText').textContent=pct+'%';
+}
+
+/* ========= Step Renderers ========= */
+let currentTab='project';
+function showStep(id){
+  activateTab(id); currentTab=id; computeProgress(); autosave();
+  const box=$('#stepContainer'); box.innerHTML='';
+  if(id==='project') return renderProject(box);
+  if(id==='site')    return renderSite(box);
+  if(id==='perf')    return renderPerf(box);
+  if(id==='opts')    return renderOpts(box);
+  if(id==='cost')    return renderCost(box);
+  if(id==='contract')return renderContract(box);
+  if(id==='preview') return renderPreview(box);
+  if(id==='equip')   return paintEquip(box);
+}
+
+function blockTitle(t){ const d=el('div'); d.innerHTML=`<h2>${t}</h2><div class="small">Language: ${LANG}</div><hr/>`; return d;}
+function formGrid(children){ const d=el('div','row'); children.forEach(c=>d.appendChild(c)); return d; }
+function field(def,path){
+  const w=el('div',(def.req?'req ':'')+(def.w||'f2'));
+  const label=el('label'); label.textContent = `${def.label}${def.u?` (${def.u})`:''}`;
+  let input;
+  if(def.type==='select'){ input=el('select'); (def.opts||[]).forEach(v=>{const o=el('option');o.value=v;o.textContent=v;input.appendChild(o);}); input.value=getv(path)||def.opts?.[0]||''; }
+  else if(def.type==='number'){ input=el('input'); input.type='number'; input.value=getv(path)||''; }
+  else if(def.type==='textarea'){ input=el('textarea'); input.value=getv(path)||''; }
+  else { input=el('input'); input.type='text'; input.value=getv(path)||''; }
+  input.oninput=()=>{ setv(path,input.value); computeProgress(); autosave(); if(def.onchange) def.onchange(input.value); };
+  w.appendChild(label); w.appendChild(input); return w;
+}
+function hint(t){ const d=el('div'); d.className='small'; d.textContent=t; return d; }
+
+/* ---------- STEP 1 ---------- */
+function renderProject(box){
+  box.appendChild(blockTitle('Project Header'));
+  box.appendChild(formGrid([
+    field({label:'Project Name',type:'text',req:true,w:'f3'},'project.header.project_name'),
+    field({label:'Client Name',type:'text',req:true,w:'f3'},'project.header.client'),
+    field({label:'Quote ID',type:'text',req:true,w:'f2'},'project.header.quote_id'),
+    field({label:'Revision',type:'text',req:true,w:'f1'},'project.header.rev'),
+    field({label:'Currency',type:'select',w:'f1',opts:['CAD','USD','EUR']},'project.header.currency'),
+    field({label:'Tax Scheme',type:'text',w:'f2'},'project.header.tax_scheme'),
+  ]));
+  box.appendChild(formGrid([
+    field({label:'Prepared By',type:'text',w:'f2'},'project.header.prepared_by'),
+    field({label:'Approved By',type:'text',w:'f2'},'project.header.approved_by'),
+    field({label:'Valid Until (ISO Date)',type:'text',w:'f2'},'project.header.valid_until'),
+    field({label:'Client Reference',type:'text',w:'f2'},'project.header.client_ref'),
+    field({label:'FX Base / Timestamp',type:'text',w:'f2'},'project.header.fx_ts')
+  ]));
+  box.appendChild(formGrid([
+    field({label:'NDA in Place',type:'select',w:'f1',opts:['No','Yes']},'project.header.nda'),
+    field({label:'Vendor Onboarding',type:'select',w:'f1',opts:['No','Yes']},'project.header.vendor_onboarding'),
+    field({label:'Bid Type',type:'select',w:'f1',opts:['Budgetary','Firm','T&M']},'project.header.bid_type'),
+    field({label:'Incoterms',type:'select',w:'f1',opts:['EXW','FOB','CIP','DAP','DDP']},'project.header.incoterms'),
+    field({label:'Site Location',type:'text',w:'f3'},'project.header.site_location')
+  ]));
+  box.appendChild(formGrid([
+    field({label:'Internal Notes',type:'textarea',w:'f4'},'project.header.internal_notes'),
+    field({label:'Customer Notes (shown on quote)',type:'textarea',w:'f4'},'project.header.customer_notes')
+  ]));
+  const pre=el('pre','mono'); pre.textContent=summaryProject(); box.appendChild(pre);
+}
+
+/* ---------- STEP 2 ---------- */
+function renderSite(box){
+  box.appendChild(blockTitle('Site Capture – Head'));
+  box.appendChild(formGrid([
+    field({label:'Install Context',type:'select',w:'f2',opts:['Indoor','Outdoor','Roof','Yard']},'project.site.install'),
+    field({label:'Ambient Tmin',type:'number',w:'f1'},'project.site.ambient_min'),
+    field({label:'Ambient Tmax',type:'number',w:'f1'},'project.site.ambient_max'),
+    field({label:'Explosion Class',type:'select',w:'f2',opts:['None','ATEX 21','ATEX 22','NFPA Class II, Div 1','NFPA Class II, Div 2']},'project.site.explosion'),
+    field({label:'Voltage Service',type:'text',w:'f2'},'project.site.voltage'),
+    field({label:'Utilities (free text)',type:'text',w:'f4'},'project.site.utilities'),
+    field({label:'Emission Limit',type:'number',w:'f1'},'project.site.emission_mgNm3'),
+    field({label:'Noise Limit dBA',type:'number',w:'f1'},'project.site.noise_dBA'),
+    field({label:'Access/Handling',type:'text',w:'f2'},'project.site.access'),
+    field({label:'Floor Area (m²)',type:'number',w:'f1'},'project.site.floor_area_m2'),
+    field({label:'Headroom (m)',type:'number',w:'f1'},'project.site.headroom_m'),
+  ]));
+  box.appendChild(formGrid([
+    field({label:'Engineer Notes',type:'textarea',w:'f4'},'project.site.notes')
+  ]));
+
+  // attachments (urls)
+  const card=el('div','card');
+  card.innerHTML=`<b>Attachments</b><div class="small">Paste URLs (photos, drawings)</div>`;
+  const photos=el('textarea'); photos.placeholder='https://... (one per line)';
+  photos.value=(state.project.site.photos||[]).join('\n');
+  photos.oninput=()=>{ state.project.site.photos = photos.value.split('\n').map(s=>s.trim()).filter(Boolean); autosave(); };
+  const drawings=el('textarea'); drawings.placeholder='https://... (one per line)';
+  drawings.value=(state.project.site.drawings||[]).join('\n');
+  drawings.oninput=()=>{ state.project.site.drawings = drawings.value.split('\n').map(s=>s.trim()).filter(Boolean); autosave(); };
+  card.appendChild(photos); card.appendChild(el('hr')); card.appendChild(drawings);
+  box.appendChild(card);
+
+  // quick checks
+  const note=el('div','note');
+  note.textContent = validateSite();
+  box.appendChild(note);
+}
+
+/* ---------- STEP 3 ---------- */
+function renderPerf(box){
+  box.appendChild(blockTitle('Performance Targets'));
+  // KPI tiles
+  const grid=el('div','kpi');
+  grid.appendChild(tile('Throughput (tph)','project.targets.throughput'));
+  grid.appendChild(tile('Outlet Moisture (%)','project.targets.moisture'));
+  grid.appendChild(tile('Emission (mg/Nm³)','project.targets.emission'));
+  grid.appendChild(tile('Energy (kWh/t)','project.targets.energy_kwh_t'));
+  grid.appendChild(tile('Availability (%)','project.targets.availability_pct'));
+  box.appendChild(grid);
+
+  box.appendChild(formGrid([
+    field({label:'Delivery Timeline (weeks/date)',type:'text',w:'f2'},'project.targets.delivery'),
+    field({label:'Key Contacts & Communication Points',type:'textarea',w:'f4'},'project.targets.contacts')
+  ]));
+
+  const btn=el('button','btn'); btn.textContent='Generate Target Summary';
+  const pre=el('pre','mono'); pre.textContent = targetSummary();
+  btn.onclick=()=>{ pre.textContent = targetSummary(true); };
+  box.appendChild(btn); box.appendChild(el('hr')); box.appendChild(pre);
+}
+function tile(label, path){ const c=el('div','card'); c.appendChild(field({label,type:'text',w:'f4'},path)); return c; }
+
+/* ---------- STEP 4 ---------- */
+function renderOpts(box){
+  box.appendChild(blockTitle('Option Builder (A/B/C)'));
+  const top=el('div','flex');
+  const draftBtn=el('button','btn'); draftBtn.textContent='Auto-Draft from Equipments';
+  draftBtn.onclick=autoDraftOptions;
+  const linkBtn=el('button','btn'); linkBtn.textContent='Attach Equip IDs to Options';
+  linkBtn.onclick=attachEquipToOptions;
+  top.appendChild(draftBtn); top.appendChild(linkBtn);
+  box.appendChild(top);
+
+  ['A','B','C'].forEach(k=>{
+    const card=el('div','card');
+    card.innerHTML=`<div class="flex"><div class="badge">Option ${k}</div>
+      <button class="btn" onclick="addItem('${k}')">+ Add Item</button>
+      <button class="btn" onclick="clearItems('${k}')">Clear</button></div>
+      <label>Engineering Summary</label>
+      <textarea oninput="setv('project.options.${k}.summary',this.value)">${getv(`project.options.${k}.summary`)||''}</textarea>
+      <div id="optItems_${k}"></div>`;
+    box.appendChild(card); paintItems(k);
+  });
+}
+
+/* ---------- STEP 5 ---------- */
+function renderCost(box){
+  box.appendChild(blockTitle('Cost & Pricing'));
+  // global pricing knobs
+  box.appendChild(formGrid([
+    field({label:'Currency',type:'select',w:'f1',opts:['CAD','USD','EUR']},'project.pricing.currency'),
+    field({label:'Base Tax Scheme',type:'select',w:'f2',opts:['GST5','GST5+QST9.975','HST13','HST15','None'],
+           onchange:(v)=>applyTax(v)},'project.pricing.base_tax'),
+    field({label:'Freight',type:'number',w:'f2'},'project.pricing.freight'),
+    field({label:'Install',type:'number',w:'f2'},'project.pricing.install'),
+    field({label:'Overhead %',type:'number',w:'f1'},'project.pricing.overhead_pct'),
+    field({label:'Margin %',type:'number',w:'f1'},'project.pricing.margin_pct'),
+  ]));
+
+  ['A','B','C'].forEach(k=>{
+    const card=el('div','card');
+    card.innerHTML=`<div class="flex"><div class="badge">Option ${k}</div>
+    <button class="btn" onclick="addCost('${k}')">+ Add Cost Row</button>
+    <button class="btn" onclick="calcTotals('${k}')">Recalc Totals</button></div>
+    <div id="costTbl_${k}"></div>
+    <div class="small" id="total_${k}"></div>`;
+    box.appendChild(card); paintCost(k); calcTotals(k);
+  });
+
+  // selection
+  const pick=el('div','flex');
+  const selLab=el('span','small'); selLab.textContent='Recommended Option:';
+  const sel=el('select'); ['A','B','C'].forEach(o=>{const x=el('option');x.value=o;x.textContent=o;sel.appendChild(x);});
+  sel.value = state.project.pricing.selection||'A';
+  sel.onchange=()=>{ state.project.pricing.selection = sel.value; autosave(); };
+  pick.appendChild(selLab); pick.appendChild(sel);
+  box.appendChild(pick);
+}
+
+/* ---------- STEP 6 ---------- */
+function renderContract(box){
+  box.appendChild(blockTitle('Contract & Warranty'));
+  box.appendChild(formGrid([
+    field({label:'Payment Terms',type:'text',w:'f2'},'project.contract.payment'),
+    field({label:'Delivery Schedule',type:'text',w:'f2'},'project.contract.delivery'),
+    field({label:'Warranty',type:'text',w:'f2'},'project.contract.warranty'),
+  ]));
+  const lib=el('div','card'); lib.innerHTML='<b>Clause Library</b>';
+  CLAUSES.forEach(c=>{
+    const row=el('div','flex');
+    const cb=el('input'); cb.type='checkbox'; cb.checked = (state.project.contract.clauses||[]).includes(c.k);
+    cb.onchange=()=>{ toggleClause(c.k,cb.checked); autosave(); };
+    const span=el('span'); span.textContent=`${c.title}`;
+    row.appendChild(cb); row.appendChild(span); lib.appendChild(row);
+  });
+  box.appendChild(lib);
+
+  box.appendChild(formGrid([
+    field({label:'Scope of Supply',type:'textarea',w:'f4'},'project.contract.scope'),
+    field({label:'Exclusions & Client Responsibilities',type:'textarea',w:'f4'},'project.contract.exclusions')
+  ]));
+
+  const pre=el('pre','mono'); pre.textContent=composeContract();
+  const btn=el('button','btn'); btn.textContent='Compose Contract Text'; btn.onclick=()=>{ pre.textContent=composeContract(); };
+  box.appendChild(btn); box.appendChild(el('hr')); box.appendChild(pre);
+}
+
+/* ---------- STEP 7 ---------- */
+function renderPreview(box){
+  box.appendChild(blockTitle('Preview & Export'));
+  // pretty render
+  const html=el('div'); html.innerHTML = prettyRender();
+  box.appendChild(html);
+  const pre=el('pre','mono'); pre.textContent=JSON.stringify(state,null,2);
+  const btn=el('button','btn pri'); btn.textContent='Download Project JSON'; btn.onclick=downloadJSON;
+  box.appendChild(el('hr')); box.appendChild(btn); box.appendChild(el('hr')); box.appendChild(pre);
+}
+
+/* ========= Equipment UI ========= */
+function paintEquip(box){
+  box.appendChild(blockTitle('Equipment Specifications'));
+  if(state.active==null){ box.appendChild(hint('No equipment selected. Use Add to insert.')); return; }
+  const eq=state.equipments[state.active];
+  const tl=TEMPLATES[eq.system]||[];
+
+  box.appendChild(formGrid([
+    field({label:'Equipment ID',type:'text',w:'f2'},`equip.${eq.id}.meta.id`),
+    field({label:'System',type:'text',w:'f2'},`equip.${eq.id}.meta.system`),
+    field({label:'Model',type:'text',w:'f2'},`equip.${eq.id}.common.model`),
+    field({label:'Serial No.',type:'text',w:'f2'},`equip.${eq.id}.common.serial`),
+    field({label:'Year',type:'number',w:'f1'},`equip.${eq.id}.common.year`),
+    field({label:'Service Hours',type:'number',w:'f1'},`equip.${eq.id}.common.hours`),
+    field({label:'Last Overhaul (YYYY-MM-DD)',type:'text',w:'f2'},`equip.${eq.id}.common.overhaul`),
+    field({label:'Condition',type:'select',w:'f1',opts:['Good','Fair','Poor']},`equip.${eq.id}.common.cond`)
+  ]));
+
+  const specWrap=el('div','card'); specWrap.innerHTML='<b>Technical Parameters</b>';
+  const form=el('div','row');
+  tl.forEach(def=>{ form.appendChild(field(def,`equip.${eq.id}.data.${def.k}`)); });
+  specWrap.appendChild(form);
+  specWrap.appendChild(el('hr'));
+  const d=el('div','small'); d.id='derivedBox';
+  const btnCalc=el('button','btn'); btnCalc.textContent='Recalculate Derived Fields';
+  btnCalc.onclick=()=>recalc(eq);
+  specWrap.appendChild(d); specWrap.appendChild(btnCalc);
+  box.appendChild(specWrap);
+
+  const files=el('div','card');
+  files.innerHTML=`<b>Uploads & Notes</b>
+    <div class="row">
+      <div class="f3"><label>Manual / Docs (paste text or references)</label>
+      <textarea oninput="setv('equip.${eq.id}.uploads.text',this.value)">${getv(`equip.${eq.id}.uploads.text`)||''}</textarea></div>
+      <div class="f3"><label>Voice Notes (URL or memo)</label>
+      <textarea oninput="setv('equip.${eq.id}.voice',this.value)">${getv(`equip.${eq.id}.voice`)||''}</textarea></div>
+    </div>`;
+  box.appendChild(files);
+  recalc(eq);
+}
+
+/* ========= Logic helpers ========= */
+function getv(path){
+  const seg=path.split('.'); let cur = (seg[0]==='equip')? equipRoot(seg[1]) : state;
+  const start=(seg[0]==='equip')?2:0;
+  for(let i=start;i<seg.length;i++){ cur = (cur||{})[seg[i]]; }
+  return cur;
+}
+function setv(path,val){
+  const seg=path.split('.'); let cur = (seg[0]==='equip')? equipRoot(seg[1]) : state;
+  const start=(seg[0]==='equip')?2:0;
+  for(let i=start;i<seg.length-1;i++){ cur[seg[i]] = cur[seg[i]]||{}; cur=cur[seg[i]]; }
+  cur[seg[seg.length-1]] = val;
+}
+function equipRoot(id){
+  const idx = state.equipments.findIndex(e=>e.id===id);
+  if(idx<0) return {};
+  return state.equipments[idx];
+}
+
+/* ========= Validations / summaries ========= */
+function summaryProject(){
+  const h = state.project.header || {};
+  const L = [
+    `Project: ${h.project_name||''} • Client: ${h.client||''}`,
+    `Quote ${h.quote_id||''} / ${h.rev||''} • ${h.currency||''} • Tax ${h.tax_scheme||''}`,
+    `Valid Until: ${h.valid_until||''} • FX: ${h.fx_ts||''}`,
+    `Site: ${h.site_location||''} • Incoterms: ${h.incoterms||''} • Bid: ${h.bid_type||''}`,
+    `NDA: ${h.nda||'No'} • Vendor Onboarding: ${h.vendor_onboarding||'No'}`,
+    `Client Ref: ${h.client_ref||''}`,
+    (h.customer_notes? `--- Customer Notes ---\n${h.customer_notes}`:''),
+    (h.internal_notes? `--- Internal Notes ---\n${h.internal_notes}`:'')
+  ].filter(Boolean);
+  return L.join('\n');
+}
+function validateSite(){
+  const s=state.project.site;
+  const errs=[];
+  if(s.ambient_min!=='' && s.ambient_max!==''){
+    if(Number(s.ambient_min)>Number(s.ambient_max)) errs.push('Tmin > Tmax');
+  }
+  if(!s.voltage) errs.push('Voltage missing');
+  return errs.length? ('⚠ ' + errs.join(' | ')) : '✓ Site inputs look consistent.';
+}
+function targetSummary(mock=false){
+  const t=state.project.targets;
+  const lines=[
+    `Throughput: ${t.throughput||'-'} tph`,
+    `Outlet Moisture: ${t.moisture||'-'} %`,
+    `Emission: ${t.emission||'-'} mg/Nm³`,
+    `Energy: ${t.energy_kwh_t||'-'} kWh/t`,
+    `Availability: ${t.availability_pct||'-'} %`,
+    `Delivery: ${t.delivery||'-'}`
+  ];
+  if(mock){ lines.push('Draft: Select equipment sizing and fan capacity to meet emission & throughput targets.'); }
+  return lines.join('\n');
+}
+
+/* ========= Options / Costs ========= */
+function addItem(k){ state.project.options[k].items.push({item:'',qty:1,unit:'ea',note:'',equip:''}); paintItems(k); autosave();}
+function clearItems(k){ state.project.options[k].items = []; paintItems(k); autosave();}
+function paintItems(k){
+  const root=$(`#optItems_${k}`); if(!root) return; root.innerHTML='';
+  const tbl=el('table'); tbl.innerHTML='<tr><th>Item</th><th>Qty</th><th>Unit</th><th>Linked Equip</th><th>Note</th></tr>';
+  (state.project.options[k].items||[]).forEach((r,i)=>{
+    const tr=el('tr');
+    const sel=el('select'); sel.innerHTML='<option value=""></option>';
+    state.equipments.forEach(e=>{const o=el('option');o.value=e.id;o.textContent=e.id;o.selected=(r.equip===e.id); sel.appendChild(o);});
+    sel.onchange=()=>{ r.equip=sel.value; autosave(); };
+    tr.innerHTML=`<td><input value="${r.item||''}" oninput="optSet('${k}',${i},'item',this.value)"></td>
+    <td><input type="number" value="${r.qty||1}" oninput="optSet('${k}',${i},'qty',this.value)"></td>
+    <td><input value="${r.unit||'ea'}" oninput="optSet('${k}',${i},'unit',this.value)"></td>`;
+    const td4=el('td'); td4.appendChild(sel);
+    const td5=el('td'); const inp=el('input'); inp.value=r.note||''; inp.oninput=()=>optSet(k,i,'note',inp.value); td5.appendChild(inp);
+    tr.appendChild(td4); tr.appendChild(td5);
+    tbl.appendChild(tr);
+  });
+  root.appendChild(tbl);
+}
+function optSet(k,i,field,val){ state.project.options[k].items[i][field]=val; autosave(); }
+
+function autoDraftOptions(){
+  ['A','B','C'].forEach((k,idx)=>{
+    const base = state.equipments.map(e=>({item:`${e.system} – ${e.id}`,qty:1,unit:'set',note:'Auto-draft',equip:e.id}));
+    state.project.options[k].items = base.map(x=>({...x, note: x.note+(idx?` (variant ${k})`:'' )}));
+    state.project.options[k].summary = `Draft generated from ${base.length} equipment(s).`;
+    paintItems(k);
+  });
+  autosave();
+}
+function attachEquipToOptions(){
+  ['A','B','C'].forEach(k=>{
+    (state.project.options[k].items||[]).forEach((r,i)=>{
+      if(!r.equip && state.equipments[i]) r.equip = state.equipments[i].id;
+    });
+    paintItems(k);
+  });
+  autosave();
+}
+
+function addCost(k){ state.project.cost[k].push({desc:'',qty:1,uprice:0,cat:'MAT'}); paintCost(k); autosave();}
+function paintCost(k){
+  const root=$(`#costTbl_${k}`); if(!root) return; root.innerHTML='';
+  const tbl=el('table'); tbl.innerHTML='<tr><th>Category</th><th>Description</th><th>Qty</th><th>Unit Price</th><th>SubTotal</th></tr>';
+  (state.project.cost[k]||[]).forEach((r,i)=>{
+    const tr=el('tr');
+    const cat=el('select'); ['MAT','LAB','SUB','OTH'].forEach(c=>{const o=el('option');o.value=c;o.textContent=c;o.selected=(r.cat===c);cat.appendChild(o);});
+    cat.onchange=()=>{ r.cat=cat.value; autosave(); calcTotals(k); };
+    tr.appendChild(tdWrap(cat));
+    tr.appendChild(tdInput(k,i,'desc',r.desc));
+    tr.appendChild(tdInput(k,i,'qty',r.qty,'number'));
+    tr.appendChild(tdInput(k,i,'uprice',r.uprice,'number'));
+    const st=((+r.qty||0)*(+r.uprice||0));
+    const td=el('td'); td.textContent=st.toLocaleString(); tr.appendChild(td);
+    tbl.appendChild(tr);
+  });
+  root.appendChild(tbl);
+}
+function tdWrap(elm){ const td=el('td'); td.appendChild(elm); return td; }
+function tdInput(k,i,f,val,type='text'){ const td=el('td'); const inp=el('input'); inp.type=type; inp.value=val||''; inp.oninput=()=>{ state.project.cost[k][i][f]=inp.value; autosave(); calcTotals(k); }; td.appendChild(inp); return td; }
+
+function applyTax(scheme){
+  if(scheme==='GST5+QST9.975'){ state.project.pricing.taxes={GST:5,QST:9.975}; }
+  else if(scheme==='GST5'){ state.project.pricing.taxes={GST:5,QST:0}; }
+  else if(scheme==='HST13'){ state.project.pricing.taxes={HST:13}; }
+  else if(scheme==='HST15'){ state.project.pricing.taxes={HST:15}; }
+  else { state.project.pricing.taxes={}; }
+  ['A','B','C'].forEach(calcTotals);
+  autosave();
+}
+function calcTotals(k){
+  const rows=state.project.cost[k]||[];
+  const sum = rows.reduce((a,r)=>a+(+r.qty||0)*(+r.uprice||0),0);
+  const pr = state.project.pricing;
+  const overhead = sum*(+pr.overhead_pct||0)/100;
+  const base = sum + (+pr.freight||0) + (+pr.install||0) + overhead;
+  const margin = base*(+pr.margin_pct||0)/100;
+  const sell = base + margin;
+  const taxes = {};
+  Object.entries(pr.taxes||{}).forEach(([name,rate])=> taxes[name]= sell*rate/100 );
+  const grand = sell + Object.values(taxes).reduce((a,b)=>a+b,0);
+  const box = $(`#total_${k}`);
+  box.textContent = `Base: ${base.toLocaleString()} • Margin: ${margin.toLocaleString()} • Sell: ${sell.toLocaleString()} • Taxes: ${Object.entries(taxes).map(([n,v])=>`${n} ${v.toFixed(2)}`).join(' / ')||'0'} • Grand: ${grand.toLocaleString()} ${pr.currency}`;
+}
+
+/* ========= Contract helpers ========= */
+function toggleClause(k,on){
+  const arr = new Set(state.project.contract.clauses||[]);
+  if(on) arr.add(k); else arr.delete(k);
+  state.project.contract.clauses = [...arr];
+}
+function composeContract(){
+  const c=state.project.contract;
+  const blocks=[
+    `Payment: ${c.payment}`,
+    `Delivery: ${c.delivery}`,
+    `Warranty: ${c.warranty}`,
+    '--- Clauses ---',
+    ...(c.clauses||[]).map(k=>{ const f=CLAUSES.find(x=>x.k===k); return f?`• ${f.title}: ${f.text}`:''; }),
+    (c.scope? `--- Scope ---\n${c.scope}`:''),
+    (c.exclusions? `--- Exclusions ---\n${c.exclusions}`:'')
+  ].filter(Boolean);
+  return blocks.join('\n');
+}
+
+/* ========= Preview pretty ========= */
+function prettyRender(){
+  const h=state.project.header, s=state.project.site, t=state.project.targets, pr=state.project.pricing;
+  function h2(x){return `<h3>${x}</h3>`}
+  function p(x){return `<p>${x}</p>`}
+  const eqs = state.equipments.map(e=>`<li><b>${e.id}</b> • ${e.system} • ${e.common?.model||''}</li>`).join('');
+  return `
+    ${h2('1. Project')}
+    ${p(`<b>${h.project_name||''}</b> for <b>${h.client||''}</b> • Quote ${h.quote_id||''}/${h.rev||''} • ${h.currency||''} (${h.tax_scheme||''})`)}
+    ${p(`Site: ${h.site_location||''} • Incoterms ${h.incoterms||''} • Bid ${h.bid_type||''}`)}
+
+    ${h2('2. Site')}
+    ${p(`Install: ${s.install}, Tmin/Tmax: ${s.ambient_min}/${s.ambient_max}°C, Explosion: ${s.explosion}, Voltage: ${s.voltage}`)}
+    ${p(`Access: ${s.access} • Floor ${s.floor_area_m2||'-'} m² • Headroom ${s.headroom_m||'-'} m`)}
+    ${p(`Notes: ${s.notes||'-'}`)}
+
+    ${h2('3. Targets')}
+    ${p(`Throughput: ${t.throughput||'-'} tph • Moisture: ${t.moisture||'-'}% • Emission: ${t.emission||'-'} mg/Nm³ • Energy: ${t.energy_kwh_t||'-'} kWh/t • Availability: ${t.availability_pct||'-'}%`)}
+
+    ${h2('4. Equipments (${state.equipments.length})')}
+    <ul>${eqs||'<li>-</li>'}</ul>
+
+    ${h2('5. Pricing – Knobs')}
+    ${p(`Currency ${pr.currency} • Overhead ${pr.overhead_pct||0}% • Margin ${pr.margin_pct||0}% • Freight ${(+pr.freight||0).toLocaleString()} • Install ${(+pr.install||0).toLocaleString()}`)}
+    ${p(`Taxes: ${Object.entries(pr.taxes||{}).map(([n,v])=>`${n} ${v}%`).join(' / ')||'None'} • Recommended: Option ${pr.selection||'A'}`)}
+  `;
+}
+
+/* ========= Derived calc (Dust Collector) ========= */
+function recalc(eq){
+  const d=$('#derivedBox'); if(!d) return;
+  let out=[];
+  const v = (k)=>getv(`equip.${eq.id}.data.${k}`);
+  const cfm = parseFloat(v('Design_CFM')||0);
+  const atc = parseFloat(v('Air_to_Cloth')||0);
+  if(cfm>0 && atc>0){
+    const area = +(cfm/atc).toFixed(1);
+    setv(`equip.${eq.id}.data.Filter_Area`,area);
+    out.push(`Filter_Area = CFM / ATC = ${cfm} / ${atc} = ${area} ft²`);
+  }
+  const sp = parseFloat(v('Static_Pressure')||0);
+  if(cfm>0 && sp>0){
+    const hp = Math.round((0.00094*cfm*sp/0.6)*10)/10;
+    setv(`equip.${eq.id}.data.Fan_Motor_HP`,hp);
+    out.push(`Fan_HP ≈ 0.00094*CFM*SP/η = ${hp} HP (η≈0.6)`);
+  }
+  d.textContent = out.length? out.join(' | ') : 'No derived values computed yet.';
+}
+
+/* ========= Equip panel ========= */
+function paintList(){
+  const ul=$('#equipList'); ul.innerHTML='';
+  state.equipments.forEach((e,i)=>{
+    const li=el('div','card'+(i===state.active?' sel':'')); li.onclick=()=>{state.active=i; showStep('equip');};
+    li.innerHTML=`<div class="flex"><b>${e.id}</b><span class="badge">${e.system}</span></div>
+      <div class="small">${(e.common?.model||'') + (e.common?.serial?(' • '+e.common.serial):'')}</div>`;
+    ul.appendChild(li);
+  })
+}
+
+/* ========= Equip CRUD ========= */
+$('#addEquip').onclick=()=>{
+  const sys=$('#sysSelect').value;
+  const id=uid(sys);
+  state.equipments.push({id,system:sys,data:{},common:{},uploads:{},meta:{id,system:sys}});
+  state.active=state.equipments.length-1;
+  paintList(); showStep('equip'); autosave();
+};
+$('#dupEquip').onclick=()=>{
+  if(state.active==null) return;
+  const src = JSON.parse(JSON.stringify(state.equipments[state.active]));
+  src.id=uid(src.system); src.meta.id=src.id;
+  state.equipments.push(src); state.active=state.equipments.length-1;
+  paintList(); showStep('equip'); autosave();
+};
+$('#delEquip').onclick=()=>{
+  if(state.active==null) return;
+  state.equipments.splice(state.active,1);
+  state.active = state.equipments.length?0:null;
+  paintList(); showStep('equip'); autosave();
+};
+
+/* ========= Baseline Δ ========= */
+$('#saveBaseline').onclick=()=>{ state.project.baseline = JSON.parse(JSON.stringify(state.project.site)); $('#diffBox').textContent='Baseline saved.'; autosave(); }
+$('#computeDiff').onclick=()=>{
+  const base=state.project.baseline||{};
+  const now=state.project.site; const keys=new Set([...Object.keys(base),...Object.keys(now)]);
+  const out=[]; keys.forEach(k=>{ if((base[k]||'')!== (now[k]||'')) out.push(`${k}: baseline → ${base[k]||''} | current → ${now[k]||''}`); });
+  $('#diffBox').textContent = out.length? out.join('\n') : '(no change)';
+};
+
+/* ========= Save / Load / Print / Autosave ========= */
+function downloadJSON(){
+  const blob=new Blob([JSON.stringify(state,null,2)],{type:'application/json'});
+  const a=document.createElement('a'); a.href=URL.createObjectURL(blob); a.download='project.json'; a.click();
+}
+$('#saveProject').onclick=downloadJSON;
+$('#loadBtn').onclick=()=>$('#loadProject').click();
+$('#loadProject').onchange=e=>{
+  const f=e.target.files[0]; if(!f) return;
+  const r=new FileReader(); r.onload=()=>{ try{
+      state=JSON.parse(r.result); paintList(); showStep(currentTab||'project'); autosave();
+    }catch(err){ alert('Invalid JSON'); } };
+  r.readAsText(f);
+};
+$('#printBtn').onclick=()=>window.print();
+
+function autosave(){ try{ localStorage.setItem('qb_state', JSON.stringify(state)); }catch(e){} }
+(function restore(){ try{ const raw=localStorage.getItem('qb_state'); if(raw){ state=JSON.parse(raw);} }catch(e){} })();
+
+/* ========= Language ========= */
+function setLang(l){ LANG=l; paintTabs(); showStep(currentTab || 'project'); }
+$('#btnEN').onclick=()=>setLang('EN');
+$('#btnFR').onclick=()=>setLang('FR');
+
+/* ========= Boot ========= */
+paintTabs();
+if(!state.equipments.length){ $('#addEquip').click(); }
+paintList();
+showStep('project');
+computeProgress();
+</script>
+</body>
+</html>
