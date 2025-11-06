@@ -1,0 +1,581 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1"/>
+<title>Quotation Builder – 7 Steps • 7 Equipments</title>
+<style>
+:root{
+  --bg:#f5f6fa;--fg:#222;--pri:#0a7;--slate:#e7ebf0;--card:#fff;--mut:#7b8794;
+}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--fg);font-family:Segoe UI,system-ui,Arial,sans-serif}
+header{position:sticky;top:0;z-index:5;background:#fff;border-bottom:1px solid #ddd}
+.wrap{max-width:1200px;margin:0 auto;padding:14px 18px;display:flex;gap:10px;align-items:center}
+h1{font-size:18px;margin:0;color:#0a5}
+.lang{margin-left:auto;display:flex;gap:6px}
+.lang button{padding:6px 10px;border:1px solid #ddd;background:#fff;border-radius:8px;cursor:pointer}
+nav.tabs{background:#fff;border-bottom:1px solid #ddd}
+nav.tabs .wrap{gap:8px;flex-wrap:wrap}
+.tabbtn{padding:8px 10px;border:1px solid #ddd;background:#fff;border-radius:8px;cursor:pointer;font-weight:600}
+.tabbtn.active{border-color:var(--pri);color:#066;background:#e6fbf4}
+main{max-width:1200px;margin:18px auto;display:grid;grid-template-columns:280px 1fr;gap:14px;padding:0 18px}
+aside{background:var(--card);border:1px solid #ddd;border-radius:12px;padding:12px;height:calc(100vh - 180px);overflow:auto}
+section.view{background:var(--card);border:1px solid #ddd;border-radius:12px;padding:14px;min-height:480px}
+h2{margin:4px 0 10px}
+.small{font-size:12px;color:#7b8794}
+hr{border:none;border-top:1px solid #eee;margin:12px 0}
+.row{display:grid;grid-template-columns:repeat(12,1fr);gap:10px}
+.f1{grid-column:span 3}.f2{grid-column:span 4}.f3{grid-column:span 6}.f4{grid-column:span 12}
+label{display:block;font-size:12px;color:#334;margin:4px 0}
+input,select,textarea{width:100%;padding:8px;border:1px solid #cfd6dd;border-radius:8px;background:#fff}
+textarea{min-height:84px}
+.badge{display:inline-block;padding:3px 8px;border:1px solid #cfe8de;background:#f2fffa;border-radius:999px;color:#095;font-size:12px}
+.list{display:flex;flex-direction:column;gap:6px}
+.card{border:1px solid #e1e6ec;border-radius:10px;padding:10px}
+.card.sel{border-color:#0a7;box-shadow:0 0 0 2px #bfe}
+.btn{padding:8px 10px;border:1px solid #ccd;background:#fff;border-radius:8px;cursor:pointer}
+.btn.pri{border-color:var(--pri);background:#e6fbf4;color:#075;font-weight:700}
+.btn.dan{border-color:#e66;color:#a00}
+table{width:100%;border-collapse:collapse}
+td,th{padding:8px;border:1px solid #e4e8ee;text-align:left;font-size:13px}
+pre{background:#0b1020;color:#dfe7ff;padding:10px;border-radius:8px;white-space:pre-wrap}
+.hidden{display:none}
+.flex{display:flex;gap:8px;align-items:center;flex-wrap:wrap}
+.mono{font-family:ui-monospace,Consolas,Menlo,monospace}
+</style>
+</head>
+<body>
+<header>
+  <div class="wrap">
+    <h1>Quotation Builder • 7 Steps / 7 Equipments</h1>
+    <div class="lang">
+      <button id="btnEN">EN</button>
+      <button id="btnFR">FR</button>
+    </div>
+    <div class="flex">
+      <button class="btn" id="saveProject">Save JSON</button>
+      <input type="file" id="loadProject" class="hidden" accept=".json"/>
+      <button class="btn" id="loadBtn">Load JSON</button>
+    </div>
+  </div>
+  <nav class="tabs">
+    <div class="wrap" id="navTabs"></div>
+  </nav>
+</header>
+
+<main>
+  <aside>
+    <div class="flex">
+      <select id="sysSelect" class="f4">
+        <option value="COL">01. Dust Collector / Air Filtration</option>
+        <option value="CONV">02. Conveyor (Pneumatic/Mechanical)</option>
+        <option value="STO">03. Storage System (Silo/Bin/Hopper)</option>
+        <option value="DRY">04. Drying System (Rotary Dryer)</option>
+        <option value="GBR">05. GBR Dehumidifier</option>
+        <option value="DHS">06. Dehumidifying Silo</option>
+        <option value="ETS">07. ETS (Electro-Thermal Storage)</option>
+      </select>
+    </div>
+    <div class="flex" style="margin:8px 0">
+      <button class="btn pri" id="addEquip">Add</button>
+      <button class="btn" id="dupEquip">Duplicate</button>
+      <button class="btn dan" id="delEquip">Delete</button>
+    </div>
+    <hr/>
+    <div class="small">Equipments in Project</div>
+    <div id="equipList" class="list"></div>
+    <hr/>
+    <div class="small">Δ Baseline (Site Head)</div>
+    <div class="flex">
+      <button class="btn" id="saveBaseline">Save as Baseline</button>
+      <button class="btn" id="computeDiff">Compute Δ</button>
+    </div>
+    <pre id="diffBox" class="mono" style="margin-top:8px"></pre>
+  </aside>
+
+  <section class="view">
+    <div id="stepContainer"></div>
+  </section>
+</main>
+
+<script>
+/* ========= i18n (EN/FR only) ========= */
+const T={
+  EN:{project:'Step 1 • Project Header',site:'Step 2 • Site Capture – Head',
+      perf:'Step 3 • Performance Targets',opts:'Step 4 • Option Builder',
+      cost:'Step 5 • Cost & Pricing',contract:'Step 6 • Contract & Warranty',
+      preview:'Step 7 • Preview & Export',equip:'Equip Specs'},
+  FR:{project:'Étape 1 • En-tête du projet',site:'Étape 2 • Capture du site',
+      perf:'Étape 3 • Objectifs de performance',opts:'Étape 4 • Options',
+      cost:'Étape 5 • Coûts & Prix',contract:'Étape 6 • Contrat & Garantie',
+      preview:'Étape 7 • Aperçu & Export',equip:'Spécifications'}
+};
+let LANG='EN';
+const $=sel=>document.querySelector(sel);
+const el=(t,cls)=>{const x=document.createElement(t); if(cls) x.className=cls; return x;};
+
+/* ========= Project State ========= */
+let state={
+  project:{
+    header:{quote_id:'',rev:'R00',currency:'CAD',tax_scheme:'GST5',client_ref:'',fx_ts:''},
+    site:{install:'Outdoor',ambient_min:-10,ambient_max:35,explosion:'None',voltage:'575V/3P',utilities:'',emission_mgNm3:'',notes:''},
+    targets:{emission:'',moisture:'',throughput:'',delivery:'',contacts:''},
+    options:{A:{summary:'',items:[]},B:{summary:'',items:[]},C:{summary:'',items:[]}},
+    cost:{A:[],B:[],C:[]},
+    contract:{payment:'30/50/20',delivery:'12 weeks ARO',warranty:'12 months from commissioning',scope:'',exclusions:''},
+    baseline:null
+  },
+  equipments:[],
+  active:null
+};
+/* add default keys for new header fields */
+state.project.header = Object.assign({
+  project_name:'', client:'', prepared_by:'', approved_by:'',
+  valid_until:'', site_location:'', incoterms:'EXW',
+  bid_type:'Budgetary', nda:'No', vendor_onboarding:'No',
+  customer_notes:'', internal_notes:''
+}, state.project.header||{});
+
+/* ========= Equipment Templates ========= */
+const TEMPLATES={
+  COL:[
+    {k:'Design_CFM',label:'Design Airflow',u:'CFM',req:true},
+    {k:'Static_Pressure',label:'Static Pressure',u:'in.WG',req:true},
+    {k:'Air_to_Cloth',label:'Air-to-Cloth Ratio',u:'ft/min',req:true},
+    {k:'Filter_Type',label:'Filter Type',type:'select',opts:['Bag','Cartridge','Envelope'],req:true},
+    {k:'Filter_Qty',label:'Filter Quantity',type:'number',u:'ea'},
+    {k:'Filter_Material',label:'Filter Material',type:'select',opts:['Polyester','PTFE','Aramid']},
+    {k:'Pulse_Valves',label:'Pulse Valves',u:'ea'},
+    {k:'Hopper_Count',label:'Hopper Count',u:'ea'},
+    {k:'Discharge_Type',label:'Discharge Type',type:'select',opts:['Rotary Valve','Double Flap','Screw']},
+    {k:'Explosion_Vent_Area',label:'Explosion Vent Area',u:'ft²'},
+    {k:'Fan_Motor_HP',label:'Fan Motor',u:'HP',calc:'hp'},
+    {k:'Filter_Area',label:'Filter Area (calc)',u:'ft²',calc:'area'}
+  ],
+  CONV:[
+    {k:'Mode',label:'Conveyor Mode',type:'select',opts:['Pneumatic','Screw','Belt']},
+    {k:'Throughput',label:'Throughput',u:'tph',req:true},
+    {k:'Distance',label:'Convey Distance',u:'m'},
+    {k:'Lift',label:'Lift (Static Head)',u:'m'},
+    {k:'Elbows',label:'Bends/Elbows',u:'ea'},
+    {k:'Drive_HP',label:'Drive Motor',u:'HP'}
+  ],
+  STO:[
+    {k:'Type',label:'Vessel Type',type:'select',opts:['Silo','Bin','Hopper']},
+    {k:'Volume',label:'Nominal Volume',u:'m³',req:true},
+    {k:'Material',label:'Construction',type:'select',opts:['CS','SS304','Al']},
+    {k:'Level_Sensor',label:'Level Sensor',type:'select',opts:['None','Rotary Paddle','Radar','Vibro']},
+    {k:'Discharge_Aid',label:'Discharge Aid',type:'select',opts:['None','Air Cannon','Fluidizing Pad','Vibrator']},
+  ],
+  DRY:[
+    {k:'Type',label:'Dryer Type',type:'select',opts:['Rotary','Fluidized Bed']},
+    {k:'Inlet_Moisture',label:'Inlet Moisture',u:'%',req:true},
+    {k:'Outlet_Moisture',label:'Target Outlet Moisture',u:'%',req:true},
+    {k:'Inlet_Temp',label:'Inlet Temp',u:'°C'},
+    {k:'Outlet_Temp',label:'Outlet Temp',u:'°C'},
+    {k:'Fuel',label:'Fuel',type:'select',opts:['Natural Gas','Propane','Biomass','Steam']},
+    {k:'Evap_Rate',label:'Evaporation Rate',u:'kg/h'}
+  ],
+  GBR:[
+    {k:'Airflow',label:'Process Airflow',u:'CFM',req:true},
+    {k:'Pressure',label:'Process Pressure',u:'in.WG'},
+    {k:'Dewpoint',label:'Target Dew Point',u:'°C'},
+    {k:'Heater_Type',label:'Heater Type',type:'select',opts:['Electric','Steam','Gas']},
+    {k:'Power_kW',label:'Power',u:'kW'}
+  ],
+  DHS:[
+    {k:'Volume',label:'Silo Volume',u:'m³',req:true},
+    {k:'Airflow',label:'Drying Airflow',u:'CFM'},
+    {k:'Residence',label:'Residence Time',u:'min'},
+    {k:'Heater_kW',label:'Heater Power',u:'kW'},
+    {k:'Blower_HP',label:'Blower',u:'HP'}
+  ],
+  ETS:[
+    {k:'Capacity_kWh',label:'Storage Capacity',u:'kWh',req:true},
+    {k:'Charge_kW',label:'Charge Power',u:'kW'},
+    {k:'Discharge_kW',label:'Discharge Power',u:'kW'},
+    {k:'Cycle_Eff',label:'Round-trip Efficiency',u:'%'},
+    {k:'Temp_Max',label:'Max Operating Temp',u:'°C'}
+  ],
+};
+const uid=sys=>`${sys}-${Math.random().toString(36).slice(2,7).toUpperCase()}`;
+
+/* ========= Tabs ========= */
+const STEPS=['project','site','perf','opts','cost','contract','preview'];
+function paintTabs(){
+  const nav=$('#navTabs'); nav.innerHTML='';
+  for(const id of STEPS){
+    const b=el('button','tabbtn'); b.textContent=T[LANG][id]; b.dataset.tab=id;
+    b.onclick=()=>showStep(id);
+    nav.appendChild(b);
+  }
+  const b2=el('button','tabbtn'); b2.textContent=T[LANG].equip; b2.dataset.tab='equip'; b2.onclick=()=>showStep('equip'); nav.appendChild(b2);
+}
+function activateTab(id){
+  document.querySelectorAll('.tabbtn').forEach(x=>x.classList.toggle('active',x.dataset.tab===id));
+}
+
+/* ========= Step Renderers ========= */
+function showStep(id){
+  activateTab(id);
+  currentTab=id;
+  const box=$('#stepContainer'); box.innerHTML='';
+  const p = state.project;
+
+  /* ---------- STEP 1: Project Header ---------- */
+  if(id==='project'){
+    box.appendChild(blockTitle('Project Header'));
+
+    // 1) Base meta
+    box.appendChild(formGrid([
+      f('Project Name','text','header.project_name','f3'),
+      f('Client Name','text','header.client','f3'),
+      f('Quote ID','text','header.quote_id','f2'),
+      f('Revision','text','header.rev','f1'),
+      f('Currency','select','header.currency','f1',['CAD','USD','EUR']),
+      f('Tax Scheme','text','header.tax_scheme','f2')
+    ]));
+
+    // 2) Dates / references
+    box.appendChild(formGrid([
+      f('Prepared By','text','header.prepared_by','f2'),
+      f('Approved By','text','header.approved_by','f2'),
+      f('Valid Until (ISO Date)','text','header.valid_until','f2'),
+      f('Client Reference','text','header.client_ref','f2'),
+      f('FX Base / Timestamp','text','header.fx_ts','f2')
+    ]));
+
+    // 3) Options
+    box.appendChild(formGrid([
+      f('NDA in Place','select','header.nda','f1',['No','Yes']),
+      f('Vendor Onboarding','select','header.vendor_onboarding','f1',['No','Yes']),
+      f('Bid Type','select','header.bid_type','f1',['Budgetary','Firm','T&M']),
+      f('Incoterms','select','header.incoterms','f1',['EXW','FOB','CIP','DAP','DDP']),
+      f('Site Location','text','header.site_location','f3')
+    ]));
+
+    // 4) Notes
+    box.appendChild(formGrid([
+      f('Internal Notes','textarea','header.internal_notes','f4'),
+      f('Customer Notes (shown on quote)','textarea','header.customer_notes','f4')
+    ]));
+
+    // 5) Summary preview
+    const pre=el('pre','mono'); pre.style.marginTop='10px'; pre.textContent=summaryProject();
+    box.appendChild(pre);
+  }
+
+  /* ---------- STEP 2: Site Capture – Head ---------- */
+  if(id==='site'){
+    box.appendChild(blockTitle('Site Capture – Head'));
+    box.appendChild(formGrid([
+      f('Install Context','select','site.install','f2',['Indoor','Outdoor','Roof','Yard']),
+      f('Ambient Tmin (°C)','number','site.ambient_min','f1'),
+      f('Ambient Tmax (°C)','number','site.ambient_max','f1'),
+      f('Explosion Class','select','site.explosion','f2',['None','ATEX 21','ATEX 22','NFPA Class II, Div 1','NFPA Class II, Div 2']),
+      f('Voltage Service','text','site.voltage','f2'),
+      f('Utilities (free text)','text','site.utilities','f4'),
+      f('Emission Limit (mg/Nm³)','number','site.emission_mgNm3','f2'),
+      f('Engineer Notes','textarea','site.notes','f4')
+    ]));
+  }
+
+  /* ---------- STEP 3: Performance Targets ---------- */
+  if(id==='perf'){
+    box.appendChild(blockTitle('Performance Targets'));
+    box.appendChild(formGrid([
+      f('Target Emission (mg/Nm³)','text','targets.emission','f2'),
+      f('Target Outlet Moisture (%)','text','targets.moisture','f2'),
+      f('Target Throughput (tph)','text','targets.throughput','f2'),
+      f('Delivery Timeline (weeks/date)','text','targets.delivery','f2'),
+      f('Key Contacts & Communication Points','textarea','targets.contacts','f4')
+    ]));
+  }
+
+  /* ---------- STEP 4: Option Builder ---------- */
+  if(id==='opts'){
+    box.appendChild(blockTitle('Option Builder (A/B/C)'));
+    ['A','B','C'].forEach(k=>{
+      const card=el('div','card');
+      card.innerHTML=`<div class="flex"><div class="badge">Option ${k}</div>
+        <button class="btn" onclick="addItem('${k}')">+ Add Item</button></div>
+        <label>Engineering Summary</label>
+        <textarea oninput="setv('project.options.${k}.summary',this.value)">${getv(`project.options.${k}.summary`)||''}</textarea>
+        <div id="optItems_${k}"></div>`;
+      box.appendChild(card); paintItems(k);
+    });
+  }
+
+  /* ---------- STEP 5: Cost & Pricing ---------- */
+  if(id==='cost'){
+    box.appendChild(blockTitle('Cost & Pricing'));
+    ['A','B','C'].forEach(k=>{
+      const card=el('div','card');
+      card.innerHTML=`<div class="flex"><div class="badge">Option ${k}</div>
+      <button class="btn" onclick="addCost('${k}')">+ Add Cost Row</button></div>
+      <div id="costTbl_${k}"></div>`;
+      box.appendChild(card); paintCost(k);
+    });
+  }
+
+  /* ---------- STEP 6: Contract & Warranty ---------- */
+  if(id==='contract'){
+    box.appendChild(blockTitle('Contract & Warranty'));
+    box.appendChild(formGrid([
+      f('Payment Terms','text','contract.payment','f2'),
+      f('Delivery Schedule','text','contract.delivery','f2'),
+      f('Warranty','text','contract.warranty','f2'),
+      f('Scope of Supply','textarea','contract.scope','f4'),
+      f('Exclusions & Client Responsibilities','textarea','contract.exclusions','f4')
+    ]));
+  }
+
+  /* ---------- STEP 7: Preview & Export ---------- */
+  if(id==='preview'){
+    box.appendChild(blockTitle('Preview & Export'));
+    const pre=el('pre'); pre.textContent=JSON.stringify(state,null,2);
+    const btn=el('button','btn pri'); btn.textContent='Download Project JSON'; btn.onclick=downloadJSON;
+    box.appendChild(btn); box.appendChild(el('hr')); box.appendChild(pre);
+  }
+
+  /* ---------- Equipment Specs ---------- */
+  if(id==='equip'){ paintEquip(box); }
+}
+
+/* ========= Helpers for Step 1 summary ========= */
+function summaryProject(){
+  const h = state.project.header || {};
+  const L = [
+    `Project: ${h.project_name||''} • Client: ${h.client||''}`,
+    `Quote ${h.quote_id||''} / ${h.rev||''} • ${h.currency||''} • Tax ${h.tax_scheme||''}`,
+    `Valid Until: ${h.valid_until||''} • FX: ${h.fx_ts||''}`,
+    `Site: ${h.site_location||''} • Incoterms: ${h.incoterms||''} • Bid: ${h.bid_type||''}`,
+    `NDA: ${h.nda||'No'} • Vendor Onboarding: ${h.vendor_onboarding||'No'}`,
+    `Client Ref: ${h.client_ref||''}`,
+    (h.customer_notes? `--- Customer Notes ---\n${h.customer_notes}`:''),
+    (h.internal_notes? `--- Internal Notes ---\n${h.internal_notes}`:'')
+  ].filter(Boolean);
+  return L.join('\n');
+}
+
+/* ========= Equipment Specs UI ========= */
+function paintEquip(box){
+  box.appendChild(blockTitle('Equipment Specifications'));
+  if(state.active==null){ box.appendChild(hint('No equipment selected. Use Add to insert.')); return; }
+  const eq=state.equipments[state.active];
+  const tl=TEMPLATES[eq.system]||[];
+
+  // common header
+  box.appendChild(formGrid([
+    f('Equipment ID','text',`equip.${eq.id}.meta.id`,'f2',null,eq.id,true),
+    f('System','text',`equip.${eq.id}.meta.system`,'f2',null,eq.system,true),
+    f('Model','text',`equip.${eq.id}.common.model`,'f2'),
+    f('Serial No.','text',`equip.${eq.id}.common.serial`,'f2'),
+    f('Year','number',`equip.${eq.id}.common.year`,'f1'),
+    f('Service Hours','number',`equip.${eq.id}.common.hours`,'f1'),
+    f('Last Overhaul (YYYY-MM-DD)','text',`equip.${eq.id}.common.overhaul`,'f2'),
+    f('Condition','select',`equip.${eq.id}.common.cond`,'f1',['Good','Fair','Poor']),
+  ]));
+
+  // spec
+  const specWrap=el('div','card'); specWrap.innerHTML='<b>Technical Parameters</b>';
+  const form=el('div','row');
+  tl.forEach(def=>{ form.appendChild(field(def,`equip.${eq.id}.data.${def.k}`)); });
+  specWrap.appendChild(form);
+  specWrap.appendChild(el('hr'));
+
+  // derived
+  const d=el('div','small'); d.id='derivedBox';
+  specWrap.appendChild(d);
+  const btnCalc=el('button','btn'); btnCalc.textContent='Recalculate Derived Fields';
+  btnCalc.onclick=()=>recalc(eq);
+  specWrap.appendChild(btnCalc);
+  box.appendChild(specWrap);
+
+  // uploads / notes
+  const files=el('div','card');
+  files.innerHTML=`<b>Uploads & Notes</b>
+    <div class="row">
+      <div class="f3"><label>Manual / Docs (paste text or drop file-name tokens)</label>
+      <textarea oninput="setv('equip.${eq.id}.uploads.text',this.value)">${getv(`equip.${eq.id}.uploads.text`)||''}</textarea></div>
+      <div class="f3"><label>Voice Notes (URL or memo)</label>
+      <textarea oninput="setv('equip.${eq.id}.voice',this.value)">${getv(`equip.${eq.id}.voice`)||''}</textarea></div>
+    </div>`;
+  box.appendChild(files);
+
+  recalc(eq);
+}
+function field(def,path){
+  const w=el('div',def.w||'f2');
+  const label=el('label'); label.textContent = `${def.label}${def.u?` (${def.u})`:''}${def.req?' *':''}`;
+  let input;
+  if(def.type==='select'){
+    input=el('select'); (def.opts||[]).forEach(v=>{const o=el('option');o.value=v;o.textContent=v;input.appendChild(o);});
+  }else if(def.type==='number'){input=el('input');input.type='number'}
+  else{input=el('input');input.type='text'}
+  input.value = getv(path)||'';
+  input.oninput=()=>{ setv(path,input.value); if(def.calc) recalcBy(def.calc); };
+  w.appendChild(label); w.appendChild(input); return w;
+}
+function formGrid(children){ const d=el('div','row'); children.forEach(c=>d.appendChild(c)); return d; }
+function blockTitle(t){ const d=el('div'); d.innerHTML=`<h2>${t}</h2><div class="small">Language: ${LANG}</div><hr/>`; return d;}
+function hint(t){ const d=el('div'); d.className='small'; d.textContent=t; return d; }
+
+/* ========= Derived calc (Dust Collector) ========= */
+function recalc(eq){
+  const d=$('#derivedBox'); if(!d) return;
+  let out=[];
+  const v = (k)=>getv(`equip.${eq.id}.data.${k}`);
+  const cfm = parseFloat(v('Design_CFM')||0);
+  const atc = parseFloat(v('Air_to_Cloth')||0);
+  if(cfm>0 && atc>0){
+    const area = +(cfm/atc).toFixed(1);
+    setv(`equip.${eq.id}.data.Filter_Area`,area);
+    out.push(`Filter_Area = CFM / ATC = ${cfm} / ${atc} = ${area} ft²`);
+  }
+  const sp = parseFloat(v('Static_Pressure')||0);
+  if(cfm>0 && sp>0){
+    const hp = Math.round((0.00094*cfm*sp/0.6)*10)/10;
+    setv(`equip.${eq.id}.data.Fan_Motor_HP`,hp);
+    out.push(`Fan_HP ≈ 0.00094*CFM*SP/η = ${hp} HP (η≈0.6)`);
+  }
+  d.textContent = out.length? out.join(' | ') : 'No derived values computed yet.';
+}
+function recalcBy(){}
+
+/* ========= Equip list panel ========= */
+function paintList(){
+  const ul=$('#equipList'); ul.innerHTML='';
+  state.equipments.forEach((e,i)=>{
+    const li=el('div','card'+(i===state.active?' sel':'')); li.onclick=()=>{state.active=i; showStep('equip');};
+    li.innerHTML=`<div class="flex"><b>${e.id}</b><span class="badge">${e.system}</span></div>
+      <div class="small">${(e.common?.model||'') + (e.common?.serial?(' • '+e.common.serial):'')}</div>`;
+    ul.appendChild(li);
+  })
+}
+
+/* ========= Add / Duplicate / Delete ========= */
+$('#addEquip').onclick=()=>{
+  const sys=$('#sysSelect').value;
+  const id=uid(sys);
+  state.equipments.push({id,system:sys,data:{},common:{},uploads:{}});
+  state.active=state.equipments.length-1;
+  paintList(); showStep('equip');
+};
+$('#dupEquip').onclick=()=>{
+  if(state.active==null) return;
+  const src = JSON.parse(JSON.stringify(state.equipments[state.active]));
+  src.id=uid(src.system);
+  state.equipments.push(src); state.active=state.equipments.length-1;
+  paintList(); showStep('equip');
+};
+$('#delEquip').onclick=()=>{
+  if(state.active==null) return;
+  state.equipments.splice(state.active,1);
+  state.active = state.equipments.length?0:null;
+  paintList(); showStep('equip');
+};
+
+/* ========= Options & Costs ========= */
+function addItem(k){ state.project.options[k].items.push({item:'',qty:1,unit:'ea',note:''}); paintItems(k); }
+function paintItems(k){
+  const root=$(`#optItems_${k}`); if(!root) return; root.innerHTML='';
+  const tbl=el('table'); tbl.innerHTML='<tr><th>Item</th><th>Qty</th><th>Unit</th><th>Note</th></tr>';
+  (state.project.options[k].items||[]).forEach((r,i)=>{
+    const tr=el('tr');
+    tr.innerHTML=`<td><input value="${r.item||''}" oninput="optSet('${k}',${i},'item',this.value)"></td>
+    <td><input type="number" value="${r.qty||1}" oninput="optSet('${k}',${i},'qty',this.value)"></td>
+    <td><input value="${r.unit||'ea'}" oninput="optSet('${k}',${i},'unit',this.value)"></td>
+    <td><input value="${r.note||''}" oninput="optSet('${k}',${i},'note',this.value)"></td>`;
+    tbl.appendChild(tr);
+  });
+  root.appendChild(tbl);
+}
+function optSet(k,i,field,val){ state.project.options[k].items[i][field]=val; }
+
+function addCost(k){ state.project.cost[k].push({desc:'',qty:1,uprice:0}); paintCost(k); }
+function paintCost(k){
+  const root=$(`#costTbl_${k}`); if(!root) return; root.innerHTML='';
+  const tbl=el('table'); tbl.innerHTML='<tr><th>Description</th><th>Qty</th><th>Unit Price</th><th>SubTotal</th></tr>';
+  let sum=0;
+  (state.project.cost[k]||[]).forEach((r,i)=>{
+    const st=(+r.qty||0)*(+r.uprice||0); sum+=st;
+    const tr=el('tr');
+    tr.innerHTML=`<td><input value="${r.desc||''}" oninput="costSet('${k}',${i},'desc',this.value)"></td>
+    <td><input type="number" value="${r.qty||1}" oninput="costSet('${k}',${i},'qty',this.value)"></td>
+    <td><input type="number" value="${r.uprice||0}" oninput="costSet('${k}',${i},'uprice',this.value)"></td>
+    <td>${st.toLocaleString()}</td>`;
+    tbl.appendChild(tr);
+  });
+  const tr=el('tr'); tr.innerHTML=`<th colspan="3" style="text-align:right">Total</th><th>${sum.toLocaleString()}</th>`;
+  tbl.appendChild(tr); root.appendChild(tbl);
+}
+function costSet(k,i,f,v){ state.project.cost[k][i][f]=v; paintCost(k); }
+
+/* ========= Baseline Δ ========= */
+$('#saveBaseline').onclick=()=>{ state.project.baseline = JSON.parse(JSON.stringify(state.project.site)); $('#diffBox').textContent='Baseline saved.'; }
+$('#computeDiff').onclick=()=>{
+  const base=state.project.baseline||{};
+  const now=state.project.site; const keys=new Set([...Object.keys(base),...Object.keys(now)]);
+  const out=[];
+  keys.forEach(k=>{ if((base[k]||'')!== (now[k]||'')) out.push(`${k}: baseline → ${base[k]||''} | current → ${now[k]||''}`); });
+  $('#diffBox').textContent = out.length? out.join('\n') : '(no change)';
+};
+
+/* ========= Save / Load ========= */
+function downloadJSON(){
+  const blob=new Blob([JSON.stringify(state,null,2)],{type:'application/json'});
+  const a=document.createElement('a'); a.href=URL.createObjectURL(blob); a.download='project.json'; a.click();
+}
+$('#saveProject').onclick=downloadJSON;
+$('#loadBtn').onclick=()=>$('#loadProject').click();
+$('#loadProject').onchange=e=>{
+  const f=e.target.files[0]; if(!f) return;
+  const r=new FileReader(); r.onload=()=>{ try{
+      state=JSON.parse(r.result);
+      state.project.header = Object.assign({
+        project_name:'', client:'', prepared_by:'', approved_by:'',
+        valid_until:'', site_location:'', incoterms:'EXW',
+        bid_type:'Budgetary', nda:'No', vendor_onboarding:'No',
+        customer_notes:'', internal_notes:''
+      }, state.project.header||{});
+      paintList(); showStep(currentTab||'project');
+    }catch(err){ alert('Invalid JSON'); } };
+  r.readAsText(f);
+};
+
+/* ========= get/set helpers ========= */
+function getv(path){
+  const seg=path.split('.'); let cur = (seg[0]==='equip')? equipRoot(seg[1]) : state;
+  const start=(seg[0]==='equip')?2:0;
+  for(let i=start;i<seg.length;i++){ cur = (cur||{})[seg[i]]; }
+  return cur;
+}
+function setv(path,val){
+  const seg=path.split('.');
+  let cur = (seg[0]==='equip')? equipRoot(seg[1]) : state;
+  const start=(seg[0]==='equip')?2:0;
+  for(let i=start;i<seg.length-1;i++){ cur[seg[i]] = cur[seg[i]]||{}; cur=cur[seg[i]]; }
+  cur[seg[seg.length-1]] = val;
+}
+function equipRoot(id){
+  const idx = state.equipments.findIndex(e=>e.id===id);
+  if(idx<0) return {};
+  return state.equipments[idx];
+}
+
+/* ========= Language toggle (EN/FR) ========= */
+function setLang(l){ LANG=l; paintTabs(); showStep(currentTab || 'project'); }
+$('#btnEN').onclick=()=>setLang('EN');
+$('#btnFR').onclick=()=>setLang('FR');
+
+/* ========= Boot ========= */
+let currentTab='project';
+paintTabs();
+$('#addEquip').click();  // seed one equipment
+paintList();
+showStep('project');
+</script>
+</body>
+</html>
