@@ -64,7 +64,6 @@ pre{background:#0b1020;color:#dfe7ff;padding:10px;border-radius:8px;white-space:
       <button class="btn" id="saveProject">Save JSON</button>
       <input type="file" id="loadProject" class="hidden" accept=".json"/>
       <button class="btn" id="loadBtn">Load JSON</button>
-      <button class="btn dan" id="resetBtn">Reset</button>
       <button class="btn" id="printBtn">Print</button>
     </div>
   </div>
@@ -781,12 +780,7 @@ $('#loadProject').onchange=e=>{
   r.readAsText(f);
 };
 $('#printBtn').onclick=()=>window.print();
-$('#resetBtn').onclick = () => {
-  if (confirm('Reset project and clear all local data?')) {
-    localStorage.removeItem('qb_state');
-    location.reload();
-  }
-};
+
 function autosave(){ try{ localStorage.setItem('qb_state', JSON.stringify(state)); }catch(e){} }
 (function restore(){ try{ const raw=localStorage.getItem('qb_state'); if(raw){ state=JSON.parse(raw);} }catch(e){} })();
 
@@ -804,5 +798,3 @@ computeProgress();
 </script>
 </body>
 </html>
-
-
