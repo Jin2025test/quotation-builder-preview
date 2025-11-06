@@ -781,7 +781,12 @@ $('#loadProject').onchange=e=>{
   r.readAsText(f);
 };
 $('#printBtn').onclick=()=>window.print();
-
+$('#resetBtn').onclick = () => {
+  if (confirm('Reset project and clear all local data?')) {
+    localStorage.removeItem('qb_state');
+    location.reload();
+  }
+};
 function autosave(){ try{ localStorage.setItem('qb_state', JSON.stringify(state)); }catch(e){} }
 (function restore(){ try{ const raw=localStorage.getItem('qb_state'); if(raw){ state=JSON.parse(raw);} }catch(e){} })();
 
@@ -799,4 +804,5 @@ computeProgress();
 </script>
 </body>
 </html>
+
 
