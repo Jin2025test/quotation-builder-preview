@@ -1,0 +1,3293 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1"/>
+<title>Quotation Builder v08</title>
+<style>
+:root{--bg:#f6f8fb;--fg:#1e293b;--pri:#0aa574;--pri-weak:#e6fbf4;--mut:#64748b;--card:#fff;--bd:#e2e8f0;--warn:#ef4444;--success:#22c55e}
+*{box-sizing:border-box}
+html,body{height:100%}
+body{margin:0;background:var(--bg);color:var(--fg);font-family:Inter,Segoe UI,system-ui,Arial,sans-serif}
+header{position:sticky;top:0;z-index:5;background:#fff;border-bottom:1px solid var(--bd);box-shadow:0 2px 4px rgba(0,0,0,0.05)}
+.wrap{max-width:1280px;margin:0 auto;padding:12px 16px;display:flex;gap:10px;align-items:center}
+h1{font-size:18px;margin:0;color:#0b7a57;font-weight:700}
+.lang{margin-left:auto;display:flex;gap:6px}
+.lang button{padding:6px 10px;border:1px solid var(--bd);background:#fff;border-radius:8px;cursor:pointer}
+.lang button.active{background:var(--pri-weak);border-color:var(--pri)}
+nav.tabs{background:#fff;border-bottom:1px solid var(--bd)}
+nav.tabs .wrap{gap:8px;flex-wrap:wrap}
+.tabbtn{padding:8px 10px;border:1px solid var(--bd);background:#fff;border-radius:8px;cursor:pointer;font-weight:600}
+.tabbtn.active{border-color:var(--pri);color:#075;background:var(--pri-weak)}
+main{max-width:1280px;margin:14px auto;display:grid;grid-template-columns:1fr;gap:14px;padding:0 16px}
+main.with-sidebar{grid-template-columns:300px 1fr}
+aside{background:var(--card);border:1px solid var(--bd);border-radius:12px;padding:12px;height:calc(100vh - 180px);overflow:auto;display:none}
+aside.active{display:block}
+section.view{background:var(--card);border:1px solid var(--bd);border-radius:12px;padding:14px;min-height:520px}
+h2{margin:4px 0 10px}
+h3{margin:8px 0 6px;font-size:16px}
+.small{font-size:12px;color:var(--mut)}
+hr{border:none;border-top:1px solid var(--bd);margin:12px 0}
+.row{display:grid;grid-template-columns:repeat(12,1fr);gap:10px;margin-bottom:10px}
+.f1{grid-column:span 3}.f2{grid-column:span 4}.f3{grid-column:span 6}.f4{grid-column:span 12}
+label{display:block;font-size:12px;color:#334;margin:4px 0}
+input,select,textarea{width:100%;padding:8px;border:1px solid #cfd6dd;border-radius:8px;background:#fff}
+textarea{min-height:84px}
+.badge{display:inline-block;padding:3px 8px;border:1px solid #cfe8de;background:#f2fffa;border-radius:999px;color:#095;font-size:12px}
+.list{display:flex;flex-direction:column;gap:6px}
+.card{border:1px solid var(--bd);border-radius:10px;padding:10px;margin-bottom:10px}
+.card.sel{border-color:var(--pri);box-shadow:0 0 0 2px #bfe}
+.btn{padding:8px 10px;border:1px solid var(--bd);background:#fff;border-radius:8px;cursor:pointer}
+.btn.pri{border-color:var(--pri);background:var(--pri-weak);color:#075;font-weight:700}
+.btn.dan{border-color:#fca5a5;color:#a00}
+.hidden{display:none}
+.flex{display:flex;gap:8px;align-items:center;flex-wrap:wrap}
+.progress{height:8px;background:#e2e8f0;border-radius:999px;overflow:hidden}
+.progress>span{display:block;height:100%;background:linear-gradient(90deg,#10b981,#22c55e);width:0%;transition:width 0.3s ease}
+.req label::after{content:" *";color:#ef4444}
+.note{background:#fffbeb;border:1px solid #fde68a;border-radius:8px;padding:8px;margin-top:10px}
+.checkbox-group{display:flex;flex-direction:column;gap:6px;padding:8px;border:1px solid var(--bd);border-radius:8px;background:#fafafa}
+.checkbox-item{display:flex;align-items:center;gap:8px}
+.checkbox-item input[type="checkbox"]{width:auto}
+.phase-section{margin-bottom:20px;padding:16px;border:1px solid var(--bd);border-radius:10px;background:#fafafa}
+
+.phase-header{display:flex;align-items:center;gap:10px;margin-bottom:12px}
+.phase-number{width:32px;height:32px;border-radius:50%;background:var(--pri);color:#fff;display:flex;align-items:center;justify-content:center;font-weight:700}
+.phase-title{font-size:18px;font-weight:700}
+.status-selector{display:flex;gap:8px;flex-wrap:wrap;margin:10px 0}
+.status-option{padding:6px 12px;border:1px solid var(--bd);border-radius:6px;cursor:pointer;background:#fff}
+.status-option.selected{border-color:var(--pri);background:var(--pri-weak);font-weight:600}
+.validation-gate{background:#fffbeb;border:2px solid #fbbf24;border-radius:8px;padding:12px;margin:12px 0}
+.validation-gate.passed{background:#f0fdf4;border-color:#86efac}
+</style>
+</head>
+<body>
+<header>
+  <div class="wrap">
+    <svg width="120" height="40" viewBox="0 0 120 40" style="margin-right:15px">
+      <text x="5" y="28" font-family="Arial, sans-serif" font-size="22" font-weight="700" fill="#000">Trustech</text>
+      <rect x="100" y="10" width="6" height="6" fill="#000"/>
+      <rect x="108" y="10" width="6" height="6" fill="#000"/>
+      <rect x="108" y="18" width="6" height="6" fill="#000"/>
+    </svg>
+    <div style="flex:1">
+      <h1 style="margin:0">Quotation Builder v08</h1>
+      <div class="small" style="color:#666">7 Steps / 7 Equipments</div>
+    </div>
+    <div class="flex" style="min-width:260px">
+      <div class="progress" style="flex:1"><span id="progressBar"></span></div>
+      <span class="small" id="progressText" style="width:64px;text-align:right">0%</span>
+    </div>
+    <div class="lang">
+      <button id="btnEN">EN</button>
+      <button id="btnFR">FR</button>
+    </div>
+    <div class="flex">
+      <button class="btn" id="saveProject">Save JSON</button>
+      <button class="btn" id="loadBtn">Load JSON</button>
+      <button class="btn dan" id="resetBtn" title="Clear all data and reset">Reset All</button>
+      <input type="file" id="loadProject" class="hidden" accept=".json"/>
+    </div>
+  </div>
+  <nav class="tabs">
+    <div class="wrap" id="navTabs"></div>
+  </nav>
+</header>
+
+<main>
+  <!-- Sidebar removed for full-width Step 4 -->
+
+  <section class="view">
+    <div id="stepContainer"></div>
+  </section>
+</main>
+
+<script>
+// i18n
+var T = {
+  EN: {
+    project: 'Step 1 • Project Header',
+    site: 'Step 2 • Site Capture',
+    perf: 'Step 3 • Review & Target Alignment',
+    opts: 'Step 4 • Option Builder',
+    cost: 'Step 5 • Cost & Pricing',
+    contract: 'Step 6 • Contract & Warranty',
+    preview: 'Step 7 • Preview & Export',
+    equip: 'Equip Specs',
+    projectName: 'Project Name',
+    clientName: 'Client Name',
+    quoteId: 'Quote ID',
+    revision: 'Revision',
+    preparedBy: 'Prepared By',
+    approvedBy: 'Approved By',
+    validityDate: 'Validity Date',
+    clientRef: 'Client Reference',
+    ndaInPlace: 'NDA in Place',
+    siteLocation: 'Site Location',
+    internalNotes: 'Internal Notes',
+    customerNotes: 'Customer Notes',
+    installContext: 'Install Context',
+    ambientTmin: 'Ambient T min (°C)',
+    ambientTmax: 'Ambient T max (°C)',
+    explosionClass: 'Explosion Class',
+    voltageService: 'Voltage Service',
+    utilities: 'Utilities',
+    emissionLimit: 'Emission Limit (mg/Nm³)',
+    noiseLimit: 'Noise Limit (dBA)',
+    accessHandling: 'Access / Handling',
+    floorArea: 'Floor Area (m²)',
+    headroom: 'Headroom (m)',
+    engineerNotes: 'Engineer Notes',
+    phase1: 'Phase 1 — Site Review',
+    phase2: 'Phase 2 — Meeting Outcome',
+    phase3: 'Phase 3 — Performance Target Setting',
+    siteReview: 'Site Information Review',
+    keyAgreements: 'Key Agreements',
+    openPoints: 'Open Points',
+    actionItems: 'Action Items',
+    decisionDate: 'Decision Date',
+    validationStatus: 'Client Validation Status',
+    globalTargets: 'Global Production Targets',
+    throughput: 'Throughput (tph)',
+    availability: 'Availability (%)',
+    deliveryTimeline: 'Delivery Timeline',
+    environmental: 'Environmental & Compliance',
+    emission: 'Emission (mg/Nm³)',
+    noise: 'Noise (dBA)',
+    regulatoryRef: 'Regulatory Reference',
+    energyEfficiency: 'Energy & Efficiency',
+    energyKwh: 'Energy (kWh/t)',
+    recoveryKpi: 'Recovery / Efficiency KPI',
+    utilityConstraints: 'Utility Constraints',
+    priorityMatrix: 'Priority & Trade-off Matrix',
+    equipOverrides: 'Equipment-Specific Overrides',
+    assumptions: 'Assumptions & Boundaries',
+    operatingBasis: 'Operating Basis',
+    feedVariability: 'Feed Variability',
+    exclusions: 'Exclusions (Scope Out)',
+    customerValidation: 'Customer Validation Status',
+    validationDate: 'Validation Date',
+    meetingRefId: 'Meeting Reference ID',
+    meetingSummary: 'Meeting Summary',
+    confirmedByClient: 'Confirmed by Client',
+    pendingValidation: 'Pending Validation',
+    internalProposal: 'Internal Proposal Only',
+    confirm: 'Confirm',
+    pending: 'Pending',
+    revisit: 'Revisit',
+    addNote: 'Add Note',
+    optionA: 'Option A',
+    optionB: 'Option B',
+    optionC: 'Option C',
+    optionType: 'Option Type',
+    minCapex: 'Minimum CAPEX',
+    capacityDriven: 'Capacity Driven',
+    futureProof: 'Future Proof',
+    engineeringSummary: 'Engineering Summary',
+    systemsEquipments: 'Systems & Equipments',
+    engineeringItems: 'Engineering Item List (BOM)',
+    optionNotes: 'Option Notes & Assumptions',
+    autoDraft: 'Auto Draft',
+    addEquipment: 'Add Equipment',
+    addSystem: 'Add System',
+    addItem: 'Add Item',
+    category: 'Category',
+    description: 'Description',
+    qty: 'Qty',
+    unit: 'Unit',
+    scope: 'Scope',
+    included: 'Included',
+    optional: 'Optional',
+    freight: 'Freight',
+    freightNotes: 'Freight Notes',
+    documents: 'Reference Documents & Notes',
+    uploadDocument: 'Upload Document',
+    selectFile: 'Click to select file...',
+    siteFiles: 'Site Photos, Drawings & Voice Notes',
+    uploadFile: 'Upload File',
+    costPricing: 'Cost & Pricing',
+    laborRate: 'Labor Rate ($/hr)',
+    marginPct: 'Margin (%)',
+    freightPct: 'Freight (%)',
+    optionSummary: 'Option Summary',
+    totalCapex: 'Total CAPEX',
+    totalCost: 'Total Cost',
+    sellingPrice: 'Selling Price',
+    exportCost: 'Export Cost Sheet',
+    contractWarranty: 'Contract & Warranty',
+    paymentTerms: 'Payment Terms',
+    deliveryTime: 'Delivery Time (weeks)',
+    warrantyPeriod: 'Warranty Period (months)',
+    warrantyNotes: 'Warranty Notes',
+    exclusions: 'Exclusions',
+    specialConditions: 'Special Conditions',
+    standardNotes: 'Standard Contract Notes',
+    note: 'Note',
+    laborRateGrid: 'Grille Tarifaire | Main d\'Oeuvre',
+    laborRatesValid2025: 'Les taux horaires, de jour sur semaine, en vigueur pour 2025 sont (*):',
+    conceptionDesign: 'CONCEPTION ET DESSINS DE PIÈCES',
+    mechanicSupervision: 'MÉCANIQUE - SUPERVISION - MONTAGE - MAINTENANCE',
+    additionalRates: 'FRAIS ADDITIONNELS',
+    engineerSenior: 'Ingénieur-Sénior',
+    engineerStandard: 'Ingénieur-Standard',
+    designer: 'Concepteur',
+    technicianDraftsman: 'Technicien-Dessinateur',
+    adminSupport: 'Secrétariat et personnel de soutien',
+    specialistDryer: 'Technicien-Spécialiste – Séchoir – Équilibrage',
+    supervisorSenior: 'Technicien Superviseur Sénior Spécialisé',
+    supervisorStandard: 'Technicien Superviseur Standard',
+    foremanMechanical: 'Contremaître Mécanique',
+    mechanicWelder: 'Mécanicien Soudeur',
+    assistantMechanic: 'Assistant Mécanicien',
+    supplies: 'Fournitures (gants, masques, autres)',
+    travelFees: 'Les frais de voyagement sont de',
+    accommodation: 'Si l\'hébergement local est nécessaire, les frais de',
+    mealAllowance: 'Si requis par l\'horaire, des frais de subsistance de',
+    overtimeSaturday: 'Temps supplémentaire et les Samedi seront chargés à',
+    sundayHolidays: 'Les Dimanche ainsi que les jours fériés seront chargés à',
+    ratesSubjectToChange: '(*) Taux sujets à changement sans préavis.',
+    contractNotes: 'Notes Contractuelles',
+    addAdditionalNote: '+ Ajouter Note Additionnelle',
+    standardTrustechNotes: '✓ Les 7 notes standard Trustech',
+    checkNotesForStep7: '☑ Cochez les notes à inclure dans le document final (Step 7)',
+    additionalNotes: 'NOTES ADDITIONNELLES',
+    deleteAdditionalNote: 'Supprimer cette note additionnelle?',
+    laborRateGrid: 'Labor Rate Grid | Workforce',
+    laborRatesValid2025: 'Hourly rates, weekday daytime, valid for 2025 (*):',
+    conceptionDesign: 'DESIGN & ENGINEERING',
+    mechanicSupervision: 'MECHANICAL - SUPERVISION - ASSEMBLY - MAINTENANCE',
+    additionalRates: 'ADDITIONAL RATES',
+    engineerSenior: 'Senior Engineer',
+    engineerStandard: 'Standard Engineer',
+    designer: 'Designer',
+    technicianDraftsman: 'Technician-Draftsman',
+    adminSupport: 'Administrative & Support Staff',
+    specialistDryer: 'Specialist Technician - Dryer - Balancing',
+    supervisorSenior: 'Senior Specialized Supervisor',
+    supervisorStandard: 'Standard Supervisor',
+    foremanMechanical: 'Mechanical Foreman',
+    mechanicWelder: 'Mechanic Welder',
+    assistantMechanic: 'Assistant Mechanic',
+    supplies: 'Supplies (gloves, masks, others)',
+    travelFees: 'Travel fees',
+    accommodation: 'Local accommodation (if necessary)',
+    mealAllowance: 'Meal allowance (if required)',
+    overtimeSaturday: 'Overtime and Saturday will be charged at',
+    sundayHolidays: 'Sunday and holidays will be charged at',
+    ratesSubjectToChange: '(*) Rates subject to change without notice.',
+    contractNotes: 'CONTRACT NOTES',
+    addAdditionalNote: '+ Add Additional Note',
+    standardTrustechNotes: '✓ Standard Trustech notes',
+    checkNotesForStep7: '☑ Check notes to include in final document (Step 7)',
+    additionalNotes: 'ADDITIONAL NOTES',
+    deleteAdditionalNote: 'Delete this additional note?',
+    docType: 'Document Type',
+    internal: 'Internal',
+    customer: 'Customer',
+    aiSummary: 'AI Summary',
+    generateSummary: 'Generate Summary',
+    noDocuments: 'No documents uploaded yet'
+  },
+  FR: {
+    project: 'Étape 1 • En-tête du projet',
+    site: 'Étape 2 • Capture du site',
+    perf: 'Étape 3 • Revue & Alignement',
+    opts: 'Étape 4 • Options',
+    cost: 'Étape 5 • Coûts & Prix',
+    contract: 'Étape 6 • Contrat',
+    preview: 'Étape 7 • Aperçu',
+    equip: 'Spécifications',
+    projectName: 'Nom du projet',
+    clientName: 'Nom du client',
+    quoteId: 'ID de soumission',
+    revision: 'Révision',
+    preparedBy: 'Préparé par',
+    approvedBy: 'Approuvé par',
+    validityDate: 'Date de validité',
+    clientRef: 'Référence client',
+    ndaInPlace: 'Entente de confidentialité',
+    siteLocation: 'Localisation',
+    internalNotes: 'Notes internes',
+    customerNotes: 'Notes client',
+    installContext: 'Contexte installation',
+    ambientTmin: 'T min (°C)',
+    ambientTmax: 'T max (°C)',
+    explosionClass: 'Classe explosion',
+    voltageService: 'Tension',
+    utilities: 'Services',
+    emissionLimit: 'Limite émission',
+    noiseLimit: 'Limite bruit',
+    accessHandling: 'Accès / Manutention',
+    floorArea: 'Surface (m²)',
+    headroom: 'Hauteur (m)',
+    engineerNotes: 'Notes ingénieur',
+    phase1: 'Phase 1 — Revue site',
+    phase2: 'Phase 2 — Réunion',
+    phase3: 'Phase 3 — Objectifs',
+    siteReview: 'Revue du site',
+    keyAgreements: 'Accords clés',
+    openPoints: 'Points ouverts',
+    actionItems: 'Actions',
+    decisionDate: 'Date décision',
+    validationStatus: 'Statut validation',
+    globalTargets: 'Objectifs globaux',
+    throughput: 'Débit (tph)',
+    availability: 'Disponibilité (%)',
+    deliveryTimeline: 'Livraison',
+    environmental: 'Environnement',
+    emission: 'Émission',
+    noise: 'Bruit',
+    regulatoryRef: 'Référence réglementaire',
+    energyEfficiency: 'Énergie & Efficacité',
+    energyKwh: 'Énergie (kWh/t)',
+    recoveryKpi: 'KPI efficacité',
+    utilityConstraints: 'Contraintes services',
+    priorityMatrix: 'Matrice priorités',
+    equipOverrides: 'Dérogations équipement',
+    assumptions: 'Hypothèses & Limites',
+    operatingBasis: 'Base opération',
+    feedVariability: 'Variabilité alimentation',
+    exclusions: 'Exclusions',
+    customerValidation: 'Validation client',
+    validationDate: 'Date validation',
+    meetingRefId: 'Réf. réunion',
+    meetingSummary: 'Résumé réunion',
+    confirmedByClient: 'Confirmé client',
+    pendingValidation: 'En attente',
+    internalProposal: 'Proposition interne',
+    confirm: 'Confirmer',
+    pending: 'En attente',
+    revisit: 'Revoir',
+    addNote: 'Ajouter note',
+    optionA: 'Option A',
+    optionB: 'Option B',
+    optionC: 'Option C',
+    optionType: 'Type option',
+    minCapex: 'CAPEX Minimum',
+    capacityDriven: 'Capacité',
+    futureProof: 'Pérenne',
+    engineeringSummary: 'Résumé ingénierie',
+    systemsEquipments: 'Systèmes & Équipements',
+    engineeringItems: 'Liste items (BOM)',
+    optionNotes: 'Notes & Hypothèses',
+    autoDraft: 'Ébauche auto',
+    addEquipment: 'Ajouter équipement',
+    addSystem: 'Ajouter système',
+    addItem: 'Ajouter item',
+    category: 'Catégorie',
+    description: 'Description',
+    qty: 'Qté',
+    unit: 'Unité',
+    scope: 'Portée',
+    included: 'Inclus',
+    optional: 'Optionnel',
+    freight: 'Transport',
+    freightNotes: 'Notes transport',
+    documents: 'Documents & Notes de référence',
+    uploadDocument: 'Télécharger document',
+    selectFile: 'Cliquer pour sélectionner...',
+    siteFiles: 'Photos, Plans & Notes vocales',
+    uploadFile: 'Télécharger fichier',
+    costPricing: 'Coûts & Prix',
+    laborRate: 'Taux horaire ($/h)',
+    marginPct: 'Marge (%)',
+    freightPct: 'Transport (%)',
+    optionSummary: 'Résumé option',
+    totalCapex: 'CAPEX total',
+    totalCost: 'Coût total',
+    sellingPrice: 'Prix de vente',
+    exportCost: 'Exporter feuille coûts',
+    contractWarranty: 'Contrat & Garantie',
+    paymentTerms: 'Conditions paiement',
+    deliveryTime: 'Délai livraison (semaines)',
+    warrantyPeriod: 'Période garantie (mois)',
+    warrantyNotes: 'Notes garantie',
+    exclusions: 'Exclusions',
+    specialConditions: 'Conditions spéciales',
+    standardNotes: 'Notes contrat standard',
+    note: 'Note',
+    laborRateGrid: 'Grille Tarifaire | Main d\'Oeuvre',
+    laborRatesValid2025: 'Les taux horaires, de jour sur semaine, en vigueur pour 2025 sont (*):',
+    conceptionDesign: 'CONCEPTION ET DESSINS DE PIÈCES',
+    mechanicSupervision: 'MÉCANIQUE - SUPERVISION - MONTAGE - MAINTENANCE',
+    additionalRates: 'FRAIS ADDITIONNELS',
+    engineerSenior: 'Ingénieur-Sénior',
+    engineerStandard: 'Ingénieur-Standard',
+    designer: 'Concepteur',
+    technicianDraftsman: 'Technicien-Dessinateur',
+    adminSupport: 'Secrétariat et personnel de soutien',
+    specialistDryer: 'Technicien-Spécialiste – Séchoir – Équilibrage',
+    supervisorSenior: 'Technicien Superviseur Sénior Spécialisé',
+    supervisorStandard: 'Technicien Superviseur Standard',
+    foremanMechanical: 'Contremaître Mécanique',
+    mechanicWelder: 'Mécanicien Soudeur',
+    assistantMechanic: 'Assistant Mécanicien',
+    supplies: 'Fournitures (gants, masques, autres)',
+    travelFees: 'Les frais de voyagement sont de',
+    accommodation: 'Si l\'hébergement local est nécessaire, les frais de',
+    mealAllowance: 'Si requis par l\'horaire, des frais de subsistance de',
+    overtimeSaturday: 'Temps supplémentaire et les Samedi seront chargés à',
+    sundayHolidays: 'Les Dimanche ainsi que les jours fériés seront chargés à',
+    ratesSubjectToChange: '(*) Taux sujets à changement sans préavis.',
+    contractNotes: 'Notes Contractuelles',
+    addAdditionalNote: '+ Ajouter Note Additionnelle',
+    standardTrustechNotes: '✓ Les 7 notes standard Trustech',
+    checkNotesForStep7: '☑ Cochez les notes à inclure dans le document final (Step 7)',
+    additionalNotes: 'NOTES ADDITIONNELLES',
+    deleteAdditionalNote: 'Supprimer cette note additionnelle?',
+    laborRateGrid: 'Labor Rate Grid | Workforce',
+    laborRatesValid2025: 'Hourly rates, weekday daytime, valid for 2025 (*):',
+    conceptionDesign: 'DESIGN & ENGINEERING',
+    mechanicSupervision: 'MECHANICAL - SUPERVISION - ASSEMBLY - MAINTENANCE',
+    additionalRates: 'ADDITIONAL RATES',
+    engineerSenior: 'Senior Engineer',
+    engineerStandard: 'Standard Engineer',
+    designer: 'Designer',
+    technicianDraftsman: 'Technician-Draftsman',
+    adminSupport: 'Administrative & Support Staff',
+    specialistDryer: 'Specialist Technician - Dryer - Balancing',
+    supervisorSenior: 'Senior Specialized Supervisor',
+    supervisorStandard: 'Standard Supervisor',
+    foremanMechanical: 'Mechanical Foreman',
+    mechanicWelder: 'Mechanic Welder',
+    assistantMechanic: 'Assistant Mechanic',
+    supplies: 'Supplies (gloves, masks, others)',
+    travelFees: 'Travel fees',
+    accommodation: 'Local accommodation (if necessary)',
+    mealAllowance: 'Meal allowance (if required)',
+    overtimeSaturday: 'Overtime and Saturday will be charged at',
+    sundayHolidays: 'Sunday and holidays will be charged at',
+    ratesSubjectToChange: '(*) Rates subject to change without notice.',
+    contractNotes: 'CONTRACT NOTES',
+    addAdditionalNote: '+ Add Additional Note',
+    standardTrustechNotes: '✓ Standard Trustech notes',
+    checkNotesForStep7: '☑ Check notes to include in final document (Step 7)',
+    additionalNotes: 'ADDITIONAL NOTES',
+    deleteAdditionalNote: 'Delete this additional note?',
+    docType: 'Type de document',
+    internal: 'Interne',
+    customer: 'Client',
+    aiSummary: 'Résumé IA',
+    generateSummary: 'Générer résumé',
+    noDocuments: 'Aucun document téléchargé'
+  }
+};
+
+var LANG = 'EN';
+var currentTab = 'project';
+
+// Equipment Templates Library (7 types from Product Lineup Excel)
+var EQUIPMENT_TEMPLATES = {
+  "01. AFS - Air Filtration System": {
+    code: "AFS",
+    category: "Air Filtration",
+    fields: [
+      {group: "Air Performance", label: "Design Airflow", unit: "CFM", type: "number", required: true},
+      {group: "Air Performance", label: "Static Pressure", unit: "in.WG", type: "number", required: true},
+      {group: "Air Performance", label: "Air-to-Cloth Ratio", unit: "ft/min", type: "number", required: true},
+      {group: "Filter Section", label: "Filter Type", unit: "", type: "select", options: ["Bag", "Cartridge"], required: true},
+      {group: "Filter Section", label: "Filter Material", unit: "", type: "select", options: ["Polyester", "PTFE", "Aramid"], required: true},
+      {group: "Filter Section", label: "Filter Quantity", unit: "ea", type: "number", required: true},
+      {group: "Cleaning Section", label: "Pulse Valves", unit: "ea", type: "number", required: true},
+      {group: "Hopper Section", label: "Hopper Count", unit: "ea", type: "number", required: true},
+      {group: "Fan Section", label: "Fan Capacity", unit: "CFM", type: "number", required: true},
+      {group: "Fan Section", label: "Fan Motor Power", unit: "HP", type: "number", required: true},
+      {group: "Safety", label: "Grounding Verified", unit: "", type: "select", options: ["Yes", "No"], required: false}
+    ]
+  },
+  "02. CONV - Conveyor System": {
+    code: "CONV",
+    category: "Material Handling",
+    fields: [
+      {group: "Type", label: "Conveying Type", unit: "", type: "select", options: ["Pneumatic", "Mechanical"], required: true},
+      {group: "Capacity", label: "Throughput", unit: "tph", type: "number", required: true},
+      {group: "Pneumatic", label: "Blower Power", unit: "HP", type: "number", required: false},
+      {group: "Mechanical", label: "Screw Diameter", unit: "in", type: "number", required: false},
+      {group: "Control", label: "VFD Applied", unit: "", type: "select", options: ["Yes", "No"], required: false}
+    ]
+  },
+  "03. SILO - Silo Storage": {
+    code: "SILO",
+    category: "Storage",
+    fields: [
+      {group: "Capacity", label: "Total Volume", unit: "m³", type: "number", required: true},
+      {group: "Structure", label: "Diameter", unit: "ft", type: "number", required: true},
+      {group: "Structure", label: "Straight Height", unit: "ft", type: "number", required: true},
+      {group: "Discharge", label: "Discharge Type", unit: "", type: "select", options: ["Rotary Valve", "Screw", "Pinch"], required: true},
+      {group: "Safety", label: "Explosion Vent", unit: "", type: "select", options: ["Yes", "No"], required: false}
+    ]
+  },
+  "04. DRYER - Rotary Dryer": {
+    code: "DRYER",
+    category: "Thermal Processing",
+    fields: [
+      {group: "Process", label: "Inlet Temperature", unit: "°C", type: "number", required: true},
+      {group: "Process", label: "Outlet Temperature", unit: "°C", type: "number", required: true},
+      {group: "Capacity", label: "Throughput", unit: "tph", type: "number", required: true},
+      {group: "Energy", label: "Burner Capacity", unit: "MMBtu/h", type: "number", required: true},
+      {group: "Drive", label: "Motor Power", unit: "HP", type: "number", required: false}
+    ]
+  },
+  "05. GBR-DH - GBR Dryer Hopper": {
+    code: "GBR-DH",
+    category: "Thermal Processing",
+    innovation: true,
+    fields: [
+      {group: "Process", label: "Inlet Temperature", unit: "°C", type: "number", required: true},
+      {group: "Process", label: "Outlet Temperature", unit: "°C", type: "number", required: true},
+      {group: "Capacity", label: "Material Flow", unit: "tph", type: "number", required: true},
+      {group: "Energy", label: "Heating Power", unit: "kW", type: "number", required: true},
+      {group: "Safety", label: "Overheat Protection", unit: "", type: "select", options: ["Yes", "No"], required: false}
+    ]
+  },
+  "06. SILO-DH - Silo Dryer Hopper": {
+    code: "SILO-DH",
+    category: "Storage & Drying",
+    innovation: true,
+    fields: [
+      {group: "Capacity", label: "Usable Volume", unit: "m³", type: "number", required: true},
+      {group: "Process", label: "Airflow Rate", unit: "CFM", type: "number", required: true},
+      {group: "Heating", label: "Heater Power", unit: "kW", type: "number", required: true},
+      {group: "Control", label: "Humidity Control", unit: "", type: "select", options: ["Yes", "No"], required: false},
+      {group: "Safety", label: "Pressure Relief", unit: "", type: "select", options: ["Yes", "No"], required: false}
+    ]
+  },
+  "07. ETS - Electro Thermal Stack": {
+    code: "ETS",
+    category: "Energy Storage",
+    innovation: true,
+    esg: true,
+    fields: [
+      {group: "Capacity", label: "Storage Capacity", unit: "kWh", type: "number", required: true},
+      {group: "Capacity", label: "Charging Power", unit: "kW", type: "number", required: true},
+      {group: "Process", label: "Max Temperature", unit: "°C", type: "number", required: true},
+      {group: "Fluid", label: "Working Medium", unit: "", type: "select", options: ["Air", "Oil", "Salt", "Solid"], required: true},
+      {group: "Control", label: "PLC Integration", unit: "", type: "select", options: ["Yes", "No"], required: true}
+    ]
+  }
+};
+
+
+var state = {
+  project: {
+    header: {
+      project_name: '',
+      client: '',
+      quote_id: '',
+      rev: '',
+      prepared_by: '',
+      approved_by: '',
+      validity_date: '',
+      client_ref: '',
+      nda: '',
+      site_location: '',
+      internal_notes: '',
+      customer_notes: '',
+      documents: []
+    },
+    site: {
+      install: '',
+      ambient_min: '',
+      ambient_max: '',
+      explosion: '',
+      voltage: '575V/3P',
+      utilities: '',
+      emission_mgNm3: '',
+      noise_dBA: '',
+      access_handling: [],
+      access_notes: '',
+      floor_area_m2: '',
+      headroom_m: '',
+      engineer_notes: [],
+      site_files: []
+    },
+    targets: {
+      site_review_status: 'pending',
+      site_review_comments: '',
+      meeting_validated: false,
+      key_agreements: '',
+      open_points: '',
+      action_items: '',
+      decision_date: '',
+      validation_status: 'Pending',
+      meeting_summary: '',
+      meeting_ref_id: '',
+      throughput: '',
+      availability_pct: '',
+      delivery: '',
+      emission: '',
+      noise: '',
+      regulatory_ref: '',
+      energy_kwh_t: '',
+      recovery_kpi: '',
+      utility_constraints: '',
+      priorities: ['Production', 'Emission', 'Energy', 'CAPEX', 'Reliability', 'Schedule'],
+      equipment_overrides: {},
+      operating_basis: '',
+      feed_variability: '',
+      exclusions: '',
+      customer_validation: 'Internal Proposal Only',
+      validation_date: ''
+    },
+    contract: {
+      payment_terms: '30% à la commande (sur réception de facture). Projet début à la réception du premier paiement.\n20% Net 45 jours à la remise des dessins d\'atelier.\n30% avant expédition (paiement doit être reçu avant expédition).\n20% Net 45 jours suivant installation (max 60 jours après expédition).\nNote: Trustech demeure propriétaire des équipements fournis tant que l\'ensemble des paiements ne sont pas complétés par le client.',
+      delivery_weeks: 16,
+      warranty_months: 12,
+      warranty_notes: 'Garantie sur efficacité de filtration (au niveau des filtres) pour respecter les normes en vigueur pour le dépoussiéreur.\nGarantie sur le débit développé par le nouveau ventilateur fourni.\nGarantie générale de 1 an sur la fonctionnalité des nouveaux équipements et composantes fournies, s\'ils sont opérés selon les recommandations des manufacturiers et de Trustech.',
+      exclusions: 'Aucune garantie sur équipements, composantes et matériaux existants qui seront réutilisés.\nAucune garantie sur les pièces d\'usure tel que filtres, conduits, etc. à moins qu\'il s\'agisse d\'un défaut de fabrication ou d\'installation.\nAucune garantie sur l\'efficacité de capture aux points d\'émission de poussières.',
+      special_conditions: 'Suivant expédition des équipements et composantes Trustech ne peut être tenu responsable de tous dommages, pertes, vol, bris, etc. du matériel expédié qui sera sous la responsabilité du client.',
+      note1: 'TERMES DE PAIEMENT: 30% à la commande (sur réception de facture). Projet début à la réception du premier paiement. 20% Net 45 jours à la remise des dessins d\'atelier. 30% avant expédition (paiement doit être reçu avant expédition). 20% Net 45 jours suivant installation (max 60 jours après expédition). Note: Trustech demeure propriétaire des équipements fournis tant que l\'ensemble des paiements ne sont pas complétés par le client.',
+      note2: 'ÉCHÉANCIER DE LIVRAISON PRÉVU: Suivant réception du premier paiement et du nuage de point (scan 3D) prêt à utiliser avec logiciel Inventor: (a) Ingénierie et remise de dessins d\'atelier: 4 à 6 semaines (b) Fabrication: 12-14 semaines (suivant approbation des dessins d\'atelier)',
+      note3: 'RESPONSABILITÉ DE TRUSTECH: Conception, fabrication et fourniture des éléments décrits et retenus à cette soumission. Ingénierie de conception fait en partenariat avec Dynagroup Technologies Inc. Fonctionnalité des équipements et composantes. Suivant remise des dessins d\'atelier, fourniture au client d\'un prix pour réseaux de conduits nécessaires et réseau de décharge d\'air à l\'atmosphère. Le tout selon notre grille tarifaire 2025 en vigueur.',
+      note4: 'RESPONSABILITÉ DU CLIENT: Transport, réception et manutention des équipements lors de la livraison. Tous les travaux de nature civil/structure afin de recevoir les nouveaux équipements (si requis). Layout général des équipements, fourniture d\'un scan 3D. L\'installation complète des équipements et composantes. Tout travaux de nature électrique, instrumentation, contrôle, pneumatique, civil, etc.',
+      note5: 'VALIDITÉ DE LA PROPOSITION: La présente proposition est valide pour 30 jours. Voir également la Note 7 pour autres notes et exceptions.',
+      note6: 'GARANTIES: Garantie sur efficacité de filtration (au niveau des filtres) pour respecter les normes en vigueur pour le dépoussiéreur. Garantie sur le débit développé par le nouveau ventilateur fourni. Garantie générale de 1 an sur la fonctionnalité des nouveaux équipements et composantes fournies, s\'ils sont opérés selon les recommandations des manufacturiers et de Trustech. Option: Si le client désire obtenir une garantie de 2 ans (au lieu de 1 an): le coût associé additionnel est de 3500$.',
+      note7: 'NOTES & EXCLUSIONS: Advenant des délais dans la livraison et disponibilité des équipements et composantes ci-haut décrit qui affecterait les délais de livraison estimés présentés à la Note 2: aucune pénalité, dommages-intérêts liquidés et/ou quelconque autre retenu sur le prix de vente établi pourra être chargé à Trustech. Suivant expédition des équipements et composantes Trustech ne peut être tenu responsable de tous dommages, pertes, vol, bris, etc. du matériel expédié qui sera sous la responsabilité du client. Aucune caution ne sera fournie par Trustech.'
+    }
+  },
+  equipments: [],
+  options: [],
+  pricing: {
+    labor_rate_per_hour: 95,
+    margin_percentage: 25,
+    freight_percentage: 5,
+    travel_rate_km: 0.85,
+    accommodation_per_night: 200,
+    meal_allowance: 50,
+    supplies_per_day: 50,
+    overtime_multiplier: 1.5,
+    sunday_multiplier: 2.0,
+    labor_rates: {
+      engineer_senior: 175.00,
+      engineer_standard: 150.00,
+      designer: 115.00,
+      technician_draftsman: 97.50,
+      admin_support: 65.00,
+      specialist_dryer: 155.00,
+      supervisor_senior: 125.00,
+      supervisor_standard: 95.00,
+      foreman_mechanical: 90.00,
+      mechanic_welder: 85.50,
+      assistant_mechanic: 80.50
+    },
+    notes: 'Taux horaires 2025 - Trustech Systèmes et Procédés Inc.\nTaux sujets à changement sans préavis.'
+  },
+  active: null
+};
+
+var ACCESS_OPTIONS = [
+  'Truck access',
+  'Crane required',
+  'Forklift available',
+  'Indoor installation',
+  'Outdoor installation',
+  'Limited access',
+  'Manual handling only',
+  'Existing structure constraint',
+  'Phased installation required'
+];
+
+function $(sel) {
+  return document.querySelector(sel);
+}
+
+function el(tag, cls) {
+  var elem = document.createElement(tag);
+  if (cls) elem.className = cls;
+  return elem;
+}
+
+function uid(sys) {
+  return sys + '-' + Math.random().toString(36).slice(2, 7).toUpperCase();
+}
+
+function getv(path) {
+  var seg = path.split('.');
+  var cur = state;
+  for (var i = 0; i < seg.length; i++) {
+    if (!cur) return '';
+    cur = cur[seg[i]];
+  }
+  return cur || '';
+}
+
+function setv(path, val) {
+  var seg = path.split('.');
+  var cur = state;
+  for (var i = 0; i < seg.length - 1; i++) {
+    if (!cur[seg[i]]) cur[seg[i]] = {};
+    cur = cur[seg[i]];
+  }
+  cur[seg[seg.length - 1]] = val;
+}
+
+function autosave() {
+  try {
+    localStorage.setItem('qb_state_v08', JSON.stringify(state));
+    computeProgress();
+  } catch (e) {}
+}
+
+function computeProgress() {
+  var req = 0, ok = 0;
+  var h = state.project.header;
+  if (h.project_name) ok++;
+  req++;
+  if (h.client) ok++;
+  req++;
+  if (h.quote_id) ok++;
+  req++;
+  if (h.rev && h.rev !== '') ok++;
+  req++;
+  if (h.nda && h.nda !== '') ok++;
+  req++;
+  
+  var s = state.project.site;
+  if (s.install && s.install !== '') ok++;
+  req++;
+  if (s.ambient_min !== '' && s.ambient_min !== null && s.ambient_min !== undefined) ok++;
+  req++;
+  if (s.ambient_max !== '' && s.ambient_max !== null && s.ambient_max !== undefined) ok++;
+  req++;
+  if (s.explosion && s.explosion !== '') ok++;
+  req++;
+  if (s.voltage && s.voltage !== '') ok++;
+  req++;
+  
+  if (state.project.targets.site_review_status === 'confirmed') ok++;
+  req++;
+  if (state.project.targets.meeting_validated) ok++;
+  req++;
+  
+  var t = state.project.targets;
+  if (t.throughput) ok++;
+  req++;
+  if (t.emission) ok++;
+  req++;
+  
+  // Check if at least one option is reasonably complete
+  if (state.options && state.options.length > 0) {
+    var hasCompleteOption = false;
+    for (var i = 0; i < state.options.length; i++) {
+      var opt = state.options[i];
+      if (opt.summary && opt.summary.length > 50 && 
+          opt.equipments && opt.equipments.length > 0) {
+        hasCompleteOption = true;
+        break;
+      }
+    }
+    if (hasCompleteOption) ok++;
+  }
+  req++;
+  
+  if (state.equipments.length > 0) ok++;
+  req++;
+  
+  var pct = req > 0 ? Math.round((ok / req) * 100) : 0;
+  var bar = $('#progressBar');
+  var text = $('#progressText');
+  if (bar) bar.style.width = pct + '%';
+  if (text) text.textContent = pct + '%';
+}
+
+function paintTabs() {
+  var nav = $('#navTabs');
+  nav.innerHTML = '';
+  var steps = ['project', 'site', 'perf', 'opts', 'cost', 'contract', 'preview'];
+  for (var i = 0; i < steps.length; i++) {
+    var b = el('button', 'tabbtn');
+    b.textContent = T[LANG][steps[i]];
+    b.dataset.tab = steps[i];
+    b.onclick = (function(id) {
+      return function() { showStep(id); };
+    })(steps[i]);
+    nav.appendChild(b);
+  }
+  var b2 = el('button', 'tabbtn');
+  b2.textContent = T[LANG].equip;
+  b2.dataset.tab = 'equip';
+  b2.onclick = function() { showStep('equip'); };
+  nav.appendChild(b2);
+}
+
+function activateTab(id) {
+  var tabs = document.querySelectorAll('.tabbtn');
+  for (var i = 0; i < tabs.length; i++) {
+    tabs[i].classList.toggle('active', tabs[i].dataset.tab === id);
+  }
+}
+
+function formGrid(children) {
+  var d = el('div', 'row');
+  for (var i = 0; i < children.length; i++) {
+    d.appendChild(children[i]);
+  }
+  return d;
+}
+
+function field(def, path) {
+  var w = el('div', (def.req ? 'req ' : '') + (def.w || 'f2'));
+  var label = el('label');
+  label.textContent = def.label + (def.u ? ' (' + def.u + ')' : '');
+  
+  var input;
+  if (def.type === 'select') {
+    input = el('select');
+    var opts = def.opts || [];
+    for (var i = 0; i < opts.length; i++) {
+      var o = el('option');
+      o.value = opts[i];
+      o.textContent = opts[i];
+      input.appendChild(o);
+    }
+    input.value = getv(path) || (opts.length > 0 ? opts[0] : '');
+  } else if (def.type === 'number') {
+    input = el('input');
+    input.type = 'number';
+    input.value = getv(path) || '';
+  } else if (def.type === 'textarea') {
+    input = el('textarea');
+    input.value = getv(path) || '';
+  } else {
+    input = el('input');
+    input.type = 'text';
+    input.value = getv(path) || '';
+  }
+  
+  input.oninput = function() {
+    setv(path, input.value);
+    computeProgress();
+    autosave();
+  };
+  
+  w.appendChild(label);
+  w.appendChild(input);
+  return w;
+}
+
+
+// BOM Generation Rules
+var BOM_RULES = {
+  "01. AFS - Air Filtration System": {
+    "Equipment": [
+      {desc: "Baghouse Dust Collector Unit", qty: 1, unit: "ea"},
+      {desc: "Filter Bags - {Filter Material}", qtyFrom: "Filter Quantity", unit: "ea"},
+      {desc: "Pulse Cleaning System", qty: 1, unit: "lot"}
+    ],
+    "Electrical": [
+      {desc: "Induced Draft Fan - {Fan Motor Power} HP", qty: 1, unit: "ea"}
+    ],
+    "Installation": [
+      {desc: "Installation Labor", qty: 40, unit: "hrs"}
+    ]
+  },
+  "02. CONV - Conveyor System": {
+    "Equipment": [
+      {desc: "Conveyor System", qty: 1, unit: "ea"}
+    ],
+    "Installation": [
+      {desc: "Installation Labor", qty: 24, unit: "hrs"}
+    ]
+  },
+  "03. SILO - Silo Storage": {
+    "Equipment": [
+      {desc: "Storage Silo - {Total Volume} m³", qty: 1, unit: "ea"}
+    ],
+    "Fabrication": [
+      {desc: "Silo Structure & Hopper", qty: 1, unit: "lot"}
+    ]
+  },
+  "04. DRYER - Rotary Dryer": {
+    "Equipment": [
+      {desc: "Rotary Dryer - {Burner Capacity} MMBtu/h", qty: 1, unit: "ea"}
+    ],
+    "Installation": [
+      {desc: "Installation", qty: 80, unit: "hrs"}
+    ]
+  },
+  "05. GBR-DH - GBR Dryer Hopper": {
+    "Equipment": [
+      {desc: "GBR Dryer Hopper - {Heating Power} kW", qty: 1, unit: "ea"}
+    ],
+    "Installation": [
+      {desc: "Installation", qty: 40, unit: "hrs"}
+    ]
+  },
+  "06. SILO-DH - Silo Dryer Hopper": {
+    "Equipment": [
+      {desc: "Silo Dryer Hopper - {Heater Power} kW", qty: 1, unit: "ea"}
+    ],
+    "Installation": [
+      {desc: "Installation", qty: 32, unit: "hrs"}
+    ]
+  },
+  "07. ETS - Electro Thermal Stack": {
+    "Equipment": [
+      {desc: "Thermal Storage - {Storage Capacity} kWh", qty: 1, unit: "ea"}
+    ],
+    "Controls": [
+      {desc: "PLC Control System", condition: "PLC Integration=Yes", qty: 1, unit: "ea"}
+    ],
+    "Installation": [
+      {desc: "Installation", qty: 40, unit: "hrs"}
+    ]
+  }
+};
+
+function generateBOMFromEquipment() {
+  if (!state.activeOption) return;
+  var option = state.options[state.activeOption];
+  if (!option.equipments || option.equipments.length === 0) {
+    alert('No equipment. Add equipment first.');
+    return;
+  }
+  
+  var generated = [];
+  
+  for (var e = 0; e < option.equipments.length; e++) {
+    var eq = option.equipments[e];
+    if (!eq.template || !BOM_RULES[eq.template]) continue;
+    
+    var rules = BOM_RULES[eq.template];
+    var eqQty = parseInt(eq.qty) || 1;
+    
+    for (var category in rules) {
+      var items = rules[category];
+      
+      for (var i = 0; i < items.length; i++) {
+        var rule = items[i];
+        
+        if (rule.condition) {
+          var parts = rule.condition.split('=');
+          if (!eq.specs || eq.specs[parts[0]] !== parts[1]) continue;
+        }
+        
+        var qty = rule.qty || 1;
+        if (rule.qtyFrom && eq.specs && eq.specs[rule.qtyFrom]) {
+          qty = parseInt(eq.specs[rule.qtyFrom]) || 1;
+        }
+        qty = qty * eqQty;
+        
+        var desc = rule.desc;
+        var matches = desc.match(/\{([^}]+)\}/g);
+        if (matches) {
+          for (var m = 0; m < matches.length; m++) {
+            var param = matches[m].slice(1, -1);
+            var value = eq.specs && eq.specs[param] ? eq.specs[param] : '—';
+            desc = desc.replace(matches[m], value);
+          }
+        }
+        
+        desc = eq.name + ' - ' + desc;
+        
+        generated.push({
+          cat: category,
+          desc: desc,
+          qty: qty,
+          unit: rule.unit,
+          scope: 'Included'
+        });
+      }
+    }
+  }
+  
+  if (generated.length === 0) {
+    alert('No BOM items. Assign templates to equipment.');
+    return;
+  }
+  
+  if (!option.items) option.items = [];
+  var added = 0;
+  
+  for (var i = 0; i < generated.length; i++) {
+    var exists = false;
+    for (var j = 0; j < option.items.length; j++) {
+      if (option.items[j].desc === generated[i].desc) {
+        exists = true;
+        break;
+      }
+    }
+    if (!exists) {
+      option.items.push(generated[i]);
+      added++;
+    }
+  }
+  
+  autosave();
+  showStep('opts');
+  alert('✓ Generated ' + added + ' BOM items');
+}
+
+
+function showStep(id) {
+  activateTab(id);
+  currentTab = id;
+  computeProgress();
+  autosave();
+  
+  // Show/hide sidebar based on step
+  var sidebar = $('#equipSidebar');
+  var mainElem = document.querySelector('main');
+  if (sidebar && mainElem) {
+    if (id === 'opts') {
+      sidebar.classList.add('active');
+      mainElem.classList.add('with-sidebar');
+      paintOptionEquipList();
+    } else {
+      sidebar.classList.remove('active');
+      mainElem.classList.remove('with-sidebar');
+    }
+  }
+  
+  var box = $('#stepContainer');
+  box.innerHTML = '';
+  
+  // Always update progress when switching steps
+  setTimeout(function() {
+    computeProgress();
+  }, 50);
+  
+  if (id === 'project') return renderProject(box);
+  if (id === 'site') return renderSite(box);
+  if (id === 'perf') return renderPerf(box);
+  if (id === 'opts') return renderOpts(box);
+  if (id === 'cost') return renderCost(box);
+  if (id === 'contract') return renderContract(box);
+  if (id === 'preview') return renderPreview(box);
+  if (id === 'equip') return renderEquip(box);
+}
+
+function renderProject(box) {
+  var title = el('h2');
+  title.textContent = T[LANG].project;
+  box.appendChild(title);
+  
+  box.appendChild(formGrid([
+    field({label: T[LANG].projectName, type: 'text', req: true, w: 'f3'}, 'project.header.project_name'),
+    field({label: T[LANG].clientName, type: 'text', req: true, w: 'f3'}, 'project.header.client'),
+    field({label: T[LANG].quoteId, type: 'text', req: true, w: 'f2'}, 'project.header.quote_id'),
+    field({label: T[LANG].revision, type: 'text', req: true, w: 'f2'}, 'project.header.rev')
+  ]));
+  
+  box.appendChild(formGrid([
+    field({label: T[LANG].preparedBy, type: 'text', w: 'f2'}, 'project.header.prepared_by'),
+    field({label: T[LANG].approvedBy, type: 'text', w: 'f2'}, 'project.header.approved_by'),
+    field({label: T[LANG].validityDate, type: 'text', w: 'f2'}, 'project.header.validity_date'),
+    field({label: T[LANG].clientRef, type: 'text', w: 'f2'}, 'project.header.client_ref')
+  ]));
+  
+  box.appendChild(formGrid([
+    field({label: T[LANG].ndaInPlace, type: 'select', w: 'f2', opts: ['', 'No', 'Yes']}, 'project.header.nda'),
+    field({label: T[LANG].siteLocation, type: 'text', w: 'f4'}, 'project.header.site_location')
+  ]));
+  
+  
+  // Documents & Notes Section
+  var docCard = el('div', 'card');
+  docCard.style.marginTop = '20px';
+  
+  var docTitle = el('h3');
+  docTitle.textContent = T[LANG].documents;
+  docCard.appendChild(docTitle);
+  
+  // Upload section
+  var uploadSection = el('div');
+  uploadSection.style.cssText = 'display:flex;gap:10px;align-items:end;margin-bottom:16px;padding:12px;background:#f8f9fa;border-radius:8px';
+  
+  var fileInputWrapper = el('div');
+  fileInputWrapper.style.flex = '1';
+  
+  // Hidden file input
+  var fileInput = el('input');
+  fileInput.type = 'file';
+  fileInput.id = 'hiddenFileInput';
+  fileInput.accept = '.pdf,.eml,.msg,.txt,.mp3,.wav,.m4a,.doc,.docx';
+  fileInput.style.display = 'none';
+  fileInputWrapper.appendChild(fileInput);
+  
+  // Custom file button
+  var customFileBtn = el('button', 'btn');
+  customFileBtn.type = 'button';
+  customFileBtn.style.cssText = 'width:100%;padding:10px;text-align:left;background:#fff;border:2px dashed #ddd;border-radius:6px;cursor:pointer;display:flex;align-items:center;gap:8px';
+  customFileBtn.innerHTML = '<span style="font-size:20px">📎</span><span id="fileNameDisplay" style="flex:1;color:#666">Click to select file...</span>';
+  
+  customFileBtn.onclick = function() {
+    fileInput.click();
+  };
+  
+  fileInput.onchange = function() {
+    var display = document.getElementById('fileNameDisplay');
+    if (fileInput.files && fileInput.files.length > 0) {
+      display.textContent = fileInput.files[0].name;
+      display.style.color = '#000';
+    } else {
+      display.textContent = 'Click to select file...';
+      display.style.color = '#666';
+    }
+  };
+  
+  fileInputWrapper.appendChild(customFileBtn);
+  uploadSection.appendChild(fileInputWrapper);
+  
+  var typeWrapper = el('div');
+  typeWrapper.style.width = '150px';
+  var typeLabel = el('label');
+  typeLabel.textContent = T[LANG].docType;
+  typeLabel.style.display = 'block';
+  typeLabel.style.marginBottom = '4px';
+  typeLabel.style.fontSize = '12px';
+  typeLabel.style.color = '#666';
+  typeWrapper.appendChild(typeLabel);
+  
+  var typeSelect = el('select');
+  typeSelect.style.cssText = 'width:100%;padding:8px;border:1px solid #ddd;border-radius:6px;background:#fff';
+  typeSelect.innerHTML = '<option value="Internal">' + T[LANG].internal + '</option><option value="Customer">' + T[LANG].customer + '</option>';
+  typeWrapper.appendChild(typeSelect);
+  uploadSection.appendChild(typeWrapper);
+  
+  var uploadBtn = el('button', 'btn pri');
+  uploadBtn.textContent = '📎 ' + T[LANG].uploadDocument;
+  uploadBtn.style.height = '38px';
+  uploadBtn.onclick = function() {
+    if (!fileInput.files || fileInput.files.length === 0) {
+      alert('Please select a file first');
+      return;
+    }
+    
+    var file = fileInput.files[0];
+    var docType = typeSelect.value;
+    
+    // Read file
+    var reader = new FileReader();
+    reader.onload = function(e) {
+      if (!state.project.header.documents) {
+        state.project.header.documents = [];
+      }
+      
+      state.project.header.documents.push({
+        id: uid('DOC'),
+        name: file.name,
+        type: docType,
+        size: file.size,
+        uploadDate: new Date().toISOString(),
+        content: e.target.result,
+        summary: ''
+      });
+      
+      fileInput.value = '';
+      renderDocumentList();
+      autosave();
+    };
+    
+    // Read as data URL for all file types
+    reader.readAsDataURL(file);
+  };
+  uploadSection.appendChild(uploadBtn);
+  
+  docCard.appendChild(uploadSection);
+  
+  // Document list
+  var docListContainer = el('div');
+  docListContainer.id = 'documentList';
+  docCard.appendChild(docListContainer);
+  
+  function renderDocumentList() {
+    var listContainer = document.getElementById('documentList');
+    if (!listContainer) return;
+    
+    listContainer.innerHTML = '';
+    
+    var docs = state.project.header.documents || [];
+    
+    if (docs.length === 0) {
+      var emptyMsg = el('div', 'note');
+      emptyMsg.textContent = T[LANG].noDocuments;
+      listContainer.appendChild(emptyMsg);
+      return;
+    }
+    
+    for (var i = 0; i < docs.length; i++) {
+      var doc = docs[i];
+      var docItem = el('div');
+      docItem.style.cssText = 'border:1px solid #ddd;border-radius:8px;padding:12px;margin-bottom:10px;background:#fff';
+      
+      // Header
+      var docHeader = el('div');
+      docHeader.style.cssText = 'display:flex;align-items:center;justify-content:space-between;margin-bottom:8px';
+      
+      var docInfo = el('div');
+      docInfo.style.flex = '1';
+      
+      var docNameSpan = el('div');
+      docNameSpan.style.cssText = 'font-weight:600;color:#0aa574';
+      var icon = doc.name.endsWith('.pdf') ? '📄' : 
+                 doc.name.endsWith('.mp3') || doc.name.endsWith('.wav') ? '🎤' : 
+                 doc.name.endsWith('.eml') || doc.name.endsWith('.msg') ? '📧' : '📝';
+      docNameSpan.textContent = icon + ' ' + doc.name;
+      docInfo.appendChild(docNameSpan);
+      
+      var docMeta = el('div', 'small');
+      docMeta.style.color = '#666';
+      var badge = el('span');
+      badge.style.cssText = 'display:inline-block;padding:2px 8px;border-radius:4px;font-size:11px;font-weight:600;margin-right:8px;background:' + 
+        (doc.type === 'Internal' ? '#eff6ff;color:#1e40af' : '#f0fdf4;color:#15803d');
+      badge.textContent = doc.type;
+      docMeta.appendChild(badge);
+      docMeta.appendChild(document.createTextNode((doc.size / 1024).toFixed(1) + ' KB • ' + new Date(doc.uploadDate).toLocaleDateString()));
+      docInfo.appendChild(docMeta);
+      
+      docHeader.appendChild(docInfo);
+      
+      var btnGroup = el('div');
+      btnGroup.style.cssText = 'display:flex;gap:6px';
+      
+      var summaryBtn = el('button', 'btn');
+      summaryBtn.innerHTML = '✨ ' + T[LANG].aiSummary;
+      summaryBtn.style.fontSize = '12px';
+      summaryBtn.onclick = (function(idx) {
+        return function() {
+          generateAISummary(idx);
+        };
+      })(i);
+      btnGroup.appendChild(summaryBtn);
+      
+      var delBtn = el('button', 'btn dan');
+      delBtn.textContent = '✕';
+      delBtn.style.padding = '4px 10px';
+      delBtn.onclick = (function(idx) {
+        return function() {
+          if (confirm('Delete this document?')) {
+            state.project.header.documents.splice(idx, 1);
+            renderDocumentList();
+            autosave();
+          }
+        };
+      })(i);
+      btnGroup.appendChild(delBtn);
+      
+      docHeader.appendChild(btnGroup);
+      docItem.appendChild(docHeader);
+      
+      // Summary
+      if (doc.summary) {
+        var summaryDiv = el('div');
+        summaryDiv.style.cssText = 'background:#f8f9fa;border-left:3px solid #0aa574;padding:10px;border-radius:4px;margin-top:8px';
+        var summaryTitle = el('div', 'small');
+        summaryTitle.style.cssText = 'font-weight:600;margin-bottom:4px;color:#0aa574';
+        summaryTitle.textContent = 'AI Summary:';
+        summaryDiv.appendChild(summaryTitle);
+        var summaryText = el('div', 'small');
+        summaryText.textContent = doc.summary;
+        summaryDiv.appendChild(summaryText);
+        docItem.appendChild(summaryDiv);
+      }
+      
+      listContainer.appendChild(docItem);
+    }
+  }
+  
+  renderDocumentList();
+  box.appendChild(docCard);
+}
+
+function renderSite(box) {
+  var title = el('h2');
+  title.textContent = T[LANG].site;
+  box.appendChild(title);
+  
+  box.appendChild(formGrid([
+    field({label: T[LANG].installContext, type: 'select', w: 'f2', opts: ['', 'Indoor', 'Outdoor', 'Roof', 'Yard']}, 'project.site.install'),
+    field({label: T[LANG].ambientTmin, type: 'number', w: 'f1'}, 'project.site.ambient_min'),
+    field({label: T[LANG].ambientTmax, type: 'number', w: 'f1'}, 'project.site.ambient_max'),
+    field({label: T[LANG].explosionClass, type: 'select', w: 'f2', opts: ['', 'None', 'ATEX 21', 'ATEX 22', 'NFPA Class II, Div 1']}, 'project.site.explosion'),
+    field({label: T[LANG].voltageService, type: 'text', w: 'f2'}, 'project.site.voltage')
+  ]));
+  
+  box.appendChild(formGrid([
+    field({label: T[LANG].emissionLimit, type: 'number', w: 'f1'}, 'project.site.emission_mgNm3'),
+    field({label: T[LANG].noiseLimit, type: 'number', w: 'f1'}, 'project.site.noise_dBA'),
+    field({label: T[LANG].floorArea, type: 'number', w: 'f1'}, 'project.site.floor_area_m2'),
+    field({label: T[LANG].headroom, type: 'number', w: 'f1'}, 'project.site.headroom_m')
+  ]));
+  
+  var accessCard = el('div', 'card');
+  var accessTitle = el('h3');
+  accessTitle.textContent = T[LANG].accessHandling;
+  accessCard.appendChild(accessTitle);
+  
+  var checkGroup = el('div', 'checkbox-group');
+  for (var i = 0; i < ACCESS_OPTIONS.length; i++) {
+    var item = el('div', 'checkbox-item');
+    var cb = el('input');
+    cb.type = 'checkbox';
+    var opt = ACCESS_OPTIONS[i];
+    cb.checked = (state.project.site.access_handling || []).indexOf(opt) >= 0;
+    cb.onclick = (function(option) {
+      return function(e) {
+        if (!state.project.site.access_handling) state.project.site.access_handling = [];
+        var idx = state.project.site.access_handling.indexOf(option);
+        if (e.target.checked && idx < 0) {
+          state.project.site.access_handling.push(option);
+        } else if (!e.target.checked && idx >= 0) {
+          state.project.site.access_handling.splice(idx, 1);
+        }
+        autosave();
+      };
+    })(opt);
+    var lbl = el('label');
+    lbl.textContent = opt;
+    item.appendChild(cb);
+    item.appendChild(lbl);
+    checkGroup.appendChild(item);
+  }
+  accessCard.appendChild(checkGroup);
+  box.appendChild(accessCard);
+  
+  // Site Files Section (Photos, Drawings, Voice Notes)
+  var filesCard = el('div', 'card');
+  filesCard.style.marginTop = '20px';
+  
+  var filesTitle = el('h3');
+  filesTitle.textContent = T[LANG].siteFiles;
+  filesCard.appendChild(filesTitle);
+  
+  // Upload section
+  var uploadSection = el('div');
+  uploadSection.style.cssText = 'display:flex;gap:10px;align-items:end;margin-bottom:16px;padding:12px;background:#f8f9fa;border-radius:8px';
+  
+  var fileInputWrapper = el('div');
+  fileInputWrapper.style.flex = '1';
+  
+  var siteFileInput = el('input');
+  siteFileInput.type = 'file';
+  siteFileInput.id = 'siteFileInput';
+  siteFileInput.accept = 'image/*,.pdf,.dwg,.dxf,.mp3,.wav,.m4a,.txt';
+  siteFileInput.style.display = 'none';
+  fileInputWrapper.appendChild(siteFileInput);
+  
+  var customSiteFileBtn = el('button', 'btn');
+  customSiteFileBtn.type = 'button';
+  customSiteFileBtn.style.cssText = 'width:100%;padding:10px;text-align:left;background:#fff;border:2px dashed #ddd;border-radius:6px;cursor:pointer;display:flex;align-items:center;gap:8px';
+  customSiteFileBtn.innerHTML = '<span style="font-size:20px">📎</span><span id="siteFileNameDisplay" style="flex:1;color:#666">' + T[LANG].selectFile + '</span>';
+  
+  customSiteFileBtn.onclick = function() {
+    siteFileInput.click();
+  };
+  
+  siteFileInput.onchange = function() {
+    var display = document.getElementById('siteFileNameDisplay');
+    if (siteFileInput.files && siteFileInput.files.length > 0) {
+      display.textContent = siteFileInput.files[0].name;
+      display.style.color = '#000';
+    } else {
+      display.textContent = T[LANG].selectFile;
+      display.style.color = '#666';
+    }
+  };
+  
+  fileInputWrapper.appendChild(customSiteFileBtn);
+  uploadSection.appendChild(fileInputWrapper);
+  
+  var uploadSiteBtn = el('button', 'btn pri');
+  uploadSiteBtn.textContent = '📎 ' + T[LANG].uploadFile;
+  uploadSiteBtn.style.height = '38px';
+  uploadSiteBtn.onclick = function() {
+    if (!siteFileInput.files || siteFileInput.files.length === 0) {
+      alert('Please select a file first');
+      return;
+    }
+    
+    var file = siteFileInput.files[0];
+    
+    var reader = new FileReader();
+    reader.onload = function(e) {
+      if (!state.project.site.site_files) {
+        state.project.site.site_files = [];
+      }
+      
+      var fileType = 'Other';
+      if (file.type.startsWith('image/')) fileType = 'Photo';
+      else if (file.type === 'application/pdf') fileType = 'PDF';
+      else if (file.name.match(/\.(dwg|dxf)$/i)) fileType = 'Drawing';
+      else if (file.type.startsWith('audio/')) fileType = 'Audio';
+      
+      state.project.site.site_files.push({
+        id: uid('FILE'),
+        name: file.name,
+        type: fileType,
+        size: file.size,
+        uploadDate: new Date().toISOString(),
+        content: e.target.result,
+        note: ''
+      });
+      
+      siteFileInput.value = '';
+      var display = document.getElementById('siteFileNameDisplay');
+      if (display) {
+        display.textContent = T[LANG].selectFile;
+        display.style.color = '#666';
+      }
+      renderSiteFileList();
+      autosave();
+    };
+    
+    reader.readAsDataURL(file);
+  };
+  uploadSection.appendChild(uploadSiteBtn);
+  
+  filesCard.appendChild(uploadSection);
+  
+  // File list
+  var fileListContainer = el('div');
+  fileListContainer.id = 'siteFileList';
+  filesCard.appendChild(fileListContainer);
+  
+  function renderSiteFileList() {
+    var listContainer = document.getElementById('siteFileList');
+    if (!listContainer) return;
+    
+    listContainer.innerHTML = '';
+    
+    var files = state.project.site.site_files || [];
+    
+    if (files.length === 0) {
+      var emptyMsg = el('div', 'note');
+      emptyMsg.textContent = 'No files uploaded yet';
+      listContainer.appendChild(emptyMsg);
+      return;
+    }
+    
+    for (var i = 0; i < files.length; i++) {
+      var file = files[i];
+      var fileItem = el('div');
+      fileItem.style.cssText = 'border:1px solid #ddd;border-radius:8px;padding:12px;margin-bottom:10px;background:#fff';
+      
+      var fileHeader = el('div');
+      fileHeader.style.cssText = 'display:flex;align-items:center;justify-content:space-between;margin-bottom:8px';
+      
+      var fileInfo = el('div');
+      fileInfo.style.flex = '1';
+      
+      var fileNameSpan = el('div');
+      fileNameSpan.style.cssText = 'font-weight:600;color:#0aa574';
+      var icon = file.type === 'Photo' ? '📷' : 
+                 file.type === 'Drawing' ? '📐' : 
+                 file.type === 'Audio' ? '🎤' : 
+                 file.type === 'PDF' ? '📄' : '📎';
+      fileNameSpan.textContent = icon + ' ' + file.name;
+      fileInfo.appendChild(fileNameSpan);
+      
+      var fileMeta = el('div', 'small');
+      fileMeta.style.color = '#666';
+      var typeBadge = el('span');
+      typeBadge.style.cssText = 'display:inline-block;padding:2px 8px;border-radius:4px;font-size:11px;font-weight:600;margin-right:8px;background:#eff6ff;color:#1e40af';
+      typeBadge.textContent = file.type;
+      fileMeta.appendChild(typeBadge);
+      fileMeta.appendChild(document.createTextNode((file.size / 1024).toFixed(1) + ' KB • ' + new Date(file.uploadDate).toLocaleDateString()));
+      fileInfo.appendChild(fileMeta);
+      
+      fileHeader.appendChild(fileInfo);
+      
+      var btnGroup = el('div');
+      btnGroup.style.cssText = 'display:flex;gap:6px';
+      
+      if (file.type === 'Photo' && file.content) {
+        var viewBtn = el('button', 'btn');
+        viewBtn.innerHTML = '👁️ View';
+        viewBtn.style.fontSize = '12px';
+        viewBtn.onclick = (function(fileContent) {
+          return function() {
+            var modal = el('div');
+            modal.style.cssText = 'position:fixed;top:0;left:0;right:0;bottom:0;background:rgba(0,0,0,0.8);z-index:2000;display:flex;align-items:center;justify-content:center;cursor:pointer';
+            var img = el('img');
+            img.src = fileContent;
+            img.style.cssText = 'max-width:90%;max-height:90%;border-radius:8px';
+            modal.appendChild(img);
+            modal.onclick = function() {
+              document.body.removeChild(modal);
+            };
+            document.body.appendChild(modal);
+          };
+        })(file.content);
+        btnGroup.appendChild(viewBtn);
+      }
+      
+      var delBtn = el('button', 'btn dan');
+      delBtn.textContent = '✕';
+      delBtn.style.padding = '4px 10px';
+      delBtn.onclick = (function(idx) {
+        return function() {
+          if (confirm('Delete this file?')) {
+            state.project.site.site_files.splice(idx, 1);
+            renderSiteFileList();
+            autosave();
+          }
+        };
+      })(i);
+      btnGroup.appendChild(delBtn);
+      
+      fileHeader.appendChild(btnGroup);
+      fileItem.appendChild(fileHeader);
+      
+      // Note input
+      var noteInput = el('textarea');
+      noteInput.placeholder = 'Add a note about this file...';
+      noteInput.value = file.note || '';
+      noteInput.style.cssText = 'width:100%;padding:6px;border:1px solid #ddd;border-radius:4px;font-size:12px;min-height:50px;margin-top:8px';
+      noteInput.oninput = (function(idx) {
+        return function() {
+          state.project.site.site_files[idx].note = this.value;
+          autosave();
+        };
+      })(i);
+      fileItem.appendChild(noteInput);
+      
+      listContainer.appendChild(fileItem);
+    }
+  }
+  
+  renderSiteFileList();
+  box.appendChild(filesCard);
+}
+
+function renderPerf(box) {
+  var title = el('h2');
+  title.textContent = T[LANG].perf;
+  box.appendChild(title);
+  
+  var phase1 = el('div', 'phase-section');
+  var p1header = el('div', 'phase-header');
+  p1header.innerHTML = '<div class="phase-number">1</div><div class="phase-title">' + T[LANG].phase1 + '</div>';
+  phase1.appendChild(p1header);
+  
+  var reviewCard = el('div', 'card');
+  var reviewTitle = el('h3');
+  reviewTitle.textContent = T[LANG].siteReview;
+  reviewCard.appendChild(reviewTitle);
+  
+  var summary = el('div');
+  var s = state.project.site;
+  summary.innerHTML = '<div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;padding:10px;background:#f8f9fa;border-radius:6px">' +
+    '<div class="small"><b>Install Context:</b> ' + s.install + '</div>' +
+    '<div class="small"><b>Temperature:</b> ' + s.ambient_min + '°C to ' + s.ambient_max + '°C</div>' +
+    '<div class="small"><b>Explosion Class:</b> ' + s.explosion + '</div>' +
+    '<div class="small"><b>Voltage:</b> ' + s.voltage + '</div>' +
+    '<div class="small"><b>Utilities:</b> ' + (s.utilities || '-') + '</div>' +
+    '<div class="small"><b>Emission Limit:</b> ' + (s.emission_mgNm3 || '-') + ' mg/Nm³</div>' +
+    '<div class="small"><b>Noise Limit:</b> ' + (s.noise_dBA || '-') + ' dBA</div>' +
+    '<div class="small"><b>Floor Area:</b> ' + (s.floor_area_m2 || '-') + ' m²</div>' +
+    '<div class="small"><b>Headroom:</b> ' + (s.headroom_m || '-') + ' m</div>' +
+    '<div class="small" style="grid-column:1/-1"><b>Access / Handling:</b> ' + ((s.access_handling || []).join(', ') || 'Not specified') + '</div>' +
+    '<div class="small" style="grid-column:1/-1"><b>Engineer Notes:</b> ' + ((s.engineer_notes && s.engineer_notes.length) || 0) + ' entries</div>' +
+    '</div>';
+  reviewCard.appendChild(summary);
+  
+  var statusSel = el('div', 'status-selector');
+  var statuses = ['confirm', 'pending', 'revisit'];
+  for (var i = 0; i < statuses.length; i++) {
+    var opt = el('div', 'status-option');
+    var s = statuses[i];
+    opt.textContent = T[LANG][s];
+    if (state.project.targets.site_review_status === s) opt.classList.add('selected');
+    opt.onclick = (function(status) {
+      return function() {
+        state.project.targets.site_review_status = status;
+        showStep('perf');
+        autosave();
+      };
+    })(s);
+    statusSel.appendChild(opt);
+  }
+  reviewCard.appendChild(statusSel);
+  
+  var commentsTA = el('textarea');
+  commentsTA.placeholder = 'Review comments...';
+  commentsTA.value = state.project.targets.site_review_comments || '';
+  commentsTA.oninput = function() {
+    state.project.targets.site_review_comments = commentsTA.value;
+    autosave();
+  };
+  reviewCard.appendChild(commentsTA);
+  
+  phase1.appendChild(reviewCard);
+  box.appendChild(phase1);
+  
+  var phase2 = el('div', 'phase-section');
+  var p2header = el('div', 'phase-header');
+  p2header.innerHTML = '<div class="phase-number">2</div><div class="phase-title">' + T[LANG].phase2 + '</div>';
+  phase2.appendChild(p2header);
+  
+  {
+    phase2.appendChild(formGrid([
+      field({label: T[LANG].keyAgreements, type: 'textarea', w: 'f4'}, 'project.targets.key_agreements'),
+      field({label: T[LANG].openPoints, type: 'textarea', w: 'f4'}, 'project.targets.open_points'),
+      field({label: T[LANG].actionItems, type: 'textarea', w: 'f4'}, 'project.targets.action_items')
+    ]));
+    
+    phase2.appendChild(formGrid([
+      field({label: T[LANG].decisionDate, type: 'text', w: 'f2'}, 'project.targets.decision_date'),
+      field({label: T[LANG].validationStatus, type: 'select', w: 'f2', opts: ['Confirmed', 'Pending', 'Proposal Only']}, 'project.targets.validation_status'),
+      field({label: T[LANG].meetingRefId, type: 'text', w: 'f2'}, 'project.targets.meeting_ref_id')
+    ]));
+    
+    phase2.appendChild(formGrid([
+      field({label: T[LANG].meetingSummary, type: 'textarea', w: 'f4'}, 'project.targets.meeting_summary')
+    ]));
+    
+    var validateBtn = el('button', 'btn pri');
+    validateBtn.textContent = '✓ Validate Meeting Outcome';
+    validateBtn.onclick = function() {
+      state.project.targets.meeting_validated = true;
+      computeProgress();
+      showStep('perf');
+      autosave();
+    };
+    phase2.appendChild(validateBtn);
+    
+    if (state.project.targets.meeting_validated) {
+      var gate = el('div', 'validation-gate passed');
+      gate.textContent = '✓ Meeting outcome validated.';
+      phase2.appendChild(gate);
+    } else {
+      var gate = el('div', 'validation-gate');
+      gate.textContent = '💡 Recommended: Click "Validate Meeting Outcome" before proceeding to Phase 3';
+      phase2.appendChild(gate);
+    }
+  }
+  box.appendChild(phase2);
+  
+  var phase3 = el('div', 'phase-section');
+  var p3header = el('div', 'phase-header');
+  p3header.innerHTML = '<div class="phase-number">3</div><div class="phase-title">' + T[LANG].phase3 + '</div>';
+  phase3.appendChild(p3header);
+  
+  {
+    var globalCard = el('div', 'card');
+    var globalTitle = el('h3');
+    globalTitle.textContent = T[LANG].globalTargets;
+    globalCard.appendChild(globalTitle);
+    globalCard.appendChild(formGrid([
+      field({label: T[LANG].throughput, type: 'number', w: 'f2', req: true}, 'project.targets.throughput'),
+      field({label: T[LANG].availability, type: 'number', w: 'f2'}, 'project.targets.availability_pct'),
+      field({label: T[LANG].deliveryTimeline, type: 'text', w: 'f2'}, 'project.targets.delivery')
+    ]));
+    phase3.appendChild(globalCard);
+    
+    var envCard = el('div', 'card');
+    var envTitle = el('h3');
+    envTitle.textContent = T[LANG].environmental;
+    envCard.appendChild(envTitle);
+    envCard.appendChild(formGrid([
+      field({label: T[LANG].emission, type: 'number', w: 'f2', req: true}, 'project.targets.emission'),
+      field({label: T[LANG].noise, type: 'number', w: 'f2'}, 'project.targets.noise'),
+      field({label: T[LANG].regulatoryRef, type: 'text', w: 'f2'}, 'project.targets.regulatory_ref')
+    ]));
+    phase3.appendChild(envCard);
+    
+    var energyCard = el('div', 'card');
+    var energyTitle = el('h3');
+    energyTitle.textContent = T[LANG].energyEfficiency;
+    energyCard.appendChild(energyTitle);
+    energyCard.appendChild(formGrid([
+      field({label: T[LANG].energyKwh, type: 'number', w: 'f2'}, 'project.targets.energy_kwh_t'),
+      field({label: T[LANG].recoveryKpi, type: 'text', w: 'f2'}, 'project.targets.recovery_kpi'),
+      field({label: T[LANG].utilityConstraints, type: 'text', w: 'f2'}, 'project.targets.utility_constraints')
+    ]));
+    phase3.appendChild(energyCard);
+    
+    var prioCard = el('div', 'card');
+    var prioTitle = el('h3');
+    prioTitle.innerHTML = T[LANG].priorityMatrix + ' ⭐';
+    prioCard.appendChild(prioTitle);
+    var prioNote = el('div', 'small');
+    prioNote.textContent = 'Drag to reorder priorities (1 = highest importance). Defines Option A/B/C design logic.';
+    prioNote.style.marginBottom = '10px';
+    prioCard.appendChild(prioNote);
+    
+    var prioList = el('div');
+    prioList.style.cssText = 'display:flex;flex-direction:column;gap:6px';
+    var priorities = state.project.targets.priorities || [];
+    for (var i = 0; i < priorities.length; i++) {
+      var prioItem = el('div');
+      prioItem.style.cssText = 'display:flex;align-items:center;gap:10px;padding:10px;border:1px solid #ddd;border-radius:6px;background:#fff;cursor:move';
+      prioItem.innerHTML = '<span style="color:#999;font-weight:700;font-size:18px">☰</span>' +
+        '<span style="font-weight:700;color:#0aa574;min-width:24px">' + (i + 1) + '</span>' +
+        '<span style="flex:1;font-weight:600">' + priorities[i] + '</span>';
+      prioItem.draggable = true;
+      prioItem.dataset.index = i;
+      
+      prioItem.ondragstart = function(e) {
+        e.dataTransfer.effectAllowed = 'move';
+        e.dataTransfer.setData('text/plain', e.target.dataset.index);
+        e.target.style.opacity = '0.5';
+      };
+      prioItem.ondragend = function(e) {
+        e.target.style.opacity = '1';
+      };
+      prioItem.ondragover = function(e) {
+        e.preventDefault();
+        e.target.style.borderTop = '2px solid #0aa574';
+      };
+      prioItem.ondragleave = function(e) {
+        e.target.style.borderTop = '1px solid #ddd';
+      };
+      prioItem.ondrop = function(e) {
+        e.preventDefault();
+        e.target.style.borderTop = '1px solid #ddd';
+        var fromIdx = parseInt(e.dataTransfer.getData('text/plain'));
+        var toIdx = parseInt(e.currentTarget.dataset.index);
+        if (fromIdx !== toIdx) {
+          var arr = state.project.targets.priorities;
+          var item = arr.splice(fromIdx, 1)[0];
+          arr.splice(toIdx, 0, item);
+          showStep('perf');
+          autosave();
+        }
+      };
+      
+      prioList.appendChild(prioItem);
+    }
+    prioCard.appendChild(prioList);
+    phase3.appendChild(prioCard);
+    
+    var overrideCard = el('div', 'card');
+    var overrideTitle = el('h3');
+    overrideTitle.textContent = T[LANG].equipOverrides;
+    overrideCard.appendChild(overrideTitle);
+    var overrideNote = el('div', 'note');
+    overrideNote.innerHTML = '<div class="small" style="margin-bottom:8px"><b>Examples of equipment-specific priorities:</b></div>' +
+      '<div class="small">• <b>Dust Collector:</b> Emission / ΔP priority</div>' +
+      '<div class="small">• <b>Conveyor:</b> Availability / Throughput priority</div>' +
+      '<div class="small">• <b>Dryer:</b> Moisture / Energy priority</div>' +
+      '<div class="small" style="margin-top:8px;font-style:italic">Leave blank to use global targets for all equipment</div>';
+    overrideCard.appendChild(overrideNote);
+    
+    var overrideTA = el('textarea');
+    overrideTA.placeholder = 'Enter equipment-specific overrides in JSON format (optional)...';
+    overrideTA.style.minHeight = '100px';
+    overrideTA.style.fontFamily = 'monospace';
+    overrideTA.value = JSON.stringify(state.project.targets.equipment_overrides || {}, null, 2);
+    overrideTA.oninput = function() {
+      try {
+        state.project.targets.equipment_overrides = JSON.parse(overrideTA.value);
+        overrideTA.style.borderColor = '#cfd6dd';
+        autosave();
+      } catch (e) {
+        overrideTA.style.borderColor = '#ef4444';
+      }
+    };
+    overrideCard.appendChild(overrideTA);
+    phase3.appendChild(overrideCard);
+    
+    var assumCard = el('div', 'card');
+    var assumTitle = el('h3');
+    assumTitle.textContent = T[LANG].assumptions;
+    assumCard.appendChild(assumTitle);
+    assumCard.appendChild(formGrid([
+      field({label: T[LANG].operatingBasis, type: 'textarea', w: 'f4'}, 'project.targets.operating_basis'),
+      field({label: T[LANG].feedVariability, type: 'textarea', w: 'f4'}, 'project.targets.feed_variability'),
+      field({label: T[LANG].exclusions, type: 'textarea', w: 'f4'}, 'project.targets.exclusions')
+    ]));
+    phase3.appendChild(assumCard);
+    
+    var validCard = el('div', 'card');
+    var validTitle = el('h3');
+    validTitle.innerHTML = T[LANG].customerValidation + ' ✓';
+    validCard.appendChild(validTitle);
+    
+    var validOpts = [
+      {val: 'Confirmed by Client', icon: '✔', color: '#22c55e'},
+      {val: 'Pending Validation', icon: '⚠', color: '#f59e0b'},
+      {val: 'Internal Proposal Only', icon: '❌', color: '#64748b'}
+    ];
+    var validSel = el('div');
+    validSel.style.cssText = 'display:flex;gap:8px;margin-bottom:12px;flex-wrap:wrap';
+    for (var i = 0; i < validOpts.length; i++) {
+      var vopt = el('button');
+      var opt = validOpts[i];
+      vopt.innerHTML = opt.icon + ' ' + opt.val;
+      vopt.style.cssText = 'padding:8px 12px;border:2px solid ' + opt.color + ';border-radius:8px;cursor:pointer;background:#fff;flex:1;min-width:180px';
+      if (state.project.targets.customer_validation === opt.val) {
+        vopt.style.background = opt.color;
+        vopt.style.color = '#fff';
+        vopt.style.fontWeight = '700';
+      } else {
+        vopt.style.color = opt.color;
+      }
+      vopt.onclick = (function(val) {
+        return function() {
+          state.project.targets.customer_validation = val;
+          showStep('perf');
+          autosave();
+        };
+      })(opt.val);
+      validSel.appendChild(vopt);
+    }
+    validCard.appendChild(validSel);
+    
+    validCard.appendChild(formGrid([
+      field({label: T[LANG].validationDate, type: 'text', w: 'f2'}, 'project.targets.validation_date'),
+      field({label: T[LANG].meetingRefId, type: 'text', w: 'f2'}, 'project.targets.meeting_ref_id')
+    ]));
+    
+    validCard.appendChild(formGrid([
+      field({label: T[LANG].meetingSummary, type: 'textarea', w: 'f4'}, 'project.targets.meeting_summary')
+    ]));
+    phase3.appendChild(validCard);
+  }
+  box.appendChild(phase3);
+}
+
+function renderOpts(box) {
+  var title = el('h2');
+  title.textContent = T[LANG].opts;
+  box.appendChild(title);
+  
+  // Context Bar - Step 3 Summary
+  
+  var contextBar = el('div');
+  contextBar.style.cssText = 'background:#f8f9fa;border:1px solid #ddd;border-radius:8px;padding:12px;margin-bottom:20px';
+  contextBar.innerHTML = '<div style="display:flex;align-items:center;gap:15px;flex-wrap:wrap">' +
+    '<div style="flex:1;min-width:200px"><div class="small">PROJECT</div><div style="font-weight:600">' + (state.project.header.project_name || '-') + '</div></div>' +
+    '<div><div class="small">THROUGHPUT</div><div style="font-weight:600;color:#0aa574">' + (state.project.targets.throughput || '-') + ' tph</div></div>' +
+    '<div><div class="small">EMISSION</div><div style="font-weight:600;color:#0aa574">' + (state.project.targets.emission || '-') + ' mg/Nm³</div></div>' +
+    '<div><div class="small">ENERGY</div><div style="font-weight:600;color:#0aa574">' + (state.project.targets.energy_kwh_t || '-') + ' kWh/t</div></div>' +
+    '<div><div class="small">STATUS</div><div style="font-weight:600;color:#22c55e">✓ Targets Locked</div></div>' +
+    '</div>';
+  box.appendChild(contextBar);
+  
+  // Initialize options if not exists
+  if (!state.options || state.options.length === 0) {
+    state.options = [
+      {id: 'A', type: 'Minimum CAPEX', summary: '', equipments: [], items: [], notes: '', freight: ''},
+      {id: 'B', type: 'Capacity Driven', summary: '', equipments: [], items: [], notes: '', freight: ''},
+      {id: 'C', type: 'Future Proof', summary: '', equipments: [], items: [], notes: '', freight: ''}
+    ];
+  }
+  
+  // Option Tabs
+  var optTabs = el('div');
+  optTabs.style.cssText = 'display:flex;gap:8px;margin-bottom:20px';
+  for (var i = 0; i < state.options.length; i++) {
+    var optTab = el('button');
+    var opt = state.options[i];
+    optTab.className = 'btn';
+    if (state.activeOption === i) optTab.className = 'btn pri';
+    optTab.innerHTML = '<b>Option ' + opt.id + '</b> — ' + opt.type;
+    optTab.onclick = (function(idx) {
+      return function() {
+        state.activeOption = idx;
+        showStep('opts');
+        paintOptionEquipList(); // Update sidebar
+        autosave();
+      };
+    })(i);
+    optTabs.appendChild(optTab);
+  }
+  box.appendChild(optTabs);
+  
+  if (state.activeOption === undefined || state.activeOption === null) {
+    state.activeOption = 0;
+  }
+  
+  var option = state.options[state.activeOption];
+  if (!option) return;
+  
+  // Option Header
+  var optHeader = el('div');
+  optHeader.style.cssText = 'background:#fff;border:2px solid #0aa574;border-radius:10px;padding:15px;margin-bottom:15px';
+  optHeader.innerHTML = '<div style="display:flex;align-items:center;gap:15px">' +
+    '<div style="font-size:24px;font-weight:700;color:#0aa574">Option ' + option.id + '</div>' +
+    '<div style="flex:1"><select id="optType" style="width:100%;padding:8px;border:1px solid #ddd;border-radius:6px;font-weight:600">' +
+    '<option value="Minimum CAPEX"' + (option.type === 'Minimum CAPEX' ? ' selected' : '') + '>Minimum CAPEX — Immediate Fix</option>' +
+    '<option value="Capacity Driven"' + (option.type === 'Capacity Driven' ? ' selected' : '') + '>Capacity Driven — Revenue Oriented</option>' +
+    '<option value="Future Proof"' + (option.type === 'Future Proof' ? ' selected' : '') + '>Future Proof — OPEX & Risk Optimized</option>' +
+    '</select></div>' +
+    '<div style="display:flex;gap:8px">' +
+    '<div style="text-align:center;padding:8px;background:#f0fdf4;border-radius:6px"><div class="small">CAPEX</div><div style="font-weight:700">' + (option.id === 'A' ? '⬇' : option.id === 'B' ? '⬆' : '⬆⬆') + '</div></div>' +
+    '<div style="text-align:center;padding:8px;background:#fef3c7;border-radius:6px"><div class="small">OPEX</div><div style="font-weight:700">' + (option.id === 'A' ? '=' : option.id === 'B' ? '⬇' : '⬇⬇') + '</div></div>' +
+    '<div style="text-align:center;padding:8px;background:#fecaca;border-radius:6px"><div class="small">RISK</div><div style="font-weight:700">' + (option.id === 'A' ? '⬆' : option.id === 'B' ? '⬇' : '⬇⬇') + '</div></div>' +
+    '</div></div>';
+  box.appendChild(optHeader);
+  
+  document.getElementById('optType').onchange = function() {
+    option.type = this.value;
+    showStep('opts');
+    autosave();
+  };
+  
+  // 1. Engineering Summary
+  var summaryCard = el('div', 'card');
+  var summaryTitle = el('h3');
+  summaryTitle.textContent = '1. ' + T[LANG].engineeringSummary;
+  summaryCard.appendChild(summaryTitle);
+  
+  var summaryNote = el('div', 'note');
+  summaryNote.innerHTML = '<b>Required:</b> Must include CAPEX, OPEX, and Risk perspective.<br>' +
+    '<b>Example:</b> "This option minimizes CAPEX by reusing existing structure. OPEX remains similar to current operation. Risk is moderate due to limited capacity for future expansion."';
+  summaryCard.appendChild(summaryNote);
+  
+  var summaryTA = el('textarea');
+  summaryTA.style.minHeight = '120px';
+  summaryTA.placeholder = 'Enter engineering summary (CAPEX, OPEX, Risk perspectives)...';
+  summaryTA.value = option.summary || '';
+  summaryTA.oninput = function() {
+    option.summary = summaryTA.value;
+    autosave();
+  };
+  summaryCard.appendChild(summaryTA);
+  
+  var draftBtn = el('button', 'btn');
+  draftBtn.textContent = '✨ ' + T[LANG].autoDraft;
+  draftBtn.onclick = function() {
+    var draft = '';
+    if (option.type === 'Minimum CAPEX') {
+      draft = 'This option minimizes initial CAPEX by focusing on immediate compliance and basic functionality. ' +
+        'Existing infrastructure is maximized where possible. OPEX remains at current levels. ' +
+        'Risk: Limited capacity for future growth and potential for additional modifications later.';
+    } else if (option.type === 'Capacity Driven') {
+      draft = 'This option prioritizes production capacity and throughput to maximize revenue potential. ' +
+        'CAPEX is increased to accommodate larger equipment and redundant systems. OPEX is optimized through efficient design. ' +
+        'Risk: Well-balanced approach with room for moderate expansion.';
+    } else {
+      draft = 'This option is designed for long-term operation with maximum efficiency and lowest total cost of ownership. ' +
+        'Higher initial CAPEX enables advanced automation and energy recovery systems. OPEX is minimized through efficient operation. ' +
+        'Risk: Future-proof design accommodates regulatory changes and expansion needs.';
+    }
+    summaryTA.value = draft;
+    option.summary = draft;
+    autosave();
+  };
+  summaryCard.appendChild(draftBtn);
+  box.appendChild(summaryCard);
+  
+  // 2. Systems & Equipments
+  var sysCard = el('div', 'card');
+  
+  var sysHeader = el('div');
+  sysHeader.style.cssText = 'display:flex;align-items:center;justify-content:space-between;margin-bottom:10px';
+  
+  var sysTitle = el('h3');
+  sysTitle.textContent = '2. ' + T[LANG].systemsEquipments + ' 🔧';
+  sysTitle.style.margin = '0';
+  sysHeader.appendChild(sysTitle);
+  sysCard.appendChild(sysHeader);
+  
+  var sysNote = el('div');
+  sysNote.style.cssText = 'background:#e0f2fe;border-left:4px solid #0284c7;padding:12px;margin-bottom:16px;border-radius:4px';
+  sysNote.innerHTML = '<div style="font-size:12px;color:#075985;line-height:1.5">' +
+    '<b>💡 How to use:</b><br>' +
+    '1. Click <b>"+ Add Equipment"</b> below<br>' +
+    '2. Enter equipment name<br>' +
+    '3. Select a <b>template</b> (01. AFS ~ 07. ETS) for detailed specs<br>' +
+    '4. Fill in specifications - fields with <b>*</b> are required<br>' +
+    '5. Template-based equipment will auto-generate BOM in Section 3' +
+    '</div>';
+  sysCard.appendChild(sysNote);
+  
+  if (!option.equipments) option.equipments = [];
+  
+  var eqList = el('div');
+  eqList.style.cssText = 'display:flex;flex-direction:column;gap:12px;margin-bottom:10px';
+  
+  for (var i = 0; i < option.equipments.length; i++) {
+    var eq = option.equipments[i];
+    var eqCard = el('div');
+    var borderColor = '#d1d5db';
+    var borderWidth = '1px';
+    
+    // Equipment number badge
+    var eqNumber = el('div');
+    eqNumber.style.cssText = 'position:absolute;top:-10px;left:12px;background:#0aa574;color:#fff;padding:4px 10px;border-radius:12px;font-size:11px;font-weight:700;box-shadow:0 2px 4px rgba(0,0,0,0.1)';
+    eqNumber.textContent = 'Equipment ' + (i + 1);
+    
+    // Check for innovation/ESG badges
+    if (eq.template && EQUIPMENT_TEMPLATES[eq.template]) {
+      var tmpl = EQUIPMENT_TEMPLATES[eq.template];
+      if (tmpl.esg) {
+        borderColor = '#10b981';
+        borderWidth = '2px';
+      } else if (tmpl.innovation) {
+        borderColor = '#fbbf24';
+        borderWidth = '2px';
+      }
+    }
+    
+    eqCard.style.cssText = 'position:relative;border:' + borderWidth + ' solid ' + borderColor + ';border-radius:8px;padding:12px;background:#fff;margin-top:14px';
+    eqCard.appendChild(eqNumber);
+    
+    // Header row with name and actions
+    var header = el('div');
+    header.style.cssText = 'display:flex;align-items:center;gap:8px;margin-bottom:10px';
+    
+    var nameLabel = el('label');
+    nameLabel.style.cssText = 'font-size:12px;font-weight:700;color:#6b7280;min-width:120px';
+    nameLabel.textContent = 'Equipment Name:';
+    header.appendChild(nameLabel);
+    
+    var nameInput = el('input');
+    nameInput.type = 'text';
+    nameInput.value = eq.name || '';
+    nameInput.placeholder = 'e.g., Main Dust Collector, Silo #1';
+    nameInput.style.cssText = 'flex:1;padding:8px;border:1px solid #d1d5db;border-radius:6px;font-weight:600;color:#0f766e';
+    nameInput.oninput = (function(idx) {
+      return function() {
+        option.equipments[idx].name = this.value;
+        autosave();
+      };
+    })(i);
+    header.appendChild(nameInput);
+    
+    var delBtn = el('button');
+    delBtn.className = 'btn dan';
+    delBtn.textContent = '✕';
+    delBtn.style.cssText = 'padding:6px 12px';
+    delBtn.onclick = (function(idx) {
+      return function() {
+        if (confirm('Delete this equipment?')) {
+          option.equipments.splice(idx, 1);
+          showStep('opts');
+          autosave();
+        }
+      };
+    })(i);
+    header.appendChild(delBtn);
+    
+    eqCard.appendChild(header);
+    
+    // Template selection row
+    var templateRow = el('div');
+    templateRow.style.cssText = 'display:flex;gap:8px;margin-bottom:10px;align-items:center';
+    
+    var templateLabel = el('label');
+    templateLabel.style.cssText = 'font-size:12px;font-weight:700;color:#6b7280;min-width:120px';
+    templateLabel.textContent = 'Template:';
+    templateRow.appendChild(templateLabel);
+    
+    var templateSelect = el('select');
+    templateSelect.style.cssText = 'flex:1;padding:8px;border:1px solid #d1d5db;border-radius:6px';
+    
+    var defaultOpt = el('option');
+    defaultOpt.value = '';
+    defaultOpt.textContent = '— No Template (Custom) —';
+    if (!eq.template) defaultOpt.selected = true;
+    templateSelect.appendChild(defaultOpt);
+    
+    var templateKeys = [
+      '01. AFS - Air Filtration System',
+      '02. CONV - Conveyor System',
+      '03. SILO - Silo Storage',
+      '04. DRYER - Rotary Dryer',
+      '05. GBR-DH - GBR Dryer Hopper',
+      '06. SILO-DH - Silo Dryer Hopper',
+      '07. ETS - Electro Thermal Stack'
+    ];
+    
+    for (var t = 0; t < templateKeys.length; t++) {
+      var opt = el('option');
+      opt.value = templateKeys[t];
+      opt.textContent = templateKeys[t];
+      if (EQUIPMENT_TEMPLATES[templateKeys[t]].innovation) opt.textContent += ' ⭐';
+      if (EQUIPMENT_TEMPLATES[templateKeys[t]].esg) opt.textContent += ' 🌱';
+      if (eq.template === templateKeys[t]) opt.selected = true;
+      templateSelect.appendChild(opt);
+    }
+    
+    templateSelect.onchange = (function(idx) {
+      return function() {
+        option.equipments[idx].template = this.value;
+        if (!option.equipments[idx].specs) option.equipments[idx].specs = {};
+        showStep('opts');
+        autosave();
+      };
+    })(i);
+    
+    templateRow.appendChild(templateSelect);
+    
+    var qtyLabel = el('label');
+    qtyLabel.style.cssText = 'font-size:12px;font-weight:700;color:#6b7280;margin-left:8px';
+    qtyLabel.textContent = 'Qty:';
+    templateRow.appendChild(qtyLabel);
+    
+    var qtyInput = el('input');
+    qtyInput.type = 'number';
+    qtyInput.value = eq.qty || 1;
+    qtyInput.min = '1';
+    qtyInput.placeholder = '1';
+    qtyInput.style.cssText = 'width:70px;padding:8px;border:1px solid #d1d5db;border-radius:6px;text-align:center';
+    qtyInput.oninput = (function(idx) {
+      return function() {
+        option.equipments[idx].qty = parseInt(this.value) || 1;
+        autosave();
+      };
+    })(i);
+    templateRow.appendChild(qtyInput);
+    
+    eqCard.appendChild(templateRow);
+    
+    // Show specs input if template selected
+    if (eq.template && EQUIPMENT_TEMPLATES[eq.template]) {
+      if (!eq.specs) eq.specs = {};
+      
+      var tmpl = EQUIPMENT_TEMPLATES[eq.template];
+      var specsDiv = el('div');
+      specsDiv.style.cssText = 'display:grid;grid-template-columns:1fr 1fr;gap:8px;padding-top:10px;border-top:1px solid #e5e7eb';
+      
+      for (var f = 0; f < tmpl.fields.length; f++) {
+        var field = tmpl.fields[f];
+        
+        var fieldDiv = el('div');
+        
+        var label = el('label');
+        label.style.cssText = 'display:block;font-size:12px;color:#6b7280;margin-bottom:4px';
+        label.textContent = field.label + (field.unit ? ' (' + field.unit + ')' : '') + (field.required ? ' *' : '');
+        fieldDiv.appendChild(label);
+        
+        if (field.type === 'select') {
+          var select = el('select');
+          select.style.cssText = 'width:100%;padding:6px;border:1px solid #d1d5db;border-radius:4px';
+          
+          var emptyOpt = el('option');
+          emptyOpt.value = '';
+          emptyOpt.textContent = '—';
+          select.appendChild(emptyOpt);
+          
+          for (var o = 0; o < field.options.length; o++) {
+            var opt = el('option');
+            opt.value = field.options[o];
+            opt.textContent = field.options[o];
+            if (eq.specs[field.label] === field.options[o]) opt.selected = true;
+            select.appendChild(opt);
+          }
+          
+          select.onchange = (function(idx, lbl) {
+            return function() {
+              option.equipments[idx].specs[lbl] = this.value;
+              autosave();
+            };
+          })(i, field.label);
+          
+          fieldDiv.appendChild(select);
+        } else {
+          var input = el('input');
+          input.type = field.type;
+          input.value = eq.specs[field.label] || '';
+          input.placeholder = field.label;
+          input.style.cssText = 'width:100%;padding:6px;border:1px solid #d1d5db;border-radius:4px';
+          
+          input.oninput = (function(idx, lbl) {
+            return function() {
+              option.equipments[idx].specs[lbl] = this.value;
+              autosave();
+            };
+          })(i, field.label);
+          
+          fieldDiv.appendChild(input);
+        }
+        
+        specsDiv.appendChild(fieldDiv);
+      }
+      
+      eqCard.appendChild(specsDiv);
+    }
+    
+    eqList.appendChild(eqCard);
+  }
+  sysCard.appendChild(eqList);
+  
+  var addEqBtn = el('button', 'btn pri');
+  addEqBtn.textContent = '+ ' + T[LANG].addEquipment;
+  addEqBtn.onclick = function() {
+    option.equipments.push({name: '', template: '', specs: {}, qty: 1});
+    showStep('opts');
+    autosave();
+  };
+  sysCard.appendChild(addEqBtn);
+  box.appendChild(sysCard);
+  
+  // 3. Engineering Items (BOM)
+  var bomCard = el('div', 'card');
+  
+  var bomHeader = el('div');
+  bomHeader.style.cssText = 'display:flex;align-items:center;justify-content:space-between;margin-bottom:10px';
+  
+  var bomTitle = el('h3');
+  bomTitle.textContent = '3. ' + T[LANG].engineeringItems + ' 📦';
+  bomTitle.style.margin = '0';
+  bomHeader.appendChild(bomTitle);
+  
+  var genBtn = el('button');
+  genBtn.className = 'btn';
+  genBtn.style.cssText = 'background:#fbbf24;color:#000;border-color:#f59e0b;font-weight:700;font-size:14px;padding:10px 20px;box-shadow:0 2px 4px rgba(0,0,0,0.1)';
+  genBtn.innerHTML = '⚡ Generate from Equipment';
+  genBtn.title = 'Auto-generate BOM items based on equipment templates and specs';
+  genBtn.onclick = function() {
+    if (confirm('Generate BOM items from equipment specifications?\n\nThis will add items based on templates. Existing items will not be removed.')) {
+      generateBOMFromEquipment();
+    }
+  };
+  bomHeader.appendChild(genBtn);
+  
+  bomCard.appendChild(bomHeader);
+  
+  var bomNote = el('div');
+  bomNote.style.cssText = 'background:#f0fdf4;border-left:4px solid:#10b981;padding:12px;margin-bottom:16px;border-radius:4px';
+  bomNote.innerHTML = '<div style="font-size:12px;color:#065f46;line-height:1.5">' +
+    '<b>🤖 Auto BOM Generation:</b> Click the button above to automatically generate engineering items from equipment specs. ' +
+    'Each template has predefined BOM rules (Equipment, Fabrication, Electrical, Controls, Installation). ' +
+    'You can also manually add items using the button below.' +
+    '</div>';
+  bomCard.appendChild(bomNote);
+  
+  if (!option.items) option.items = [];
+  
+  var itemList = el('div');
+  itemList.style.cssText = 'display:flex;flex-direction:column;gap:6px;margin-bottom:10px';
+  for (var i = 0; i < option.items.length; i++) {
+    var item = option.items[i];
+    var itemRow = el('div');
+    itemRow.style.cssText = 'display:grid;grid-template-columns:120px 1fr 80px 80px 100px 40px;gap:6px;align-items:center;padding:8px;border:1px solid #e5e7eb;border-radius:4px;background:#fff';
+    itemRow.innerHTML = '<select style="padding:4px;border:1px solid #ddd;border-radius:4px"><option' + (item.cat === 'Equipment' ? ' selected' : '') + '>Equipment</option><option' + (item.cat === 'Fabrication' ? ' selected' : '') + '>Fabrication</option><option' + (item.cat === 'Installation' ? ' selected' : '') + '>Installation</option><option' + (item.cat === 'Electrical' ? ' selected' : '') + '>Electrical</option><option' + (item.cat === 'Controls' ? ' selected' : '') + '>Controls</option></select>' +
+      '<input type="text" value="' + item.desc + '" placeholder="Description" style="padding:4px;border:1px solid #ddd;border-radius:4px">' +
+      '<input type="number" value="' + item.qty + '" placeholder="Qty" style="padding:4px;border:1px solid #ddd;border-radius:4px">' +
+      '<input type="text" value="' + item.unit + '" placeholder="Unit" style="padding:4px;border:1px solid #ddd;border-radius:4px">' +
+      '<select style="padding:4px;border:1px solid #ddd;border-radius:4px"><option' + (item.scope === 'Included' ? ' selected' : '') + '>Included</option><option' + (item.scope === 'Optional' ? ' selected' : '') + '>Optional</option></select>' +
+      '<button class="btn dan" style="padding:4px 8px">✕</button>';
+    itemList.appendChild(itemRow);
+    
+    var selects = itemRow.querySelectorAll('select');
+    var inputs = itemRow.querySelectorAll('input');
+    
+    selects[0].onchange = (function(idx) {
+      return function() {
+        option.items[idx].cat = this.value;
+        autosave();
+      };
+    })(i);
+    inputs[0].oninput = (function(idx) {
+      return function() {
+        option.items[idx].desc = this.value;
+        autosave();
+      };
+    })(i);
+    inputs[1].oninput = (function(idx) {
+      return function() {
+        option.items[idx].qty = this.value;
+        autosave();
+      };
+    })(i);
+    inputs[2].oninput = (function(idx) {
+      return function() {
+        option.items[idx].unit = this.value;
+        autosave();
+      };
+    })(i);
+    selects[1].onchange = (function(idx) {
+      return function() {
+        option.items[idx].scope = this.value;
+        autosave();
+      };
+    })(i);
+    itemRow.querySelector('button').onclick = (function(idx) {
+      return function() {
+        option.items.splice(idx, 1);
+        showStep('opts');
+        autosave();
+      };
+    })(i);
+  }
+  bomCard.appendChild(itemList);
+  
+  var addItemBtn = el('button', 'btn pri');
+  addItemBtn.textContent = '+ ' + T[LANG].addItem;
+  addItemBtn.onclick = function() {
+    option.items.push({cat: 'Equipment', desc: '', qty: 1, unit: 'ea', scope: 'Included'});
+    showStep('opts');
+    autosave();
+  };
+  bomCard.appendChild(addItemBtn);
+  box.appendChild(bomCard);
+  
+  // 4. Freight & Notes
+  var notesCard = el('div', 'card');
+  var notesTitle = el('h3');
+  notesTitle.textContent = '4. ' + T[LANG].freight + ' & ' + T[LANG].optionNotes;
+  notesCard.appendChild(notesTitle);
+  
+  notesCard.appendChild(formGrid([
+    field({label: T[LANG].freight, type: 'select', w: 'f2', opts: ['Normal', 'Heavy', 'Oversize', 'Special']}, 'options.' + state.activeOption + '.freight'),
+    field({label: T[LANG].freightNotes, type: 'text', w: 'f4'}, 'options.' + state.activeOption + '.freight_notes')
+  ]));
+  
+  var notesLabel = el('label');
+  notesLabel.textContent = 'Assumptions & Exclusions';
+  notesCard.appendChild(notesLabel);
+  
+  var notesTA = el('textarea');
+  notesTA.style.minHeight = '80px';
+  notesTA.placeholder = 'Option-specific assumptions, exclusions, or notes...';
+  notesTA.value = option.notes || '';
+  notesTA.oninput = function() {
+    option.notes = notesTA.value;
+    autosave();
+  };
+  notesCard.appendChild(notesTA);
+  
+  box.appendChild(notesCard);
+  
+  // Completion Indicator
+  var complete = el('div');
+  complete.style.cssText = 'margin-top:20px;padding:15px;background:#f0fdf4;border:1px solid #86efac;border-radius:8px';
+  var checks = [
+    option.summary && option.summary.length > 50,
+    option.equipments && option.equipments.length > 0,
+    option.items && option.items.length > 0
+  ];
+  var completePct = Math.round((checks.filter(Boolean).length / checks.length) * 100);
+  complete.innerHTML = '<div style="font-weight:700;margin-bottom:8px">Option ' + option.id + ' Completion: ' + completePct + '%</div>' +
+    '<div class="small">' +
+    (checks[0] ? '✓' : '○') + ' Engineering Summary<br>' +
+    (checks[1] ? '✓' : '○') + ' Systems & Equipments<br>' +
+    (checks[2] ? '✓' : '○') + ' Engineering Items (BOM)' +
+    '</div>';
+  box.appendChild(complete);
+}
+
+function renderCost(box) {
+  var title = el('h2');
+  title.textContent = T[LANG].cost;
+  box.appendChild(title);
+  
+  
+  // Check if options exist
+  if (!state.options || state.options.length === 0) {
+    var lockMsg = el('div', 'note');
+    lockMsg.style.marginTop = '20px';
+    lockMsg.innerHTML = '<b>⚠️ No options created yet</b><br>Please complete Step 04 (Option Builder) first.';
+    box.appendChild(lockMsg);
+    return;
+  }
+  
+  // Global Settings Card
+  var settingsCard = el('div', 'card');
+  var settingsTitle = el('h3');
+  settingsTitle.textContent = 'Global Pricing Parameters';
+  settingsCard.appendChild(settingsTitle);
+  
+  settingsCard.appendChild(formGrid([
+    field({label: T[LANG].laborRate, type: 'number', w: 'f2'}, 'pricing.labor_rate_per_hour'),
+    field({label: T[LANG].marginPct, type: 'number', w: 'f1'}, 'pricing.margin_percentage'),
+    field({label: T[LANG].freightPct, type: 'number', w: 'f1'}, 'pricing.freight_percentage')
+  ]));
+  
+  box.appendChild(settingsCard);
+  
+  // Option Comparison Table
+  var compCard = el('div', 'card');
+  compCard.style.marginTop = '20px';
+  var compTitle = el('h3');
+  compTitle.textContent = 'Option Comparison';
+  compCard.appendChild(compTitle);
+  
+  var table = el('table');
+  table.style.cssText = 'width:100%;border-collapse:collapse;margin-top:12px';
+  
+  var thead = el('thead');
+  var tr = el('tr');
+  tr.innerHTML = '<th style="text-align:left;padding:10px;border-bottom:2px solid #ddd;background:#f8f9fa">Metric</th>';
+  
+  for (var i = 0; i < state.options.length; i++) {
+    var opt = state.options[i];
+    tr.innerHTML += '<th style="text-align:right;padding:10px;border-bottom:2px solid #ddd;background:#f8f9fa">Option ' + opt.id + '</th>';
+  }
+  thead.appendChild(tr);
+  table.appendChild(thead);
+  
+  var tbody = el('tbody');
+  
+  // Calculate costs for each option
+  var optionCosts = [];
+  for (var i = 0; i < state.options.length; i++) {
+    var opt = state.options[i];
+    var costs = calculateOptionCosts(opt);
+    optionCosts.push(costs);
+  }
+  
+  // Equipment Count
+  var row1 = el('tr');
+  row1.innerHTML = '<td style="padding:10px;border-bottom:1px solid #eee">Equipment Count</td>';
+  for (var i = 0; i < optionCosts.length; i++) {
+    row1.innerHTML += '<td style="padding:10px;border-bottom:1px solid #eee;text-align:right">' + optionCosts[i].equipmentCount + '</td>';
+  }
+  tbody.appendChild(row1);
+  
+  // BOM Items
+  var row2 = el('tr');
+  row2.innerHTML = '<td style="padding:10px;border-bottom:1px solid #eee">BOM Items</td>';
+  for (var i = 0; i < optionCosts.length; i++) {
+    row2.innerHTML += '<td style="padding:10px;border-bottom:1px solid #eee;text-align:right">' + optionCosts[i].bomCount + '</td>';
+  }
+  tbody.appendChild(row2);
+  
+  // Estimated Hours
+  var row3 = el('tr');
+  row3.innerHTML = '<td style="padding:10px;border-bottom:1px solid #eee">Estimated Hours</td>';
+  for (var i = 0; i < optionCosts.length; i++) {
+    row3.innerHTML += '<td style="padding:10px;border-bottom:1px solid #eee;text-align:right">' + optionCosts[i].totalHours.toFixed(0) + ' hr</td>';
+  }
+  tbody.appendChild(row3);
+  
+  // Labor Cost
+  var row4 = el('tr');
+  row4.innerHTML = '<td style="padding:10px;border-bottom:1px solid #eee">Labor Cost</td>';
+  for (var i = 0; i < optionCosts.length; i++) {
+    row4.innerHTML += '<td style="padding:10px;border-bottom:1px solid #eee;text-align:right;color:#0aa574;font-weight:600">$' + optionCosts[i].laborCost.toLocaleString() + '</td>';
+  }
+  tbody.appendChild(row4);
+  
+  // Total Cost
+  var row5 = el('tr');
+  row5.innerHTML = '<td style="padding:10px;border-bottom:2px solid #ddd;font-weight:700">Total Cost</td>';
+  for (var i = 0; i < optionCosts.length; i++) {
+    row5.innerHTML += '<td style="padding:10px;border-bottom:2px solid #ddd;text-align:right;font-weight:700;color:#0aa574">$' + optionCosts[i].totalCost.toLocaleString() + '</td>';
+  }
+  tbody.appendChild(row5);
+  
+  // Margin
+  var row6 = el('tr');
+  row6.innerHTML = '<td style="padding:10px;border-bottom:1px solid #eee">Margin (' + state.pricing.margin_percentage + '%)</td>';
+  for (var i = 0; i < optionCosts.length; i++) {
+    row6.innerHTML += '<td style="padding:10px;border-bottom:1px solid #eee;text-align:right">$' + optionCosts[i].margin.toLocaleString() + '</td>';
+  }
+  tbody.appendChild(row6);
+  
+  // Freight
+  var row7 = el('tr');
+  row7.innerHTML = '<td style="padding:10px;border-bottom:1px solid #eee">Freight (' + state.pricing.freight_percentage + '%)</td>';
+  for (var i = 0; i < optionCosts.length; i++) {
+    row7.innerHTML += '<td style="padding:10px;border-bottom:1px solid #eee;text-align:right">$' + optionCosts[i].freight.toLocaleString() + '</td>';
+  }
+  tbody.appendChild(row7);
+  
+  // Selling Price
+  var row8 = el('tr');
+  row8.style.background = '#f0fdf4';
+  row8.innerHTML = '<td style="padding:12px;font-weight:700;font-size:16px">Selling Price</td>';
+  for (var i = 0; i < optionCosts.length; i++) {
+    row8.innerHTML += '<td style="padding:12px;text-align:right;font-weight:700;font-size:16px;color:#15803d">$' + optionCosts[i].sellingPrice.toLocaleString() + '</td>';
+  }
+  tbody.appendChild(row8);
+  
+  table.appendChild(tbody);
+  compCard.appendChild(table);
+  box.appendChild(compCard);
+  
+  // Detailed Cost Breakdown per Option
+  for (var i = 0; i < state.options.length; i++) {
+    var opt = state.options[i];
+    var costs = optionCosts[i];
+    
+    var detailCard = el('div', 'card');
+    detailCard.style.marginTop = '20px';
+    
+    var detailTitle = el('h3');
+    detailTitle.innerHTML = 'Option ' + opt.id + ' — Detailed Breakdown';
+    detailCard.appendChild(detailTitle);
+    
+    var detailTable = el('table');
+    detailTable.style.cssText = 'width:100%;border-collapse:collapse;margin-top:12px';
+    
+    var detailThead = el('thead');
+    var detailTr = el('tr');
+    detailTr.innerHTML = '<th style="text-align:left;padding:8px;border-bottom:2px solid #ddd;background:#f8f9fa">Category</th>' +
+      '<th style="text-align:left;padding:8px;border-bottom:2px solid #ddd;background:#f8f9fa">Description</th>' +
+      '<th style="text-align:center;padding:8px;border-bottom:2px solid #ddd;background:#f8f9fa">Qty</th>' +
+      '<th style="text-align:center;padding:8px;border-bottom:2px solid #ddd;background:#f8f9fa">Unit</th>' +
+      '<th style="text-align:right;padding:8px;border-bottom:2px solid #ddd;background:#f8f9fa">Est. Hours</th>';
+    detailThead.appendChild(detailTr);
+    detailTable.appendChild(detailThead);
+    
+    var detailTbody = el('tbody');
+    
+    if (!opt.items || opt.items.length === 0) {
+      var emptyRow = el('tr');
+      emptyRow.innerHTML = '<td colspan="5" style="padding:20px;text-align:center;color:#999">No BOM items defined for this option</td>';
+      detailTbody.appendChild(emptyRow);
+    } else {
+      for (var j = 0; j < opt.items.length; j++) {
+        var item = opt.items[j];
+        var estHours = estimateHours(item);
+        var itemRow = el('tr');
+        itemRow.innerHTML = '<td style="padding:8px;border-bottom:1px solid #eee">' + item.cat + '</td>' +
+          '<td style="padding:8px;border-bottom:1px solid #eee">' + item.desc + '</td>' +
+          '<td style="padding:8px;border-bottom:1px solid #eee;text-align:center">' + item.qty + '</td>' +
+          '<td style="padding:8px;border-bottom:1px solid #eee;text-align:center">' + item.unit + '</td>' +
+          '<td style="padding:8px;border-bottom:1px solid #eee;text-align:right">' + estHours.toFixed(1) + ' hr</td>';
+        detailTbody.appendChild(itemRow);
+      }
+    }
+    
+    detailTable.appendChild(detailTbody);
+    detailCard.appendChild(detailTable);
+    box.appendChild(detailCard);
+  }
+}
+
+function estimateHours(item) {
+  // Simple estimation based on category and quantity
+  var baseHours = 0;
+  switch (item.cat) {
+    case 'Equipment': baseHours = 40; break;
+    case 'Fabrication': baseHours = 20; break;
+    case 'Installation': baseHours = 16; break;
+    case 'Electrical': baseHours = 12; break;
+    case 'Controls': baseHours = 24; break;
+    default: baseHours = 10;
+  }
+  return baseHours * (item.qty || 1);
+}
+
+function calculateOptionCosts(option) {
+  var equipmentCount = (option.equipments || []).length;
+  var bomCount = (option.items || []).length;
+  
+  var totalHours = 0;
+  if (option.items) {
+    for (var i = 0; i < option.items.length; i++) {
+      totalHours += estimateHours(option.items[i]);
+    }
+  }
+  
+  var laborRate = state.pricing.labor_rate_per_hour || 125;
+  var laborCost = Math.round(totalHours * laborRate);
+  var totalCost = laborCost;
+  
+  var marginPct = state.pricing.margin_percentage || 25;
+  var margin = Math.round(totalCost * (marginPct / 100));
+  
+  var freightPct = state.pricing.freight_percentage || 5;
+  var freight = Math.round(totalCost * (freightPct / 100));
+  
+  var sellingPrice = totalCost + margin + freight;
+  
+  return {
+    equipmentCount: equipmentCount,
+    bomCount: bomCount,
+    totalHours: totalHours,
+    laborCost: laborCost,
+    totalCost: totalCost,
+    margin: margin,
+    freight: freight,
+    sellingPrice: sellingPrice
+  };
+}
+
+function renderContract(box) {
+  var title = el('h2');
+  title.textContent = T[LANG].contract;
+  box.appendChild(title);
+  
+  // GRILLE TARIFAIRE | MAIN D'OEUVRE
+  // Ensure pricing and labor_rates exist
+  if (!state.pricing) {
+    state.pricing = {
+      labor_rate_per_hour: 95,
+      margin_percentage: 25,
+      freight_percentage: 5,
+      travel_rate_km: 0.85,
+      accommodation_per_night: 200,
+      meal_allowance: 50,
+      supplies_per_day: 50,
+      overtime_multiplier: 1.5,
+      sunday_multiplier: 2.0,
+      labor_rates: {},
+      notes: ''
+    };
+  }
+  
+  if (!state.pricing.labor_rates) {
+    state.pricing.labor_rates = {
+      engineer_senior: 175.00,
+      engineer_standard: 150.00,
+      designer: 115.00,
+      technician_draftsman: 97.50,
+      admin_support: 65.00,
+      specialist_dryer: 155.00,
+      supervisor_senior: 125.00,
+      supervisor_standard: 95.00,
+      foreman_mechanical: 90.00,
+      mechanic_welder: 85.50,
+      assistant_mechanic: 80.50
+    };
+  }
+  
+  var tarifCard = el('div', 'card');
+  tarifCard.style.background = '#fffbeb';
+  tarifCard.style.borderColor = '#fbbf24';
+  
+  var tarifTitle = el('h3');
+  tarifTitle.innerHTML = '💰 GRILLE TARIFAIRE | MAIN D\'OEUVRE';
+  tarifCard.appendChild(tarifTitle);
+  
+  var tarifSubtitle = el('div', 'small');
+  tarifSubtitle.style.cssText = 'color:#666;margin-bottom:16px';
+  tarifSubtitle.innerHTML = T[LANG].laborRatesValid2025;
+  tarifCard.appendChild(tarifSubtitle);
+  
+  // CONCEPTION ET DESSINS Section
+  var conceptionHeader = el('div');
+  conceptionHeader.style.cssText = 'font-weight:700;margin-top:12px;margin-bottom:8px;color:#b45309;text-transform:uppercase';
+  conceptionHeader.textContent = T[LANG].conceptionDesign;
+  tarifCard.appendChild(conceptionHeader);
+  
+  var conceptionTable = el('table');
+  conceptionTable.style.cssText = 'width:100%;border-collapse:collapse;margin-bottom:16px';
+  conceptionTable.innerHTML = 
+    '<tr><td style="padding:6px;width:60%">Ø ' + T[LANG].engineerSenior + '</td><td style="text-align:right;padding:6px"><input type="number" step="0.01" value="' + state.pricing.labor_rates.engineer_senior + '" onchange="state.pricing.labor_rates.engineer_senior=parseFloat(this.value);autosave()" style="width:100px;text-align:right;padding:4px;border:1px solid #ddd;border-radius:4px"/> $ / hr</td></tr>' +
+    '<tr style="background:#fef3c7"><td style="padding:6px">Ø ' + T[LANG].engineerStandard + '</td><td style="text-align:right;padding:6px"><input type="number" step="0.01" value="' + state.pricing.labor_rates.engineer_standard + '" onchange="state.pricing.labor_rates.engineer_standard=parseFloat(this.value);autosave()" style="width:100px;text-align:right;padding:4px;border:1px solid #ddd;border-radius:4px"/> $ / hr</td></tr>' +
+    '<tr><td style="padding:6px">Ø ' + T[LANG].designer + '</td><td style="text-align:right;padding:6px"><input type="number" step="0.01" value="' + state.pricing.labor_rates.designer + '" onchange="state.pricing.labor_rates.designer=parseFloat(this.value);autosave()" style="width:100px;text-align:right;padding:4px;border:1px solid #ddd;border-radius:4px"/> $ / hr</td></tr>' +
+    '<tr style="background:#fef3c7"><td style="padding:6px">Ø ' + T[LANG].technicianDraftsman + '</td><td style="text-align:right;padding:6px"><input type="number" step="0.01" value="' + state.pricing.labor_rates.technician_draftsman + '" onchange="state.pricing.labor_rates.technician_draftsman=parseFloat(this.value);autosave()" style="width:100px;text-align:right;padding:4px;border:1px solid #ddd;border-radius:4px"/> $ / hr</td></tr>' +
+    '<tr><td style="padding:6px">Ø ' + T[LANG].adminSupport + '</td><td style="text-align:right;padding:6px"><input type="number" step="0.01" value="' + state.pricing.labor_rates.admin_support + '" onchange="state.pricing.labor_rates.admin_support=parseFloat(this.value);autosave()" style="width:100px;text-align:right;padding:4px;border:1px solid #ddd;border-radius:4px"/> $ / hr</td></tr>';
+  tarifCard.appendChild(conceptionTable);
+  
+  // MÉCANIQUE Section
+  var mecaniqueHeader = el('div');
+  mecaniqueHeader.style.cssText = 'font-weight:700;margin-top:12px;margin-bottom:8px;color:#b45309;text-transform:uppercase';
+  mecaniqueHeader.textContent = T[LANG].mechanicSupervision;
+  tarifCard.appendChild(mecaniqueHeader);
+  
+  var mecaniqueTable = el('table');
+  mecaniqueTable.style.cssText = 'width:100%;border-collapse:collapse;margin-bottom:16px';
+  mecaniqueTable.innerHTML = 
+    '<tr><td style="padding:6px">Ø ' + T[LANG].specialistDryer + '</td><td style="text-align:right;padding:6px"><input type="number" step="0.01" value="' + state.pricing.labor_rates.specialist_dryer + '" onchange="state.pricing.labor_rates.specialist_dryer=parseFloat(this.value);autosave()" style="width:100px;text-align:right;padding:4px;border:1px solid #ddd;border-radius:4px"/> $ / hr</td></tr>' +
+    '<tr style="background:#fef3c7"><td style="padding:6px">Ø ' + T[LANG].supervisorSenior + '</td><td style="text-align:right;padding:6px"><input type="number" step="0.01" value="' + state.pricing.labor_rates.supervisor_senior + '" onchange="state.pricing.labor_rates.supervisor_senior=parseFloat(this.value);autosave()" style="width:100px;text-align:right;padding:4px;border:1px solid #ddd;border-radius:4px"/> $ / hr</td></tr>' +
+    '<tr><td style="padding:6px">Ø ' + T[LANG].supervisorStandard + '</td><td style="text-align:right;padding:6px"><input type="number" step="0.01" value="' + state.pricing.labor_rates.supervisor_standard + '" onchange="state.pricing.labor_rates.supervisor_standard=parseFloat(this.value);autosave()" style="width:100px;text-align:right;padding:4px;border:1px solid #ddd;border-radius:4px"/> $ / hr</td></tr>' +
+    '<tr style="background:#fef3c7"><td style="padding:6px">Ø ' + T[LANG].foremanMechanical + '</td><td style="text-align:right;padding:6px"><input type="number" step="0.01" value="' + state.pricing.labor_rates.foreman_mechanical + '" onchange="state.pricing.labor_rates.foreman_mechanical=parseFloat(this.value);autosave()" style="width:100px;text-align:right;padding:4px;border:1px solid #ddd;border-radius:4px"/> $ / hr</td></tr>' +
+    '<tr><td style="padding:6px">Ø ' + T[LANG].mechanicWelder + '</td><td style="text-align:right;padding:6px"><input type="number" step="0.01" value="' + state.pricing.labor_rates.mechanic_welder + '" onchange="state.pricing.labor_rates.mechanic_welder=parseFloat(this.value);autosave()" style="width:100px;text-align:right;padding:4px;border:1px solid #ddd;border-radius:4px"/> $ / hr</td></tr>' +
+    '<tr style="background:#fef3c7"><td style="padding:6px">Ø ' + T[LANG].assistantMechanic + '</td><td style="text-align:right;padding:6px"><input type="number" step="0.01" value="' + state.pricing.labor_rates.assistant_mechanic + '" onchange="state.pricing.labor_rates.assistant_mechanic=parseFloat(this.value);autosave()" style="width:100px;text-align:right;padding:4px;border:1px solid #ddd;border-radius:4px"/> $ / hr</td></tr>' +
+    '<tr><td style="padding:6px">Ø ' + T[LANG].supplies + '</td><td style="text-align:right;padding:6px"><input type="number" step="0.01" value="' + state.pricing.supplies_per_day + '" onchange="state.pricing.supplies_per_day=parseFloat(this.value);autosave()" style="width:100px;text-align:right;padding:4px;border:1px solid #ddd;border-radius:4px"/> $ / jour / homme</td></tr>';
+  tarifCard.appendChild(mecaniqueTable);
+  
+  // Additional rates
+  var addRatesDiv = el('div');
+  addRatesDiv.style.cssText = 'margin-top:16px;padding:12px;background:#fef3c7;border-radius:6px';
+  addRatesDiv.innerHTML = 
+    '<div style="margin-bottom:8px"><b>' + T[LANG].ratesSubjectToChange + '</b></div>' +
+    '<div style="margin-bottom:4px">• ' + T[LANG].travelFees + ' <b>' + state.pricing.travel_rate_km.toFixed(2) + '$ / km</b> + taux horaire applicable.</div>' +
+    '<div style="margin-bottom:4px">• ' + T[LANG].accommodation + ' <b>' + state.pricing.accommodation_per_night + '$ par nuit</b> s\'ajouteront.</div>' +
+    '<div style="margin-bottom:4px">• ' + T[LANG].mealAllowance + ' <b>' + state.pricing.meal_allowance + '$ / repas</b> s\'ajouteront.</div>' +
+    '<div style="margin-bottom:4px">• ' + T[LANG].overtimeSaturday + ' <b>' + state.pricing.overtime_multiplier + 'x le taux horaire</b>.</div>' +
+    '<div>• ' + T[LANG].sundayHolidays + ' <b>' + state.pricing.sunday_multiplier + 'x le taux horaire</b>.</div>';
+  tarifCard.appendChild(addRatesDiv);
+  
+  box.appendChild(tarifCard);
+  
+  // 2. NOTES CONTRACTUELLES (Fixed 7 + Additional)
+  var notesCard = el('div', 'card');
+  notesCard.style.marginTop = '20px';
+  
+  var notesHeader = el('div');
+  notesHeader.style.cssText = 'display:flex;justify-content:space-between;align-items:center;margin-bottom:12px';
+  
+  var notesTitle = el('h3');
+  notesTitle.textContent = '📄 ' + T[LANG].contractNotes;
+  notesTitle.style.margin = '0';
+  notesHeader.appendChild(notesTitle);
+  
+  var addNoteBtn = el('button', 'btn pri');
+  addNoteBtn.innerHTML = T[LANG].addAdditionalNote;
+  addNoteBtn.onclick = function() {
+    if (!state.project.contract.additional_notes) state.project.contract.additional_notes = [];
+    state.project.contract.additional_notes.push({
+      id: uid('NOTE'),
+      text: '',
+      included: true
+    });
+    renderContractNotes();
+    autosave();
+  };
+  notesHeader.appendChild(addNoteBtn);
+  
+  notesCard.appendChild(notesHeader);
+  
+  var notesInfo = el('div', 'note');
+  notesInfo.style.marginBottom = '12px';
+  notesInfo.innerHTML = T[LANG].standardTrustechNotes + '<br>' + T[LANG].checkNotesForStep7;
+  notesCard.appendChild(notesInfo);
+  
+  var notesListContainer = el('div');
+  notesListContainer.id = 'contractNotesList';
+  notesCard.appendChild(notesListContainer);
+  
+  function renderContractNotes() {
+    var container = document.getElementById('contractNotesList');
+    if (!container) {
+      console.log('contractNotesList not found, will retry');
+      setTimeout(renderContractNotes, 100);
+      return;
+    }
+    
+    container.innerHTML = '';
+    
+    // Initialize standard 7 notes if not exist
+    var standardNotes = [
+      { key: 'note1', title: 'TERMES DE PAIEMENT', text: 'TERMES DE PAIEMENT (Section A ou B selon celle retenue par client)\n• 30% à la commande (sur réception de facture). Projet début à la réception du premier paiement.\n• 20% Net 45 jours à la remise des dessins d\'atelier.\n• 30% avant expédition (paiement doit être reçu avant expédition).\n• 20% Net 45 jours suivant installation (max 60 jours après expédition).\n• Note: Trustech demeure propriétaire des équipements fournis tant que l\'ensemble des paiements ne sont pas complétés par le client.\n• Note: Tout retard de paiement peut entraîner des délais additionnels sur l\'échéancier de livraison prévu.' },
+      { key: 'note2', title: 'ÉCHÉANCIER DE LIVRAISON PRÉVU', text: 'ÉCHÉANCIER DE LIVRAISON PRÉVU\nSuivant réception du premier paiement et du nuage de point (scan 3D) prêt à utiliser avec logiciel Inventor:\n• Ingénierie et remise de dessins d\'atelier: 4 à 6 semaines\n• Fabrication: 12-14 semaines (suivant approbation des dessins d\'atelier)' },
+      { key: 'note3', title: 'RESPONSABILITÉ DE TRUSTECH', text: 'RESPONSABILITÉ DE TRUSTECH\n• Conception, fabrication et fourniture des éléments décrits et retenus à cette soumission.\n• Ingénierie de conception fait en partenariat avec Dynagroup Technologies Inc.\n• Fonctionnalité des équipements et composantes.\n• Suivant remise des dessins d\'atelier, fourniture au client d\'un prix pour réseaux de conduits nécessaires et réseau de décharge d\'air à l\'atmosphère. Le tout selon notre grille tarifaire 2025 en vigueur.\n• Suivant remise des dessins d\'atelier, fourniture au client d\'un prix pour installation mécanique hors décret. Le tout selon notre grille tarifaire 2025 en vigueur.' },
+      { key: 'note4', title: 'RESPONSABILITÉ DU CLIENT', text: 'RESPONSABILITÉ DU CLIENT\n• Transport, réception et manutention des équipements lors de la livraison.\n• Tous les travaux de nature civil/structure afin de recevoir les nouveaux équipements (si requis).\n• Layout général des équipements, fourniture d\'un scan 3D.\n• L\'installation complète des équipements et composantes.\n• Tout travaux de nature électrique, instrumentation, contrôle, pneumatique, civil, etc.\n• Source d\'air comprimé, propre et asséché pour alimenter le système de pulse des dépoussiéreurs.\n• Tous percements de murs, plancher et toit requis dans le cadre du projet.\n• Toutes modifications aux équipements existants afin de recevoir les nouveaux équipements et composantes.\n• Tous travaux ou fourniture non-inclus à cette proposition.' },
+      { key: 'note5', title: 'VALIDITÉ DE LA PROPOSITION', text: 'VALIDITÉ DE LA PROPOSITION\n• La présente proposition est valide pour 30 jours.\n• Voir également la Note 7 pour autres notes et exceptions.' },
+      { key: 'note6', title: 'GARANTIES', text: 'GARANTIES\n• Garantie sur efficacité de filtration (au niveau des filtres) pour respecter les normes en vigueur pour le dépoussiéreur.\n• Garantie sur le débit développé par le nouveau ventilateur fourni.\n• Garantie générale de 1 an sur la fonctionnalité des nouveaux équipements et composantes fournies, s\'ils sont opérés selon les recommandations des manufacturiers et de Trustech.\n• Aucune garantie sur équipements, composantes et matériaux existants qui seront réutilisés.\n• Option: Si le client désire obtenir une garantie de 2 ans (au lieu de 1 an) sur la fonctionnalité des nouveaux équipements et composantes fournies par Trustech: le coût associé additionnel est de 3500$.\n• Aucune garantie sur les pièces d\'usure tel que filtres, conduits, etc. à moins qu\'il s\'agisse d\'un défaut de fabrication ou d\'installation.\n• Aucune garantie sur l\'efficacité de capture aux points d\'émission de poussières.\n• Garantie offerte couvre le matériel nécessaire et non la main-d\'œuvre requise associée.' },
+      { key: 'note7', title: 'NOTES & EXCLUSIONS', text: 'NOTES & EXCLUSIONS\n• Advenant des délais dans la livraison et disponibilité des équipements et composantes ci-haut décrit qui affecterait les délais de livraison estimés présentés à la Note 2: aucune pénalité, dommages-intérêts liquidés et/ou quelconque autre retenu sur le prix de vente établi pourra être chargé à Trustech – Systèmes et Procédés Inc. Nous ferons tout dans notre possible afin de respecter les délais proposés et aviserons le client dès que possible advenant de potentielles problématiques.\n• Suivant expédition des équipements et composantes Trustech ne peut être tenu responsable de tous dommages, pertes, vol, bris, etc. du matériel expédié qui sera sous la responsabilité du client.\n• Aucune caution ne sera fournie par Trustech.\n• Les prix indiqués à cette proposition sont basés sur une évaluation de projet en date d\'Octobre 2025, les différentes révisions subséquentes ont été réalisées pour adresser des besoins identifiés par le client. À cet effet les prix indiqués à cette proposition ne tiennent pas compte de nouveaux tarifs (US et autres) ou frais excédentaires pouvant être encourus et ce à partir de Novembre 2024. Advenant cette situation, un ajustement de coût pourrait être nécessaire pour palier à ces augmentations de coût.' }
+    ];
+    
+    // Initialize if not exist
+    for (var i = 0; i < standardNotes.length; i++) {
+      if (!state.project.contract[standardNotes[i].key]) {
+        state.project.contract[standardNotes[i].key] = standardNotes[i].text;
+      }
+      if (state.project.contract[standardNotes[i].key + '_included'] === undefined) {
+        state.project.contract[standardNotes[i].key + '_included'] = true;
+      }
+    }
+    
+    // Render standard 7 notes
+    for (var i = 0; i < standardNotes.length; i++) {
+      var sn = standardNotes[i];
+      
+      var noteWrapper = el('div');
+      noteWrapper.style.cssText = 'margin-top:16px;padding:12px;background:#f0fdf4;border-left:4px solid #0aa574;border-radius:4px';
+      
+      var noteHeader = el('div');
+      noteHeader.style.cssText = 'display:flex;justify-content:space-between;align-items:center;margin-bottom:8px';
+      
+      var leftSide = el('div');
+      leftSide.style.cssText = 'display:flex;align-items:center;gap:8px';
+      
+      var checkbox = el('input');
+      checkbox.type = 'checkbox';
+      checkbox.checked = state.project.contract[sn.key + '_included'] !== false;
+      checkbox.onchange = (function(key) {
+        return function() {
+          state.project.contract[key + '_included'] = this.checked;
+          autosave();
+        };
+      })(sn.key);
+      leftSide.appendChild(checkbox);
+      
+      var noteLabel = el('label');
+      noteLabel.textContent = 'NOTE ' + (i + 1) + ': ' + sn.title;
+      noteLabel.style.cssText = 'font-weight:700;color:#0aa574;margin:0;cursor:pointer';
+      noteLabel.onclick = function() { checkbox.checked = !checkbox.checked; checkbox.onchange(); };
+      leftSide.appendChild(noteLabel);
+      
+      noteHeader.appendChild(leftSide);
+      noteWrapper.appendChild(noteHeader);
+      
+      var noteInput = el('textarea');
+      noteInput.style.cssText = 'width:100%;min-height:100px;padding:8px;border:1px solid #ddd;border-radius:4px;font-size:14px;line-height:1.5';
+      noteInput.value = state.project.contract[sn.key] || '';
+      noteInput.oninput = (function(key) {
+        return function() {
+          state.project.contract[key] = this.value;
+          autosave();
+        };
+      })(sn.key);
+      noteWrapper.appendChild(noteInput);
+      
+      container.appendChild(noteWrapper);
+    }
+    
+    // Separator
+    if (state.project.contract.additional_notes && state.project.contract.additional_notes.length > 0) {
+      var separator = el('div');
+      separator.style.cssText = 'margin:24px 0;border-top:2px solid #0aa574;padding-top:16px';
+      var sepTitle = el('div');
+      sepTitle.style.cssText = 'font-weight:700;color:#0aa574;margin-bottom:8px';
+      sepTitle.textContent = T[LANG].additionalNotes;
+      separator.appendChild(sepTitle);
+      container.appendChild(separator);
+    }
+    
+    // Render additional notes
+    if (!state.project.contract.additional_notes) state.project.contract.additional_notes = [];
+    
+    for (var i = 0; i < state.project.contract.additional_notes.length; i++) {
+      var note = state.project.contract.additional_notes[i];
+      
+      var noteWrapper = el('div');
+      noteWrapper.style.cssText = 'margin-top:16px;padding:12px;background:#fef3c7;border-left:4px solid #f59e0b;border-radius:4px';
+      
+      var noteHeader = el('div');
+      noteHeader.style.cssText = 'display:flex;justify-content:space-between;align-items:center;margin-bottom:8px';
+      
+      var leftSide = el('div');
+      leftSide.style.cssText = 'display:flex;align-items:center;gap:8px';
+      
+      var checkbox = el('input');
+      checkbox.type = 'checkbox';
+      checkbox.checked = note.included !== false;
+      checkbox.onchange = (function(idx) {
+        return function() {
+          state.project.contract.additional_notes[idx].included = this.checked;
+          autosave();
+        };
+      })(i);
+      leftSide.appendChild(checkbox);
+      
+      var noteLabel = el('label');
+      noteLabel.textContent = 'NOTE ' + (7 + i + 1);
+      noteLabel.style.cssText = 'font-weight:700;color:#f59e0b;margin:0;cursor:pointer';
+      noteLabel.onclick = function() { checkbox.checked = !checkbox.checked; checkbox.onchange(); };
+      leftSide.appendChild(noteLabel);
+      
+      noteHeader.appendChild(leftSide);
+      
+      var noteActions = el('div');
+      noteActions.style.cssText = 'display:flex;gap:6px';
+      
+      // Move Up
+      if (i > 0) {
+        var upBtn = el('button', 'btn');
+        upBtn.innerHTML = '↑';
+        upBtn.style.cssText = 'padding:2px 8px;font-size:16px';
+        upBtn.onclick = (function(idx) {
+          return function() {
+            var temp = state.project.contract.additional_notes[idx];
+            state.project.contract.additional_notes[idx] = state.project.contract.additional_notes[idx - 1];
+            state.project.contract.additional_notes[idx - 1] = temp;
+            renderContractNotes();
+            autosave();
+          };
+        })(i);
+        noteActions.appendChild(upBtn);
+      }
+      
+      // Move Down
+      if (i < state.project.contract.additional_notes.length - 1) {
+        var downBtn = el('button', 'btn');
+        downBtn.innerHTML = '↓';
+        downBtn.style.cssText = 'padding:2px 8px;font-size:16px';
+        downBtn.onclick = (function(idx) {
+          return function() {
+            var temp = state.project.contract.additional_notes[idx];
+            state.project.contract.additional_notes[idx] = state.project.contract.additional_notes[idx + 1];
+            state.project.contract.additional_notes[idx + 1] = temp;
+            renderContractNotes();
+            autosave();
+          };
+        })(i);
+        noteActions.appendChild(downBtn);
+      }
+      
+      // Delete
+      var delBtn = el('button', 'btn dan');
+      delBtn.innerHTML = '✕';
+      delBtn.style.cssText = 'padding:2px 8px';
+      delBtn.onclick = (function(idx) {
+        return function() {
+          if (confirm(T[LANG].deleteAdditionalNote)) {
+            state.project.contract.additional_notes.splice(idx, 1);
+            renderContractNotes();
+            autosave();
+          }
+        };
+      })(i);
+      noteActions.appendChild(delBtn);
+      
+      noteHeader.appendChild(noteActions);
+      noteWrapper.appendChild(noteHeader);
+      
+      var noteInput = el('textarea');
+      noteInput.style.cssText = 'width:100%;min-height:100px;padding:8px;border:1px solid #ddd;border-radius:4px;font-size:14px;line-height:1.5';
+      noteInput.value = note.text || '';
+      noteInput.oninput = (function(idx) {
+        return function() {
+          state.project.contract.additional_notes[idx].text = this.value;
+          autosave();
+        };
+      })(i);
+      noteWrapper.appendChild(noteInput);
+      
+      container.appendChild(noteWrapper);
+    }
+  }
+  
+  renderContractNotes();
+  box.appendChild(notesCard);
+}
+
+
+function renderPreview(box) {
+  var title = el('h2');
+  title.textContent = T[LANG].preview;
+  box.appendChild(title);
+  
+  // Quotation Header with Logo
+  var quotHeader = el('div');
+  quotHeader.style.cssText = 'border:1px solid #ddd;border-radius:8px;padding:20px;background:#fff;margin-bottom:20px';
+  quotHeader.innerHTML = '<div style="display:flex;align-items:center;border-bottom:2px solid #0aa574;padding-bottom:15px;margin-bottom:15px">' +
+    '<img src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAABLAAAAEsCAYAAADPZVYeAAAACXBIWXMAAAsTAAALEwEAmpwYAAAKT2lDQ1BQaG90b3Nob3AgSUNDIHByb2ZpbGUAAHjanVNnVFPpFj333vRCS4iAlEtvUhUIIFJCi4AUkSYqIQkQSoghodkVUcERRUUEG8igiAOOjoCMFVEsDIoK2AfkIaKOg6OIisr74Xuja9a89+bN/rXXPues852zzwfACAyWSDNRNYAMqUIeEeCDx8TG4eQuQIEKJHAAEAizZCFz/SMBAPh+PDwrIsAHvgABeNMLCADATZvAMByH/w/qQplcAYCEAcB0kThLCIAUAEB6jkKmAEBGAYCdmCZTAKAEAGDLY2LjAFAtAGAnf+bTAICd+Jl7AQBblCEVAaCRACATZYhEAGg7AKzPVopFAFgwABRmS8Q5ANgtADBJV2ZIALC3AMDOEAuyAAgMADBRiIUpAAR7AGDIIyN4AISZABRG8lc88SuuEOcqAAB4mbI8uSQ5RYFbCC1xB1dXLh4ozkkXKxQ2YQJhmkAuwnmZGTKBNA/g88wAAKCRFRHgg/P9eM4Ors7ONo62Dl8t6r8G/yJiYuP+5c+rcEAAAOF0ftH+LC+zGoA7BoBt/qIl7gRoXgugdfeLZrIPQLUAoOnaV/Nw+H48PEWhkLnZ2eXk5NhKxEJbYcpXff5nwl/AV/1s+X48/Pf14L7iJIEyXYFHBPjgwsz0TKUcz5IJhGLc5o9H/LcL//wd0yLESWK5WCoU41EScY5EmozzMqUiiUKSKcUl0v9k4t8s+wM+3zUAsGo+AXuRLahdYwP2SycQWHTA4vcAAPK7b8HUKAgDgGiD4c93/+8//UegJQCAZkmScQAAXkQkLlTKsz/HCAAARKCBKrBBG/TBGCzABhzBBdzBC/xgNoRCJMTCQhBCCmSAHHJgKayCQiiGzbAdKmAv1EAdNMBRaIaTcA4uwlW4Dj1wD/phCJ7BKLyBCQRByAgTYSHaiAFiilgjjggXmYX4IcFIBBKLJCDJiBRRIkuRNUgxUopUIFVIHfI9cgI5h1xGupE7yAAygvyGvEcxlIGyUT3UDLVDuag3GoRGogvQZHQxmo8WoJvQcrQaPYw2oefQq2gP2o8+Q8cwwOgYBzPEbDAuxsNCsTgsCZNjy7EirAyrxhqwVqwDu4n1Y8+xdwQSgUXACTYEd0IgYR5BSFhMWE7YSKggHCQ0EdoJNwkDhFHCJyKTqEu0JroR+cQYYjIxh1hILCPWEo8TLxB7iEPENyQSiUMyJ7mQAkmxpFTSEtJG0m5SI+ksqZs0SBojk8naZGuyBzmULCAryIXkneTD5DPkG+Qh8lsKnWJAcaT4U+IoUspqShnlEOU05QZlmDJBVaOaUt2ooVQRNY9aQq2htlKvUYeoEzR1mjnNgxZJS6WtopXTGmgXaPdpr+h0uhHdlR5Ol9BX0svpR+iX6AP0dwwNhhWDx4hnKBmbGAcYZxl3GK+YTKYZ04sZx1QwNzHrmOeZD5lvVVgqtip8FZHKCpVKlSaVGyovVKmqpqreqgtV81XLVI+pXlN9rkZVM1PjqQnUlqtVqp1Q61MbU2epO6iHqmeob1Q/pH5Z/YkGWcNMw09DpFGgsV/jvMYgC2MZs3gsIWsNq4Z1gTXEJrHN2Xx2KruY/R27iz2qqaE5QzNKM1ezUvOUZj8H45hx+Jx0TgnnKKeX836K3hTvKeIpG6Y0TLkxZVxrqpaXllirSKtRq0frvTau7aedpr1Fu1n7gQ5Bx0onXCdHZ4/OBZ3nU9lT3acKpxZNPTr1ri6qa6UbobtEd79up+6Ynr5egJ5Mb6feeb3n+hx9L/1U/W36p/VHDFgGswwkBtsMzhg8xTVxbzwdL8fb8VFDXcNAQ6VhlWGX4YSRudE8o9VGjUYPjGnGXOMk423GbcajJgYmISZLTepN7ppSTbmmKaY7TDtMx83MzaLN1pk1mz0x1zLnm+eb15vft2BaeFostqi2uGVJsuRaplnutrxuhVo5WaVYVVpds0atna0l1rutu6cRp7lOk06rntZnw7Dxtsm2qbcZsOXYBtuutm22fWFnYhdnt8Wuw+6TvZN9un2N/T0HDYfZDqsdWh1+c7RyFDpWOt6azpzuP33F9JbpL2dYzxDP2DPjthPLKcRpnVOb00dnF2e5c4PziIuJS4LLLpc+Lpsbxt3IveRKdPVxXeF60vWdm7Obwu2o26/uNu5p7ofcn8w0nymeWTNz0MPIQ+BR5dE/C5+VMGvfrH5PQ0+BZ7XnIy9jL5FXrdewt6V3qvdh7xc+9j5yn+M+4zw33jLeWV/MN8C3yLfLT8Nvnl+F30N/I/9k/3r/0QCngCUBZwOJgUGBWwL7+Hp8Ib+OPzrbZfay2e1BjKC5QRVBj4KtguXBrSFoyOyQrSH355jOkc5pDoVQfujW0Adh5mGLw34MJ4WHhVeGP45wiFga0TGXNXfR3ENz30T6RJZE3ptnMU85ry1KNSo+qi5qPNo3ujS6P8YuZlnM1VidWElsSxw5LiquNm5svt/87fOH4p3iC+N7F5gvyF1weaHOwvSFpxapLhIsOpZATIhOOJTwQRAqqBaMJfITdyWOCnnCHcJnIi/RNtGI2ENcKh5O8kgqTXqS7JG8NXkkxTOlLOW5hCepkLxMDUzdmzqeFpp2IG0yPTq9MYOSkZBxQqohTZO2Z+pn5mZ2y6xlhbL+xW6Lty8elQfJa7OQrAVZLQq2QqboVFoo1yoHsmdlV2a/zYnKOZarnivN7cyzytuQN5zvn//tEsIS4ZK2pYZLVy0dWOa9rGo5sjxxedsK4xUFK4ZWBqw8uIq2Km3VT6vtV5eufr0mek1rgV7ByoLBtQFr6wtVCuWFfevc1+1dT1gvWd+1YfqGnRs+FYmKrhTbF5cVf9go3HjlG4dvyr+Z3JS0qavEuWTPZtJm6ebeLZ5bDpaql+aXDm4N2dq0Dd9WtO319kXbL5fNKNu7g7ZDuaO/PLi8ZafJzs07P1SkVPRU+lQ27tLdtWHX+G7R7ht7vPY07NXbW7z3/T7JvttVAVVN1WbVZftJ+7P3P66Jqun4lvttXa1ObXHtxwPSA/0HIw6217nU1R3SPVRSj9Yr60cOxx++/p3vdy0NNg1VjZzG4iNwRHnk6fcJ3/ceDTradox7rOEH0x92HWcdL2pCmvKaRptTmvtbYlu6T8w+0dbq3nr8R9sfD5w0PFl5SvNUyWna6YLTk2fyz4ydlZ19fi753GDborZ752PO32oPb++6EHTh0kX/i+c7vDvOXPK4dPKy2+UTV7hXmq86X23qdOo8/pPTT8e7nLuarrlca7nuer21e2b36RueN87d9L158Rb/1tWeOT3dvfN6b/fF9/XfFt1+cif9zsu72Xcn7q28T7xf9EDtQdlD3YfVP1v+3Njv3H9qwHeg89HcR/cGhYPP/pH1jw9DBY+Zj8uGDYbrnjg+OTniP3L96fynQ89kzyaeF/6i/suuFxYvfvjV69fO0ZjRoZfyl5O/bXyl/erA6xmv28bCxh6+yXgzMV70VvvtwXfcdx3vo98PT+R8IH8o/2j5sfVT0Kf7kxmTk/8EA5jz/GMzLdsAAAAgY0hSTQAAeiUAAICDAAD5/wAAgOkAAHUwAADqYAAAOpgAABdvkl/FRgAAFd9JREFUeNrs3T1vI9eZgOFD/jHZLFDsFnZ6Q8EWUqTYwkVwpyrFAimuVARwpypFirW6VClSLOBqL2AXKVwsUqwApXChAnShSoX8AxsTM5IRzZHEGX7cj/MUAQRJFHWI4XDmPed9z9n6+vr6CgAAAAAAXNH/u3QAAAAAAABFAAAAAACAIgAAAAAAAEUAAAAAAACKAAAAAAAAFAEAAAAAACgCAAAAAABQBAAAAAAAoAgAAAAAAEARAAAAAACAIgAAAAAAAEUAAAAAAACKAAAAAAAAFAEAAAAAACgCAAAAAABQBAAAAAAAoAgAAAAAAEARAAAAAACAIgAAAAAAAEUAAAAAAIAiAAAAAAAARQAAAAAAAIoAAAAAAAAUAQAAAAAAKAIAAAAAAFAEAAAAAACgCAAAAAAAgCIAAAAAAAA0FQFPnz79aNu2X2zbtrdt25+2bfvf19fX/3HJAQAAAACuzdbX19cu+4G2fP7bb68nk8mfp9PpPyeTyZ+m0+l4NpuNZ7PZ+PHx8e83m81m++zZs/Fu7zubzcZ7+/x8Pu/zv8n5fN7n3+C/SnNvbW1tf+9z/f9r/xz7X5vPsfa7+//+v/f2eW797wEAAAAAHM9fnj59+hff+ta3/m3K4bUVAVtfPH36s/F4/I+TyeTPf/nLX/7n+++//5fj4+PT+/fv//3u3bu/uX///t+87W1vo9Fo9NZbb/1tff1v+71NJpN3fFuAAQAAAABc1W9fvXr1H2fPnv3/q3//qiJg6+//7V++e3z80+Pj4x8fHR39w/vvv//Pt99+++T99+//dvz+++/78OHDt3z1AAAAAKBxj1++fPmfv/nNb35z7J9bSwSM/x6B/+j4+HhyfHz8g+Pj4x+8+eabP7h79+53fHcAAAAAYOgePXr08PHjxw8f//znP//nY//MY0fA3yPwB2+++eYPXr9+/aO7d+8+8F0BAAAAgPa8ePHi+OTk5Pjk5OTkT3/60+cPHjz4/Z0Tx6TG2fr6+t7h7eNHjx5Njo+PT4+Pj3949+7d7/n6AAAAAMCQ/fWvfz1/9erV+cuXL1/+8Y9//Je7d+/+9hA/p5YImP39v/99cvfu3ePfv/76h1/s/gMAAAAAAH95+vTpRz/4wQ9+dqifM6gI2Lr45S+++OIP/+u73zl68+bNv12y/AcAAAAAkP17//btX/35+fPn/7K2dr4y4JAy4OASYOuf41fvv//+v/32t7999MUdAQAAAAAAyP7vL3/5y1/+8pe//OXTp0+f/vNh/pkXKgJ++tOfbv3yP//zH//3i/n/AAAAAABw+x88fvz48ePHj0+++eabL/75z3/+2fuXLwE++v/X5gAAAABMUlEQVT3vve9n5z/Nzj7v9H/IxkAAAAAAN/ku7/85S//8/T0dPqv//qvl+72r/y/g4tT//N/F//+//FvAAAAAAAA3N7X//qv//r1q1evvv7ss89+/f9vuy8AAP7qkwACAA==" alt="Trustech" style="height:50px">' +
+    '<div style="flex:1;text-align:right">' +
+    '<div style="font-size:24px;font-weight:700;color:#0aa574">QUOTATION</div>' +
+    '<div style="font-size:14px;color:#666">Quote #: ' + (state.project.header.quote_id || '-') + ' / ' + (state.project.header.rev || 'R00') + '</div>' +
+    '</div></div>';
+  
+  // Project Information
+  var h = state.project.header;
+  quotHeader.innerHTML += '<div style="display:grid;grid-template-columns:1fr 1fr;gap:20px;margin-top:15px">' +
+    '<div><div style="font-size:12px;color:#666;margin-bottom:3px">PROJECT</div><div style="font-weight:600">' + (h.project_name || '-') + '</div></div>' +
+    '<div><div style="font-size:12px;color:#666;margin-bottom:3px">CLIENT</div><div style="font-weight:600">' + (h.client || '-') + '</div></div>' +
+    '<div><div style="font-size:12px;color:#666;margin-bottom:3px">SITE LOCATION</div><div style="font-weight:600">' + (h.site_location || '-') + '</div></div>' +
+    '<div><div style="font-size:12px;color:#666;margin-bottom:3px">VALIDITY DATE</div><div style="font-weight:600">' + (h.validity_date || '-') + '</div></div>' +
+    '</div>';
+  
+  box.appendChild(quotHeader);
+  
+  var pre = el('pre');
+  pre.style.background = '#0b1020';
+  pre.style.color = '#dfe7ff';
+  pre.style.padding = '10px';
+  pre.style.borderRadius = '8px';
+  pre.style.whiteSpace = 'pre-wrap';
+  pre.textContent = JSON.stringify(state, null, 2);
+  box.appendChild(pre);
+}
+
+function renderEquip(box) {
+  var title = el('h2');
+  title.textContent = T[LANG].equip;
+  box.appendChild(title);
+  
+  if (state.active === null || state.equipments.length === 0) {
+    var msg = el('div', 'note');
+    msg.textContent = 'No equipment selected. Click Add to create one.';
+    box.appendChild(msg);
+    return;
+  }
+  
+  var eq = state.equipments[state.active];
+  var info = el('div', 'card');
+  info.innerHTML = '<h3>Equipment: ' + eq.id + '</h3><div class="small">System: ' + eq.system + '</div>';
+  box.appendChild(info);
+}
+
+
+function showEquipmentEditor() {
+  if (state.activeOption === null || state.activeEquipment === null) return;
+  var option = state.options[state.activeOption];
+  var eq = option.equipments[state.activeEquipment];
+  if (!eq) return;
+  
+  // Create modal overlay
+  var overlay = el('div');
+  overlay.style.cssText = 'position:fixed;top:0;left:0;right:0;bottom:0;background:rgba(0,0,0,0.5);z-index:1000;display:flex;align-items:center;justify-content:center';
+  
+  var modal = el('div');
+  modal.style.cssText = 'background:#fff;border-radius:12px;padding:20px;max-width:600px;width:90%;max-height:80vh;overflow:auto';
+  
+  var title = el('h3');
+  title.textContent = 'Edit Equipment: ' + eq.name;
+  modal.appendChild(title);
+  
+  // Equipment name
+  var nameLabel = el('label');
+  nameLabel.textContent = 'Equipment Name';
+  modal.appendChild(nameLabel);
+  var nameInput = el('input');
+  nameInput.value = eq.name || '';
+  nameInput.style.cssText = 'width:100%;padding:8px;border:1px solid #ddd;border-radius:6px;margin-bottom:12px';
+  nameInput.oninput = function() {
+    eq.name = nameInput.value;
+    autosave();
+  };
+  modal.appendChild(nameInput);
+  
+  // Specs section
+  var specsTitle = el('h4');
+  specsTitle.textContent = 'Specifications';
+  specsTitle.style.marginTop = '16px';
+  modal.appendChild(specsTitle);
+  
+  if (!eq.specs) eq.specs = [];
+  
+  var specsList = el('div');
+  specsList.style.cssText = 'display:flex;flex-direction:column;gap:8px;margin-bottom:12px';
+  
+  function renderSpecs() {
+    specsList.innerHTML = '';
+    for (var i = 0; i < eq.specs.length; i++) {
+      var spec = eq.specs[i];
+      var specRow = el('div');
+      specRow.style.cssText = 'display:grid;grid-template-columns:1fr 1fr 40px;gap:8px;align-items:center';
+      
+      var paramInput = el('input');
+      paramInput.value = spec.param || '';
+      paramInput.placeholder = 'Parameter (e.g., CFM)';
+      paramInput.style.cssText = 'padding:6px;border:1px solid #ddd;border-radius:4px';
+      paramInput.oninput = (function(idx) {
+        return function() {
+          eq.specs[idx].param = this.value;
+          autosave();
+        };
+      })(i);
+      
+      var valueInput = el('input');
+      valueInput.value = spec.value || '';
+      valueInput.placeholder = 'Value (e.g., 10,000)';
+      valueInput.style.cssText = 'padding:6px;border:1px solid #ddd;border-radius:4px';
+      valueInput.oninput = (function(idx) {
+        return function() {
+          eq.specs[idx].value = this.value;
+          autosave();
+        };
+      })(i);
+      
+      var delBtn = el('button', 'btn dan');
+      delBtn.textContent = '✕';
+      delBtn.style.cssText = 'padding:6px 8px';
+      delBtn.onclick = (function(idx) {
+        return function() {
+          eq.specs.splice(idx, 1);
+          renderSpecs();
+          autosave();
+        };
+      })(i);
+      
+      specRow.appendChild(paramInput);
+      specRow.appendChild(valueInput);
+      specRow.appendChild(delBtn);
+      specsList.appendChild(specRow);
+    }
+  }
+  
+  renderSpecs();
+  modal.appendChild(specsList);
+  
+  var addSpecBtn = el('button', 'btn pri');
+  addSpecBtn.textContent = '+ Add Specification';
+  addSpecBtn.onclick = function() {
+    eq.specs.push({param: '', value: ''});
+    renderSpecs();
+    autosave();
+  };
+  modal.appendChild(addSpecBtn);
+  
+  // Close button
+  var closeBtn = el('button', 'btn');
+  closeBtn.textContent = 'Close';
+  closeBtn.style.cssText = 'margin-top:16px;width:100%';
+  closeBtn.onclick = function() {
+    document.body.removeChild(overlay);
+    paintOptionEquipList();
+  };
+  modal.appendChild(closeBtn);
+  
+  overlay.appendChild(modal);
+  document.body.appendChild(overlay);
+  
+  overlay.onclick = function(e) {
+    if (e.target === overlay) {
+      document.body.removeChild(overlay);
+      paintOptionEquipList();
+    }
+  };
+}
+
+function paintList() {
+  var ul = $('#equipList');
+  ul.innerHTML = '';
+  for (var i = 0; i < state.equipments.length; i++) {
+    var e = state.equipments[i];
+    var li = el('div', 'card' + (i === state.active ? ' sel' : ''));
+    li.innerHTML = '<div class="flex"><b>' + e.id + '</b><span class="badge">' + e.system + '</span></div>';
+    li.onclick = (function(idx) {
+      return function() {
+        state.active = idx;
+        showStep('equip');
+      };
+    })(i);
+    ul.appendChild(li);
+  }
+}
+
+// New equipment handler for Option-based system
+var addEquipBtn = $('#addEquipToOption');
+if (addEquipBtn) {
+  addEquipBtn.onclick = function() {
+    if (state.activeOption === null || state.activeOption === undefined) return;
+    var option = state.options[state.activeOption];
+    if (!option) return;
+    
+    var sys = $('#sysSelect').value;
+    if (!option.equipments) option.equipments = [];
+    
+    option.equipments.push({
+      name: sys,
+      specs: []
+    });
+    
+    state.activeEquipment = option.equipments.length - 1;
+    paintOptionEquipList();
+    autosave();
+    
+    // Automatically open editor for new equipment
+    setTimeout(function() {
+      showEquipmentEditor();
+    }, 100);
+  };
+}
+
+$('#saveProject').onclick = function() {
+  var blob = new Blob([JSON.stringify(state, null, 2)], {type: 'application/json'});
+  var a = document.createElement('a');
+  a.href = URL.createObjectURL(blob);
+  a.download = 'project-v06.json';
+  a.click();
+};
+
+$('#loadBtn').onclick = function() {
+  $('#loadProject').click();
+};
+
+$('#resetBtn').onclick = function() {
+  if (confirm('Are you sure you want to clear ALL data and reset the application?\n\nThis cannot be undone!')) {
+    localStorage.removeItem('qb_state_v08');
+    location.reload();
+  }
+};
+
+$('#loadProject').onchange = function(e) {
+  var f = e.target.files[0];
+  if (!f) return;
+  var r = new FileReader();
+  r.onload = function() {
+    try {
+      state = JSON.parse(r.result);
+      paintList();
+      showStep(currentTab || 'project');
+      autosave();
+    } catch (err) {
+      alert('Invalid JSON');
+    }
+  };
+  r.readAsText(f);
+};
+
+function setLang(l) {
+  LANG = l;
+  var btns = document.querySelectorAll('.lang button');
+  for (var i = 0; i < btns.length; i++) {
+    btns[i].classList.toggle('active', btns[i].id === 'btn' + l);
+  }
+  paintTabs();
+  showStep(currentTab || 'project');
+}
+
+$('#btnEN').onclick = function() { setLang('EN'); };
+$('#btnFR').onclick = function() { setLang('FR'); };
+
+async function generateAISummary(docIdx) {
+  var doc = state.project.header.documents[docIdx];
+  if (!doc) return;
+  
+  var summaryBtn = event.target;
+  summaryBtn.disabled = true;
+  summaryBtn.textContent = '⏳ Generating...';
+  
+  try {
+    // Extract text content from different file types
+    var textContent = '';
+    
+    if (doc.content.startsWith('data:text/')) {
+      // Text files
+      var base64 = doc.content.split(',')[1];
+      textContent = atob(base64);
+    } else if (doc.content.startsWith('data:application/pdf')) {
+      // PDF - show message that PDF processing is limited
+      textContent = '[PDF Document: ' + doc.name + ']\nNote: PDF text extraction requires server-side processing. Using filename and metadata for summary.';
+    } else {
+      // Other files
+      textContent = '[File: ' + doc.name + ', Type: ' + doc.type + ', Size: ' + (doc.size/1024).toFixed(1) + 'KB]';
+    }
+    
+    // Call Claude API
+    var response = await fetch('https://api.anthropic.com/v1/messages', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'anthropic-version': '2023-06-01'
+      },
+      body: JSON.stringify({
+        model: 'claude-sonnet-4-20250514',
+        max_tokens: 1000,
+        messages: [{
+          role: 'user',
+          content: 'You are analyzing a document for an industrial quotation project. Summarize the key points, requirements, specifications, or decisions from this document in 2-3 concise bullet points.\n\nDocument Type: ' + doc.type + '\nDocument Name: ' + doc.name + '\n\nContent:\n' + textContent.substring(0, 5000)
+        }]
+      })
+    });
+    
+    if (!response.ok) {
+      throw new Error('API request failed: ' + response.status);
+    }
+    
+    var data = await response.json();
+    var summary = '';
+    
+    if (data.content && data.content.length > 0) {
+      summary = data.content.map(function(block) {
+        return block.type === 'text' ? block.text : '';
+      }).join('');
+    }
+    
+    if (summary) {
+      doc.summary = summary;
+      autosave();
+      renderDocumentList();
+    } else {
+      alert('No summary generated');
+    }
+    
+  } catch (error) {
+    console.error('AI Summary Error:', error);
+    alert('Failed to generate summary: ' + error.message + '\n\nNote: This feature uses the Claude API which may require configuration.');
+    summaryBtn.disabled = false;
+    summaryBtn.innerHTML = '✨ ' + T[LANG].aiSummary;
+  }
+}
+
+window.addEventListener('DOMContentLoaded', function() {
+  try {
+    var raw = localStorage.getItem('qb_state_v08');
+    if (raw) {
+      state = JSON.parse(raw);
+    }
+  } catch (e) {}
+  
+  paintTabs();
+  setLang('EN');
+  
+  if (state.equipments.length === 0) {
+    var sys = $('#sysSelect').value;
+    var id = uid(sys);
+    state.equipments.push({id: id, system: sys, data: {}, common: {}});
+    state.active = 0;
+  }
+  
+  if (state.activeOption === undefined || state.activeOption === null) {
+    state.activeOption = 0;
+  }
+  
+  paintList();
+  showStep('project');
+  computeProgress();
+  
+  // Ensure progress bar is visible and updates
+  setTimeout(function() {
+    computeProgress();
+    console.log('Progress bar initialized');
+  }, 100);
+});
+</script>
+</body>
+</html>
