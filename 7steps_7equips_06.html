@@ -1,0 +1,1256 @@
+/* qb_v06_app.js
+   Quotation Builder v06 (Single-file React)
+   Requirements implemented:
+   - Step01: header schema updated, remove currency/incoterms/audio/summary, add custom uploader arrays
+   - EN/FR only, no Korean strings
+   - Step02: Access/Handling multi-select + attachments metadata uploader + list/remove + extra notes
+   - Step03: Site Review & Target Alignment + LOCK gate (Step04 blocked until locked)
+   - Step04: Option-owned equipments (A/B/C each owns equipments)
+   - Backend sync: Step01 create project, Step02 save site
+*/
+
+/* global React, ReactDOM */
+const { useMemo, useState } = React;
+
+const API_BASE = "http://127.0.0.1:8001/api/v1";
+
+async function api(path, { method = "GET", body } = {}) {
+  const res = await fetch(`${API_BASE}${path}`, {
+    method,
+    headers: { "Content-Type": "application/json" },
+    body: body ? JSON.stringify(body) : undefined,
+  });
+  if (!res.ok) {
+    const text = await res.text().catch(() => "");
+    throw new Error(`API ${method} ${path} failed: ${res.status} ${text}`);
+  }
+  return res.json();
+}
+
+const STEPS = [
+  { id: "s1", key: "step1" },
+  { id: "s2", key: "step2" },
+  { id: "s3", key: "step3" },
+  { id: "s4", key: "step4" },
+  { id: "s5", key: "step5" },
+  { id: "s6", key: "step6" },
+  { id: "s7", key: "step7" },
+];
+
+const I18N = {
+  EN: {
+    title: "Quotation Builder · v06",
+    step1: "Step 01 · Project Header",
+    step2: "Step 02 · Site Capture",
+    step3: "Step 03 · Site Review & Target Alignment",
+    step4: "Step 04 · Option Builder (Option-owned Equipments)",
+    step5: "Step 05 · Cost & Pricing",
+    step6: "Step 06 · Contract & Warranty",
+    step7: "Step 07 · Quote Preview (Template-ready data)",
+
+    // Step01
+    projectName: "Project Name",
+    clientName: "Client Name",
+    quoteId: "Quote ID",
+    revision: "Revision",
+    validUntil: "Valid Until (ISO Date)",
+    siteLocation: "Site Location",
+    customerNotes: "Customer Notes (shown on quote)",
+    internalNotes: "Internal Notes (internal only)",
+    customerFiles: "Customer Files (metadata only)",
+    internalFiles: "Internal Files (metadata only)",
+
+    // Step02
+    accessHandling: "Access / Handling (multi-select)",
+    engineerNotes: "Engineer Notes",
+    attachments: "Attachments (photos/docs/audio)",
+    additionalNotes: "Additional Notes",
+
+    // Step03
+    phaseHint:
+      "v06 flow: Phase 1 review Step 02 → Phase 2 fix agreements/open points → Phase 3 set targets. Lock required before Step 04.",
+    step02Snapshot: "Step 02 Snapshot (read-only)",
+    meetingSummary: "Meeting Summary",
+    keyAgreements: "Key Agreements",
+    openPoints: "Open Points",
+    globalTargets: "Global Targets",
+    equipmentOverrides: "Equipment-level Overrides (optional)",
+    lockStep03: "Lock Step 03 (Confirm & Freeze)",
+    unlockStep03: "Unlock Step 03",
+    locked: "Locked",
+
+    // Step04
+    optionRationale: "Option Rationale",
+    systemsAndBOM: "Systems + BOM (free text for now)",
+    addRow: "+ Add",
+    remove: "Remove",
+    optionA: "Option A (Min CAPEX / quick fix)",
+    optionB: "Option B (Increase CAPA)",
+    optionC: "Option C (CAPA + Energy + Risk reduction)",
+    optionEquipments: "Option Equipments",
+
+    // Step05
+    overhead: "Overhead %",
+    margin: "Margin %",
+    contingency: "Contingency (Risk) %",
+    freightBase: "Freight (Base assumption)",
+    freightOverride: "Freight Override (only if different)",
+
+    // Backend buttons
+    sync: "Sync to Backend",
+    saveStep01: "Save Step 01 to Server (Create Project)",
+    saveStep02: "Save Step 02 to Server (Site)",
+    projectId: "Project ID",
+
+    // Nav
+    next: "Next",
+    prev: "Previous",
+    downloadJSON: "Download JSON",
+
+    // Generic
+    noProjectId:
+      "No projectId yet. Go to Step 01 and click 'Save Step 01 to Server' first.",
+    syncedSite: "Synced Step 02 (site) to server for projectId = ",
+    projectCreated: "Project created. ID = ",
+    gateBlocked:
+      "Step 04 is blocked until Step 03 is locked (Confirm & Freeze).",
+    fileMetaOnly:
+      "Stored as metadata only (name/size/type). No upload to server in v06.",
+    none: "None",
+  },
+
+  FR: {
+    title: "Générateur de soumission · v06",
+    step1: "Étape 01 · En-tête du projet",
+    step2: "Étape 02 · Capture du site",
+    step3: "Étape 03 · Revue & alignement des cibles",
+    step4: "Étape 04 · Options (équipements dépendants de l’option)",
+    step5: "Étape 05 · Coûts & Prix",
+    step6: "Étape 06 · Contrat & Garantie",
+    step7: "Étape 07 · Aperçu (données prêtes gabarit)",
+
+    // Step01
+    projectName: "Nom du projet",
+    clientName: "Client",
+    quoteId: "No. de soumission",
+    revision: "Révision",
+    validUntil: "Valide jusqu’au (date ISO)",
+    siteLocation: "Localisation du site",
+    customerNotes: "Notes client (affichées)",
+    internalNotes: "Notes internes",
+    customerFiles: "Fichiers client (métadonnées seulement)",
+    internalFiles: "Fichiers internes (métadonnées seulement)",
+
+    // Step02
+    accessHandling: "Accès / Manutention (multi-choix)",
+    engineerNotes: "Notes ingénieur",
+    attachments: "Pièces jointes (photos/docs/audio)",
+    additionalNotes: "Notes additionnelles",
+
+    // Step03
+    phaseHint:
+      "Flux v06 : Phase 1 revue Étape 02 → Phase 2 accords/points ouverts → Phase 3 cibles. Verrouillage requis avant Étape 04.",
+    step02Snapshot: "Instantané Étape 02 (lecture seule)",
+    meetingSummary: "Résumé de réunion",
+    keyAgreements: "Accords clés",
+    openPoints: "Points ouverts",
+    globalTargets: "Cibles globales",
+    equipmentOverrides: "Ajustements par équipement (optionnel)",
+    lockStep03: "Verrouiller Étape 03 (Confirmer & figer)",
+    unlockStep03: "Déverrouiller Étape 03",
+    locked: "Verrouillé",
+
+    // Step04
+    optionRationale: "Justification de l’option",
+    systemsAndBOM: "Systèmes + BOM (texte libre pour l’instant)",
+    addRow: "+ Ajouter",
+    remove: "Retirer",
+    optionA: "Option A (CAPEX min / correctif rapide)",
+    optionB: "Option B (Augmenter la capacité)",
+    optionC: "Option C (Capacité + énergie + réduction des risques)",
+    optionEquipments: "Équipements de l’option",
+
+    // Step05
+    overhead: "Frais généraux %",
+    margin: "Marge %",
+    contingency: "Contingence (risque) %",
+    freightBase: "Transport (hypothèse de base)",
+    freightOverride: "Transport - Override (si différent)",
+
+    // Backend buttons
+    sync: "Synchroniser",
+    saveStep01: "Sauvegarder Étape 01 (Créer projet)",
+    saveStep02: "Sauvegarder Étape 02 (Site)",
+    projectId: "ID Projet",
+
+    // Nav
+    next: "Suivant",
+    prev: "Précédent",
+    downloadJSON: "Télécharger JSON",
+
+    // Generic
+    noProjectId:
+      "Aucun projectId. Allez à l’Étape 01 et cliquez sur 'Sauvegarder Étape 01' d’abord.",
+    syncedSite: "Étape 02 synchronisée (site) pour projectId = ",
+    projectCreated: "Projet créé. ID = ",
+    gateBlocked:
+      "Étape 04 bloquée tant que l’Étape 03 n’est pas verrouillée.",
+    fileMetaOnly:
+      "Stocké en métadonnées uniquement (nom/taille/type). Aucun upload serveur en v06.",
+    none: "Aucun",
+  },
+};
+
+function downloadJson(data) {
+  const blob = new Blob([JSON.stringify(data, null, 2)], {
+    type: "application/json",
+  });
+  const a = document.createElement("a");
+  a.href = URL.createObjectURL(blob);
+  a.download = "qb_v06_project.json";
+  a.click();
+}
+
+function injectStyles() {
+  const css = `
+    :root{
+      --bg:#f6f8fb; --fg:#1e293b; --pri:#0aa574; --priW:#e6fbf4;
+      --mut:#64748b; --card:#fff; --bd:#e2e8f0; --danger:#ef4444;
+    }
+    *{box-sizing:border-box}
+    body{margin:0;background:var(--bg);color:var(--fg);font-family:Inter,Segoe UI,system-ui,Arial,sans-serif}
+    header{position:sticky;top:0;z-index:10;background:#fff;border-bottom:1px solid var(--bd)}
+    .wrap{max-width:1280px;margin:0 auto;padding:12px 16px;display:flex;gap:10px;align-items:center}
+    h1{font-size:18px;margin:0;color:#0b7a57}
+    .row{max-width:1280px;margin:14px auto;padding:0 16px}
+    .card{background:var(--card);border:1px solid var(--bd);border-radius:12px;padding:12px}
+    .tabs{display:flex;gap:8px;flex-wrap:wrap}
+    .tabbtn{padding:8px 10px;border:1px solid var(--bd);background:#fff;border-radius:10px;cursor:pointer;font-weight:700}
+    .tabbtn.active{border-color:var(--pri);color:#075;background:var(--priW)}
+    .progress{height:8px;background:#e2e8f0;border-radius:999px;overflow:hidden;width:220px}
+    .progress > div{height:100%;background:linear-gradient(90deg,#10b981,#22c55e);width:0%}
+    .small{font-size:12px;color:var(--mut)}
+    .btn{padding:8px 10px;border:1px solid var(--bd);background:#fff;border-radius:10px;cursor:pointer}
+    .btn.pri{border-color:var(--pri);background:var(--priW);color:#075;font-weight:800}
+    .btn.dan{border-color:#fca5a5;color:#a00}
+    .grid{display:grid;grid-template-columns:repeat(12,1fr);gap:10px}
+    .c12{grid-column:span 12}.c6{grid-column:span 6}.c4{grid-column:span 4}.c3{grid-column:span 3}
+    label{display:block;font-size:12px;color:#334;margin:4px 0}
+    input,select,textarea{width:100%;padding:8px;border:1px solid #cfd6dd;border-radius:10px;background:#fff}
+    textarea{min-height:90px;resize:vertical}
+    .box{border:1px solid var(--bd);border-radius:10px;padding:10px;background:#fff}
+    .optCard{border:1px solid var(--bd);border-radius:12px;padding:12px;margin-top:10px;background:#fff}
+    .pill{display:inline-flex;gap:8px;align-items:center;border:1px solid var(--bd);border-radius:999px;padding:6px 10px}
+    .mono{font-family:ui-monospace,Consolas,Menlo,monospace}
+    .warn{color:var(--danger);font-weight:800}
+    .disabled{opacity:.55;pointer-events:none}
+  `;
+  const tag = document.createElement("style");
+  tag.textContent = css;
+  document.head.appendChild(tag);
+}
+
+function App() {
+  const [lang, setLang] = useState("EN");
+  const t = I18N[lang];
+
+  const [stepIdx, setStepIdx] = useState(0);
+
+  // v06 State (aligned to decisions)
+  const [state, setState] = useState({
+    projectId: null,
+
+    // Step01: header schema (NO currency/incoterms/audio/summary)
+    header: {
+      projectName: "",
+      clientName: "",
+      quoteId: "",
+      revision: "R00",
+      validUntil: "",
+      siteLocation: "",
+      customerNotes: "",
+      internalNotes: "",
+      customerFiles: [], // [{name,size,type}]
+      internalFiles: [], // [{name,size,type}]
+    },
+
+    // Step02
+    site: {
+      accessHandling: [], // multi-select
+      engineerNotes: "",
+      attachments: [], // [{name,size,type}]
+      extraNotes: "",
+    },
+
+    // Step03 (locked gate)
+    step03: {
+      locked: false,
+      meetingSummary: "",
+      keyAgreements: "",
+      openPoints: "",
+      globalTargets: "",
+      equipmentOverrides: "",
+      lockedAtIso: "",
+    },
+
+    // Step04 options (equipments belong to each option)
+    options: {
+      A: { rationale: "", systemsAndBom: "", equipments: [] },
+      B: { rationale: "", systemsAndBom: "", equipments: [] },
+      C: { rationale: "", systemsAndBom: "", equipments: [] },
+    },
+
+    // Step05 pricing knobs (keep as per v06 draft)
+    pricing: {
+      overheadPct: 10,
+      marginPct: 15,
+      contingencyPct: 5,
+      freightBase: "Freight included in base scope unless otherwise specified.",
+      freightOverride: { A: "", B: "", C: "" },
+    },
+
+    // Step06 contract (fixed base + editable addendum)
+    contract: {
+      fixedText: true,
+      editableText: "",
+    },
+  });
+
+  const progress = useMemo(() => {
+    // step-based progress (simple and deterministic)
+    return Math.round(((stepIdx + 1) / STEPS.length) * 100);
+  }, [stepIdx]);
+
+  const optionKeys = ["A", "B", "C"];
+
+  const ACCESS_CHOICES = [
+    "Truck",
+    "Forklift",
+    "Crane",
+    "Limited headroom",
+    "Restricted access",
+    "Indoor route constraints",
+    "Outdoor yard constraints",
+  ];
+
+  // Backend payloads
+  async function createProjectOnServer() {
+    const payload = {
+      project_title: state.header.projectName || "Untitled",
+      reference: state.header.quoteId || "",
+      language: lang.toLowerCase(), // "en" / "fr"
+      client: { name: state.header.clientName || "" },
+      header: {
+        revision: state.header.revision || "R00",
+        valid_until: state.header.validUntil || "",
+        site_location: state.header.siteLocation || "",
+        customer_notes: state.header.customerNotes || "",
+        internal_notes: state.header.internalNotes || "",
+        customer_files: state.header.customerFiles || [],
+        internal_files: state.header.internalFiles || [],
+      },
+    };
+    return api("/projects", { method: "POST", body: payload });
+  }
+
+  async function saveSiteOnServer(projectId) {
+    const payload = {
+      access: (state.site.accessHandling || []).join(", "),
+      notes: [
+        state.site.engineerNotes || "",
+        state.site.extraNotes || "",
+      ]
+        .filter(Boolean)
+        .join("\n\n"),
+      attachments: state.site.attachments || [],
+    };
+    return api(`/projects/${projectId}/site`, { method: "POST", body: payload });
+  }
+
+  function canGoToStep(targetIdx) {
+    // Gate: Step04+ requires Step03 locked
+    if (targetIdx >= 3 && !state.step03.locked) return false;
+    return true;
+  }
+
+  function goToStep(targetIdx) {
+    if (!canGoToStep(targetIdx)) {
+      alert(t.gateBlocked);
+      return;
+    }
+    setStepIdx(targetIdx);
+  }
+
+  function nextStep() {
+    const n = Math.min(stepIdx + 1, STEPS.length - 1);
+    goToStep(n);
+  }
+
+  function prevStep() {
+    const p = Math.max(stepIdx - 1, 0);
+    goToStep(p);
+  }
+
+  function addFilesTo(listKey, files) {
+    const metas = Array.from(files || []).map((f) => ({
+      name: f.name,
+      size: f.size,
+      type: f.type,
+    }));
+    setState((prev) => ({
+      ...prev,
+      header: {
+        ...prev.header,
+        [listKey]: [...(prev.header[listKey] || []), ...metas],
+      },
+    }));
+  }
+
+  function removeHeaderFile(listKey, idx) {
+    setState((prev) => ({
+      ...prev,
+      header: {
+        ...prev.header,
+        [listKey]: (prev.header[listKey] || []).filter((_, i) => i !== idx),
+      },
+    }));
+  }
+
+  function addSiteAttachments(files) {
+    const metas = Array.from(files || []).map((f) => ({
+      name: f.name,
+      size: f.size,
+      type: f.type,
+    }));
+    setState((prev) => ({
+      ...prev,
+      site: {
+        ...prev.site,
+        attachments: [...(prev.site.attachments || []), ...metas],
+      },
+    }));
+  }
+
+  function removeSiteAttachment(idx) {
+    setState((prev) => ({
+      ...prev,
+      site: {
+        ...prev.site,
+        attachments: (prev.site.attachments || []).filter((_, i) => i !== idx),
+      },
+    }));
+  }
+
+  function addOptionEquip(optKey) {
+    setState((prev) => {
+      const next = { ...prev.options };
+      next[optKey] = { ...next[optKey] };
+      next[optKey].equipments = [
+        ...(next[optKey].equipments || []),
+        { system: "COL", title: "", spec: "" },
+      ];
+      return { ...prev, options: next };
+    });
+  }
+
+  function updateOptionEquip(optKey, idx, patch) {
+    setState((prev) => {
+      const next = { ...prev.options };
+      const arr = [...(next[optKey].equipments || [])];
+      arr[idx] = { ...arr[idx], ...patch };
+      next[optKey] = { ...next[optKey], equipments: arr };
+      return { ...prev, options: next };
+    });
+  }
+
+  function removeOptionEquip(optKey, idx) {
+    setState((prev) => {
+      const next = { ...prev.options };
+      next[optKey] = {
+        ...next[optKey],
+        equipments: (next[optKey].equipments || []).filter((_, i) => i !== idx),
+      };
+      return { ...prev, options: next };
+    });
+  }
+
+  const HeaderBar = () => (
+    <header>
+      <div className="wrap">
+        <h1>{t.title}</h1>
+
+        <div style={{ display: "flex", gap: 10, alignItems: "center" }}>
+          <div className="progress">
+            <div style={{ width: `${progress}%` }} />
+          </div>
+          <div className="small" style={{ width: 52, textAlign: "right" }}>
+            {progress}%
+          </div>
+        </div>
+
+        <div className="pill">
+          <div className="small">Language</div>
+          <button className="btn" onClick={() => setLang("EN")}>
+            EN
+          </button>
+          <button className="btn" onClick={() => setLang("FR")}>
+            FR
+          </button>
+        </div>
+
+        <button className="btn" onClick={() => downloadJson(state)}>
+          {t.downloadJSON}
+        </button>
+      </div>
+    </header>
+  );
+
+  const Tabs = () => (
+    <div className="card">
+      <div className="tabs">
+        {STEPS.map((s, i) => {
+          const blocked = i >= 3 && !state.step03.locked;
+          return (
+            <button
+              key={s.id}
+              className={"tabbtn" + (i === stepIdx ? " active" : "") + (blocked ? " disabled" : "")}
+              onClick={() => goToStep(i)}
+              title={blocked ? t.gateBlocked : ""}
+            >
+              {t[s.key]}
+              {i === 2 && state.step03.locked ? ` · ${t.locked}` : ""}
+            </button>
+          );
+        })}
+      </div>
+      {(!state.step03.locked) && (
+        <div className="small" style={{ marginTop: 8 }}>
+          <span className="warn">Gate:</span> Step 04+ requires Step 03 lock.
+        </div>
+      )}
+    </div>
+  );
+
+  const StepTitle = () => (
+    <div className="card">
+      <div style={{ display: "flex", justifyContent: "space-between", alignItems: "baseline" }}>
+        <h3 style={{ margin: "0 0 6px 0" }}>{t[STEPS[stepIdx].key]}</h3>
+        <div className="small">Language: {lang}</div>
+      </div>
+      <div className="small">
+        v06 rules: Step 01 cleaned. Step 03 lock gates Step 04. Equipments are option-owned.
+      </div>
+    </div>
+  );
+
+  /* ---------------- Step 01 ---------------- */
+  const Step01 = () => (
+    <div className="card">
+      <div className="grid">
+        <div className="c6">
+          <label>{t.projectName}</label>
+          <input
+            value={state.header.projectName}
+            onChange={(e) =>
+              setState((p) => ({ ...p, header: { ...p.header, projectName: e.target.value } }))
+            }
+          />
+        </div>
+        <div className="c6">
+          <label>{t.clientName}</label>
+          <input
+            value={state.header.clientName}
+            onChange={(e) =>
+              setState((p) => ({ ...p, header: { ...p.header, clientName: e.target.value } }))
+            }
+          />
+        </div>
+
+        <div className="c4">
+          <label>{t.quoteId}</label>
+          <input
+            value={state.header.quoteId}
+            onChange={(e) =>
+              setState((p) => ({ ...p, header: { ...p.header, quoteId: e.target.value } }))
+            }
+          />
+        </div>
+        <div className="c4">
+          <label>{t.revision}</label>
+          <input
+            value={state.header.revision}
+            onChange={(e) =>
+              setState((p) => ({ ...p, header: { ...p.header, revision: e.target.value } }))
+            }
+          />
+        </div>
+        <div className="c4">
+          <label>{t.validUntil}</label>
+          <input
+            placeholder="YYYY-MM-DD"
+            value={state.header.validUntil}
+            onChange={(e) =>
+              setState((p) => ({ ...p, header: { ...p.header, validUntil: e.target.value } }))
+            }
+          />
+        </div>
+
+        <div className="c12">
+          <label>{t.siteLocation}</label>
+          <input
+            value={state.header.siteLocation}
+            onChange={(e) =>
+              setState((p) => ({ ...p, header: { ...p.header, siteLocation: e.target.value } }))
+            }
+          />
+        </div>
+
+        <div className="c12">
+          <label>{t.customerNotes}</label>
+          <textarea
+            value={state.header.customerNotes}
+            onChange={(e) =>
+              setState((p) => ({ ...p, header: { ...p.header, customerNotes: e.target.value } }))
+            }
+          />
+        </div>
+
+        <div className="c12">
+          <label>{t.internalNotes}</label>
+          <textarea
+            value={state.header.internalNotes}
+            onChange={(e) =>
+              setState((p) => ({ ...p, header: { ...p.header, internalNotes: e.target.value } }))
+            }
+          />
+        </div>
+
+        <div className="c6">
+          <label>{t.customerFiles}</label>
+          <input
+            type="file"
+            multiple
+            onChange={(e) => addFilesTo("customerFiles", e.target.files)}
+          />
+          <div className="small">{t.fileMetaOnly}</div>
+          <div className="box" style={{ marginTop: 8 }}>
+            {(state.header.customerFiles || []).length === 0 ? (
+              <div className="small">{t.none}</div>
+            ) : (
+              <ul style={{ margin: 0, paddingLeft: 18 }}>
+                {state.header.customerFiles.map((f, idx) => (
+                  <li key={idx} className="small">
+                    {f.name} ({f.type || "n/a"}, {f.size} bytes)
+                    <button
+                      className="btn"
+                      style={{ marginLeft: 8 }}
+                      onClick={() => removeHeaderFile("customerFiles", idx)}
+                    >
+                      {t.remove}
+                    </button>
+                  </li>
+                ))}
+              </ul>
+            )}
+          </div>
+        </div>
+
+        <div className="c6">
+          <label>{t.internalFiles}</label>
+          <input
+            type="file"
+            multiple
+            onChange={(e) => addFilesTo("internalFiles", e.target.files)}
+          />
+          <div className="small">{t.fileMetaOnly}</div>
+          <div className="box" style={{ marginTop: 8 }}>
+            {(state.header.internalFiles || []).length === 0 ? (
+              <div className="small">{t.none}</div>
+            ) : (
+              <ul style={{ margin: 0, paddingLeft: 18 }}>
+                {state.header.internalFiles.map((f, idx) => (
+                  <li key={idx} className="small">
+                    {f.name} ({f.type || "n/a"}, {f.size} bytes)
+                    <button
+                      className="btn"
+                      style={{ marginLeft: 8 }}
+                      onClick={() => removeHeaderFile("internalFiles", idx)}
+                    >
+                      {t.remove}
+                    </button>
+                  </li>
+                ))}
+              </ul>
+            )}
+          </div>
+        </div>
+
+        <div className="c12" style={{ display: "flex", gap: 8, alignItems: "center" }}>
+          <button
+            className="btn pri"
+            onClick={async () => {
+              try {
+                const r = await createProjectOnServer(); // expect {id,...}
+                setState((prev) => ({ ...prev, projectId: r.id }));
+                alert(t.projectCreated + r.id);
+              } catch (err) {
+                alert(String(err.message || err));
+              }
+            }}
+          >
+            {t.saveStep01}
+          </button>
+
+          <div className="small">
+            {t.projectId}: <b>{state.projectId ?? "null"}</b>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+
+  /* ---------------- Step 02 ---------------- */
+  const Step02 = () => (
+    <div className="card">
+      <div className="grid">
+        <div className="c12">
+          <label>{t.accessHandling}</label>
+          <div className="box">
+            {ACCESS_CHOICES.map((c) => {
+              const checked = state.site.accessHandling.includes(c);
+              return (
+                <div key={c} style={{ display: "flex", gap: 8, alignItems: "center", margin: "6px 0" }}>
+                  <input
+                    type="checkbox"
+                    checked={checked}
+                    onChange={() => {
+                      const next = checked
+                        ? state.site.accessHandling.filter((x) => x !== c)
+                        : [...state.site.accessHandling, c];
+                      setState((p) => ({ ...p, site: { ...p.site, accessHandling: next } }));
+                    }}
+                  />
+                  <span>{c}</span>
+                </div>
+              );
+            })}
+          </div>
+        </div>
+
+        <div className="c12">
+          <label>{t.engineerNotes}</label>
+          <textarea
+            value={state.site.engineerNotes}
+            onChange={(e) =>
+              setState((p) => ({ ...p, site: { ...p.site, engineerNotes: e.target.value } }))
+            }
+          />
+        </div>
+
+        <div className="c12">
+          <label>{t.attachments}</label>
+          <input type="file" multiple onChange={(e) => addSiteAttachments(e.target.files)} />
+          <div className="small">{t.fileMetaOnly}</div>
+
+          <div className="box" style={{ marginTop: 8 }}>
+            {(state.site.attachments || []).length === 0 ? (
+              <div className="small">{t.none}</div>
+            ) : (
+              <ul style={{ margin: 0, paddingLeft: 18 }}>
+                {state.site.attachments.map((a, idx) => (
+                  <li key={idx} className="small">
+                    {a.name} ({a.type || "n/a"}, {a.size} bytes)
+                    <button
+                      className="btn"
+                      style={{ marginLeft: 8 }}
+                      onClick={() => removeSiteAttachment(idx)}
+                    >
+                      {t.remove}
+                    </button>
+                  </li>
+                ))}
+              </ul>
+            )}
+          </div>
+        </div>
+
+        <div className="c12">
+          <label>{t.additionalNotes}</label>
+          <textarea
+            value={state.site.extraNotes}
+            onChange={(e) =>
+              setState((p) => ({ ...p, site: { ...p.site, extraNotes: e.target.value } }))
+            }
+          />
+        </div>
+
+        <div className="c12" style={{ display: "flex", gap: 8, alignItems: "center" }}>
+          <button
+            className="btn pri"
+            onClick={async () => {
+              try {
+                if (!state.projectId) {
+                  alert(t.noProjectId);
+                  return;
+                }
+                await saveSiteOnServer(state.projectId);
+                alert(t.syncedSite + state.projectId);
+              } catch (err) {
+                alert(String(err.message || err));
+              }
+            }}
+          >
+            {t.saveStep02}
+          </button>
+          <button className="btn" onClick={() => downloadJson(state)}>
+            {t.downloadJSON}
+          </button>
+        </div>
+      </div>
+    </div>
+  );
+
+  /* ---------------- Step 03 ---------------- */
+  const Step03 = () => {
+    const locked = state.step03.locked;
+
+    return (
+      <div className="card">
+        <div className="small">{t.phaseHint}</div>
+
+        <div className="grid" style={{ marginTop: 10 }}>
+          <div className="c12">
+            <label>{t.step02Snapshot}</label>
+            <pre className="mono" style={{ background: "#0b1020", color: "#dfe7ff", padding: 12, borderRadius: 10, overflow: "auto" }}>
+{JSON.stringify(
+  {
+    accessHandling: state.site.accessHandling,
+    engineerNotes: state.site.engineerNotes,
+    attachments: state.site.attachments,
+    additionalNotes: state.site.extraNotes,
+  },
+  null,
+  2
+)}
+            </pre>
+          </div>
+
+          <div className="c12">
+            <label>{t.meetingSummary}</label>
+            <textarea
+              disabled={locked}
+              value={state.step03.meetingSummary}
+              onChange={(e) =>
+                setState((p) => ({ ...p, step03: { ...p.step03, meetingSummary: e.target.value } }))
+              }
+            />
+          </div>
+
+          <div className="c6">
+            <label>{t.keyAgreements}</label>
+            <textarea
+              disabled={locked}
+              value={state.step03.keyAgreements}
+              onChange={(e) =>
+                setState((p) => ({ ...p, step03: { ...p.step03, keyAgreements: e.target.value } }))
+              }
+            />
+          </div>
+
+          <div className="c6">
+            <label>{t.openPoints}</label>
+            <textarea
+              disabled={locked}
+              value={state.step03.openPoints}
+              onChange={(e) =>
+                setState((p) => ({ ...p, step03: { ...p.step03, openPoints: e.target.value } }))
+              }
+            />
+          </div>
+
+          <div className="c6">
+            <label>{t.globalTargets}</label>
+            <textarea
+              disabled={locked}
+              value={state.step03.globalTargets}
+              onChange={(e) =>
+                setState((p) => ({ ...p, step03: { ...p.step03, globalTargets: e.target.value } }))
+              }
+            />
+          </div>
+
+          <div className="c6">
+            <label>{t.equipmentOverrides}</label>
+            <textarea
+              disabled={locked}
+              value={state.step03.equipmentOverrides}
+              onChange={(e) =>
+                setState((p) => ({ ...p, step03: { ...p.step03, equipmentOverrides: e.target.value } }))
+              }
+            />
+          </div>
+
+          <div className="c12" style={{ display: "flex", gap: 8, alignItems: "center" }}>
+            {!locked ? (
+              <button
+                className="btn pri"
+                onClick={() => {
+                  const iso = new Date().toISOString();
+                  setState((p) => ({
+                    ...p,
+                    step03: { ...p.step03, locked: true, lockedAtIso: iso },
+                  }));
+                }}
+              >
+                {t.lockStep03}
+              </button>
+            ) : (
+              <>
+                <div className="pill">
+                  <span className="small">{t.locked}</span>
+                  <span className="mono small">{state.step03.lockedAtIso || ""}</span>
+                </div>
+                <button
+                  className="btn"
+                  onClick={() => {
+                    setState((p) => ({
+                      ...p,
+                      step03: { ...p.step03, locked: false, lockedAtIso: "" },
+                    }));
+                  }}
+                >
+                  {t.unlockStep03}
+                </button>
+              </>
+            )}
+
+            <div className="small">
+              Gate status: {locked ? <b className="warn">OPEN</b> : <b className="warn">BLOCKED</b>} for Step 04+
+            </div>
+          </div>
+        </div>
+      </div>
+    );
+  };
+
+  /* ---------------- Step 04 ---------------- */
+  const Step04 = () => (
+    <div className="card">
+      <div className="small">
+        v06 rule: Equipments are NOT project-global. Equipments belong to Option A/B/C.
+      </div>
+
+      {optionKeys.map((k) => (
+        <div key={k} className="optCard">
+          <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
+            <b>{t[`option${k}`]}</b>
+            <button className="btn pri" onClick={() => addOptionEquip(k)}>
+              {t.addRow}
+            </button>
+          </div>
+
+          <label style={{ marginTop: 8 }}>{t.optionRationale}</label>
+          <textarea
+            value={state.options[k].rationale}
+            onChange={(e) =>
+              setState((p) => ({
+                ...p,
+                options: { ...p.options, [k]: { ...p.options[k], rationale: e.target.value } },
+              }))
+            }
+          />
+
+          <label>{t.systemsAndBOM}</label>
+          <textarea
+            value={state.options[k].systemsAndBom}
+            onChange={(e) =>
+              setState((p) => ({
+                ...p,
+                options: { ...p.options, [k]: { ...p.options[k], systemsAndBom: e.target.value } },
+              }))
+            }
+          />
+
+          <div className="box" style={{ marginTop: 10 }}>
+            <div className="small">
+              <b>{t.optionEquipments} · {k}</b>
+            </div>
+
+            {(state.options[k].equipments || []).length === 0 ? (
+              <div className="small">{t.none}</div>
+            ) : (
+              state.options[k].equipments.map((eq, idx) => (
+                <div key={idx} style={{ borderTop: "1px solid #eee", paddingTop: 10, marginTop: 10 }}>
+                  <div className="grid">
+                    <div className="c3">
+                      <label>System</label>
+                      <select
+                        value={eq.system}
+                        onChange={(e) => updateOptionEquip(k, idx, { system: e.target.value })}
+                      >
+                        <option value="COL">Dust Collector</option>
+                        <option value="CONV">Conveyor</option>
+                        <option value="STO">Storage</option>
+                        <option value="DRY">Drying</option>
+                        <option value="GBR">GBR</option>
+                        <option value="DHS">Dehumidifying Silo</option>
+                        <option value="ETS">ETS</option>
+                      </select>
+                    </div>
+
+                    <div className="c6">
+                      <label>Equipment Title</label>
+                      <input
+                        value={eq.title}
+                        onChange={(e) => updateOptionEquip(k, idx, { title: e.target.value })}
+                      />
+                    </div>
+
+                    <div className="c12">
+                      <label>Specs / Notes</label>
+                      <textarea
+                        value={eq.spec}
+                        onChange={(e) => updateOptionEquip(k, idx, { spec: e.target.value })}
+                      />
+                    </div>
+                  </div>
+
+                  <button className="btn" onClick={() => removeOptionEquip(k, idx)}>
+                    {t.remove}
+                  </button>
+                </div>
+              ))
+            )}
+          </div>
+        </div>
+      ))}
+    </div>
+  );
+
+  /* ---------------- Step 05 ---------------- */
+  const Step05 = () => (
+    <div className="card">
+      <div className="small">
+        Definitions: Overhead = indirect costs allocation. Margin = profit target. Contingency = risk reserve for unknowns.
+        Freight base is a standardized sentence; override per option only when different.
+      </div>
+
+      <div className="grid" style={{ marginTop: 10 }}>
+        <div className="c4">
+          <label>{t.overhead}</label>
+          <input
+            type="number"
+            value={state.pricing.overheadPct}
+            onChange={(e) =>
+              setState((p) => ({ ...p, pricing: { ...p.pricing, overheadPct: Number(e.target.value) } }))
+            }
+          />
+        </div>
+
+        <div className="c4">
+          <label>{t.margin}</label>
+          <input
+            type="number"
+            value={state.pricing.marginPct}
+            onChange={(e) =>
+              setState((p) => ({ ...p, pricing: { ...p.pricing, marginPct: Number(e.target.value) } }))
+            }
+          />
+        </div>
+
+        <div className="c4">
+          <label>{t.contingency}</label>
+          <input
+            type="number"
+            value={state.pricing.contingencyPct}
+            onChange={(e) =>
+              setState((p) => ({
+                ...p,
+                pricing: { ...p.pricing, contingencyPct: Number(e.target.value) },
+              }))
+            }
+          />
+        </div>
+
+        <div className="c12">
+          <label>{t.freightBase}</label>
+          <input
+            value={state.pricing.freightBase}
+            onChange={(e) =>
+              setState((p) => ({ ...p, pricing: { ...p.pricing, freightBase: e.target.value } }))
+            }
+          />
+        </div>
+
+        {optionKeys.map((k) => (
+          <div className="c4" key={k}>
+            <label>
+              {t.freightOverride} · Option {k}
+            </label>
+            <input
+              value={state.pricing.freightOverride[k]}
+              onChange={(e) =>
+                setState((p) => ({
+                  ...p,
+                  pricing: {
+                    ...p.pricing,
+                    freightOverride: { ...p.pricing.freightOverride, [k]: e.target.value },
+                  },
+                }))
+              }
+            />
+          </div>
+        ))}
+      </div>
+    </div>
+  );
+
+  /* ---------------- Step 06 ---------------- */
+  const FIXED_CONTRACT_FR = `NOTE 1: TERMES DE PAIEMENT (Section A ou B selon celle retenue par client)
+- 30% à la commande (sur réception de facture). Projet début à la réception du premier paiement.
+- 20% Net 45 jours à la remise des dessins d’atelier.
+- 30% avant expédition (paiement doit être reçu avant expédition).
+- 20% Net 45 jours suivant installation (max 60 jours après expédition).
+- Note : Trustech demeure propriétaire des équipements fournis tant que l’ensemble des paiements ne sont pas complétés par le client.
+- Note : Tout retard de paiement peut entraîner des délais additionnel sur l’échéancier de livraison prévu.
+
+NOTE 2: ÉCHÉANCIER DE LIVRAISON PRÉVU
+- Suivant réception du premier paiement et du nuage de point (scan 3D) prêt à utiliser avec logiciel Inventor :
+  - Ingénierie et remise de dessins d’atelier: 4 à 6 semaines
+  - Fabrication : 12-14 semaine (suivant approbation des dessins d’atelier)
+
+NOTE 3: RESPONSABILITÉ DE TRUSTECH
+- Conception, fabrication et fourniture des éléments décrits et retenus à cette soumission.
+- Ingénierie de conception fait en partenariat avec Dynagroup Technologies Inc.
+- Fonctionnalité des équipements et composantes.
+- Suivant remise des dessins d’atelier, fourniture au client d’un prix pour réseaux de conduits nécessaires et réseau de décharge d’air à l’atmosphère. Le tout selon notre grille tarifaire 2025 en vigueur.
+- Suivant remise des dessins d’atelier, fourniture au client d’un prix pour installation mécanique hors décret. Le tout selon notre grille tarifaire 2025 en vigueur.
+
+NOTE 4: RESPONSABILITÉ DU CLIENT
+- Transport, réception et manutention des équipements lors de la livraison.
+- Tous les travaux de nature civil/structure afin de recevoir les nouveaux équipements (si requis).
+- Layout général des équipements, fourniture d’un scan 3D.
+- L’installation complète des équipements et composantes.
+- Tout travaux de nature électrique, instrumentation, contrôle, pneumatique, civil, etc.
+- Source d’air comprimé, propre et asséché pour alimenter le système de pulse des dépoussiéreurs.
+- Tous percements de murs, plancher et toit requis dans le cadre du projet.
+- Toutes modifications aux équipements existants afin de recevoir les nouveaux équipements et composantes.
+- Tous travaux ou fourniture non-inclus à cette proposition.
+
+NOTE 5: VALIDITÉ DE LA PROPOSITION
+- La présente proposition est valide pour 30 jours.
+- Voir également la Note 7 pour autres notes et exception.
+
+NOTE 6: GARANTIES
+- Garantie sur efficacité de filtration (au niveau des filtres) pour respecter les normes en vigueur pour le dépoussiéreur.
+- Garantie sur le débit développé par le nouveau ventilateur fourni.
+- Garantie générale de 1 an sur la fonctionnalité des nouveaux équipements et composantes fournies, s’ils sont opérés selon les recommandations des manufacturiers et de Trustech.
+- Aucune garantie sur équipements, composantes et matériaux existants qui seront réutilisés.
+- Option : garantie de 2 ans (au lieu de 1 an) : coût additionnel de 3500$.
+- Aucune garantie sur les pièces d’usure (filtres, conduits, etc.) sauf défaut de fabrication ou d’installation.
+- Aucune garantie sur l’efficacité de capture aux points d’émission de poussières.
+- La garantie couvre le matériel nécessaire et non la main-d’œuvre associée.
+
+NOTE 7: NOTES & EXCLUSIONS
+- En cas de délais affectant l’échéancier : aucune pénalité/dommages-intérêts liquidés ne pourra être chargé à Trustech – Systèmes et Procédés Inc.
+- Après expédition : Trustech n’est pas responsable des dommages/pertes/vol/brus sous la responsabilité du client.
+- Aucune caution ne sera fournie.
+- Les prix sont basés sur une évaluation de projet (Octobre 2025). Ajustement possible si nouveaux tarifs/frais excédentaires (à partir de Novembre 2024).`;
+
+  const Step06 = () => (
+    <div className="card">
+      <div className="small">
+        v06 requirement: Contract base included (Vibrotech Notes 1–7). Add editable addendum for revisions.
+      </div>
+
+      <label>Fixed Contract Base (FR)</label>
+      <textarea value={FIXED_CONTRACT_FR} readOnly />
+
+      <label style={{ marginTop: 10 }}>Editable Updates / Revision Notes</label>
+      <textarea
+        value={state.contract.editableText}
+        onChange={(e) =>
+          setState((p) => ({ ...p, contract: { ...p.contract, editableText: e.target.value } }))
+        }
+        placeholder="Add/update clauses here (will be merged into final document)."
+      />
+    </div>
+  );
+
+  /* ---------------- Step 07 ---------------- */
+  const Step07 = () => (
+    <div className="card">
+      <div className="small">
+        Template-ready dataset for Word → PDF generation (v06).
+      </div>
+      <pre
+        className="mono"
+        style={{
+          background: "#0b1020",
+          color: "#dfe7ff",
+          padding: 12,
+          borderRadius: 10,
+          overflow: "auto",
+        }}
+      >
+{JSON.stringify(state, null, 2)}
+      </pre>
+    </div>
+  );
+
+  const StepBody = () => {
+    if (stepIdx === 0) return <Step01 />;
+    if (stepIdx === 1) return <Step02 />;
+    if (stepIdx === 2) return <Step03 />;
+    if (stepIdx === 3) return <Step04 />;
+    if (stepIdx === 4) return <Step05 />;
+    if (stepIdx === 5) return <Step06 />;
+    return <Step07 />;
+  };
+
+  return (
+    <>
+      <HeaderBar />
+
+      <div className="row">
+        <Tabs />
+      </div>
+
+      <div className="row">
+        <StepTitle />
+      </div>
+
+      <div className="row">
+        <StepBody />
+      </div>
+
+      <div className="row" style={{ display: "flex", gap: 8, justifyContent: "space-between" }}>
+        <button className="btn" disabled={stepIdx === 0} onClick={prevStep}>
+          {t.prev}
+        </button>
+
+        <button
+          className="btn pri"
+          disabled={stepIdx === STEPS.length - 1}
+          onClick={nextStep}
+          title={stepIdx === 2 && !state.step03.locked ? t.gateBlocked : ""}
+        >
+          {t.next}
+        </button>
+      </div>
+
+      <div className="row">
+        <div className="small">
+          Notes: EN/FR only. Step01 cleaned. Step03 lock gates Step04+. Equipments belong to options (A/B/C).
+        </div>
+      </div>
+    </>
+  );
+}
+
+// Boot
+(function boot() {
+  injectStyles();
+  const root = ReactDOM.createRoot(document.getElementById("root"));
+  root.render(<App />);
+})();
